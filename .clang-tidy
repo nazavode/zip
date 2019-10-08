@@ -1,0 +1,5 @@
+---
+Checks: '-*,cppcoreguidelines-*,modernize-*,bugprone-*,performance-*,portability-*,readability-*,misc-*'
+HeaderFilterRegex: '*\.h$'
+FormatStyle: file
+...
