@@ -3,6 +3,14 @@ project(zipit VERSION 0.1 LANGUAGES CXX)
 
 option(ZIPIT_ENABLE_TEST "Enable unit tests" ON)
 
+# Add extra finders
+set(CMAKE_MODULE_PATH
+    ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+# Always enable generation of compilation database to
+# make clang tooling and vscode happy
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Generate compile commands database" FORCE)
+
 ###########################################################
 # C++ standard level
 # Defines target 'zipit::cxxstd'
@@ -84,6 +92,10 @@ add_executable(_Test
 add_executable(zipit::test ALIAS _Test)
 set_target_properties(_Test
     PROPERTIES
+        # zipit::cxxstd isn't enough since INTERFACE_CXX_EXTENSIONS
+        # is still broken:
+        # https://gitlab.kitware.com/cmake/cmake/issues/17183
+        CXX_EXTENSIONS OFF
         OUTPUT_NAME "zipit-test")
 target_link_libraries(_Test
     PUBLIC
@@ -97,14 +109,12 @@ endif()
 
 ###########################################################
 # Tooling
-# Defines the following targets:
+# Defines the following targets (only if the corresponding
+# tool is found):
 # - format-fix (run clang-format fixers in place on all sources)
 # - tidy       (run clang-tidy on all sources)
 # - tidy-fix   (run clang-tidy fixers in place on all sources)
 ###########################################################
-find_package(ClangFormat QUIET)
-find_package(ClangTidy QUIET)
-
 function(get_target_sources _outvar _target)
     # Returns all the source files
     # (including headers) associated to the given
@@ -136,6 +146,7 @@ get_target_sources(_AllSources
     zipit::zipit
     zipit::test)
 
+find_package(ClangFormat QUIET)
 if(CLANG_FORMAT_FOUND)
     message(STATUS "clang-format: found ${CLANG_FORMAT_EXECUTABLE}")
     message(STATUS "clang-format: added custom target 'format-fix'")
@@ -145,6 +156,7 @@ if(CLANG_FORMAT_FOUND)
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
+find_package(ClangTidy QUIET)
 if(CLANG_TIDY_FOUND)
     message(STATUS "clang-tidy: found ${CLANG_TIDY_EXECUTABLE}")
     message(STATUS "clang-tidy: added custom targets 'tidy' and 'tidy-fix'")
