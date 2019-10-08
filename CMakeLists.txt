@@ -23,8 +23,9 @@ if(cxx_std_17 IN_LIST CMAKE_CXX_COMPILE_FEATURES)
     set_property(TARGET _Cxxstd PROPERTY INTERFACE_COMPILE_FEATURES cxx_std_17)
 else()
     set(_cxx_std_flag -std=c++17)
-    check_cxx_compiler_flag(${_cxx_std_flag} _compiler_supports_cxx_std17_flag)
-    if(_compiler_supports_cxx_std17_flag)
+    include(CheckCXXCompilerFlag)
+    check_cxx_compiler_flag(${_cxx_std_flag} COMPILER_SUPPORTS_CXX_STD17_FLAG)
+    if(COMPILER_SUPPORTS_CXX_STD17_FLAG)
         message(STATUS "CMake compile features not available for the current \
 toolchain or CMake version, setting C++ standard level directly via compiler \
 flags. Please be aware that setting flags doesn't check the actual C++17 \
