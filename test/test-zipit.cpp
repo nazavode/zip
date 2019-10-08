@@ -1,3 +1,4 @@
+#include <zipit.h>
 
 #include "catch.hpp"
 
