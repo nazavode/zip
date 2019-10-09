@@ -1,55 +1,65 @@
 #include <zipit.h>
 
-#include "catch.hpp"
-
-#include <vector>
 #include <array>
 #include <iterator>
 #include <type_traits>
+#include <vector>
+
+#include "catch.hpp"
 
 TEST_CASE("zip provides access to stored references to sequences", "[zip]") {
-    std::array<int, 0> a;
-    std::vector<float> b;
-    std::vector<long long> c;
-    auto z = zipit::zip{a, b, c};
+    // std::array<int, 0> a;
+    // std::vector<float> b;
+    // std::vector<long long> c;
+    // auto z = zipit::zip{a, b, c};
 
-    SECTION("via unqualified get") {
-        STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(get<0>(z))>);
-        STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(get<1>(z))>);
-        STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(get<2>(z))>);
-    }
+    // SECTION("via unqualified get") {
+    //     using std::get;
+    //     STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(get<0>(z))>);
+    //     STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(get<1>(z))>);
+    //     STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(get<2>(z))>);
+    // }
 
-    SECTION("via std::get") {
-        STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(std::get<0>(z))>);
-        STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(std::get<1>(z))>);
-        STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(std::get<2>(z))>);
-    }
+    // SECTION("via std::get") {
+    //     STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(std::get<0>(z))>);
+    //     STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(std::get<1>(z))>);
+    //     STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(std::get<2>(z))>);
+    // }
+
+    // SECTION("via structured binding") {
+    //     auto& [aa, bb, cc] = z;
+    //     STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(aa));
+    //     STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(bb));
+    //     STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(cc));
+    // }
 }
 
-TEST_CASE("zip size matches the shortest sequence's size", "[zip]") {
+TEST_CASE("zip size matches the size of the shortest sequence", "[zip]") {
     std::vector<float> a;
     std::vector<int> b{0, 0, 0};
     auto z = zipit::zip{a, b};
 
-    REQUIRE(std::size(z) == 0);
-    b.emplace_back(0);
-    REQUIRE(std::size(z) == 0);
+    SECTION("with immutable sequences") { REQUIRE(std::size(z) == 0); }
 
-    a.emplace_back(0);
-    REQUIRE(std::size(z) == 1);
-    a.emplace_back(0);
-    REQUIRE(std::size(z) == 2);
-    a.emplace_back(0);
-    REQUIRE(std::size(z) == 3);
-    a.emplace_back(0);
-    REQUIRE(std::size(z) == 4);
-    a.emplace_back(0);
-    REQUIRE(std::size(z) == 5);
-    a.emplace_back(0);
-    REQUIRE(std::size(z) == 6);
+    SECTION("with mutating sequences") {
+        REQUIRE(std::size(z) == 0);
+        b.push_back(0);
+        REQUIRE(std::size(z) == 0);
 
-    b.emplace_back(0);
-    REQUIRE(std::size(z) == 6);
+        a.push_back(0);
+        REQUIRE(std::size(z) == 1);
+        a.push_back(0);
+        REQUIRE(std::size(z) == 2);
+        a.push_back(0);
+        REQUIRE(std::size(z) == 3);
+        a.push_back(0);
+        REQUIRE(std::size(z) == 4);
+        a.push_back(0);
+        REQUIRE(std::size(z) == 4);
+
+        b.push_back(0);
+        REQUIRE(std::size(z) == 5);
+    }
 }
 
 // TEST_CASE("zip stores references to sequences", "[zip]") {
