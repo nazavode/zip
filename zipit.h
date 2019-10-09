@@ -7,6 +7,7 @@
 #include <tuple>
 #include <type_traits>
 #include <utility>
+#include <algorithm>
 
 namespace zipit {
 
@@ -63,7 +64,8 @@ constexpr void for_each(Tuple&& t, UnaryOp&& f) {
 // constexpr Return map(Tuple&& t, UnaryOp&& f) {
 //     using Indexes =
 //         std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tuple>>>;
-//     return detail::map_impl(std::forward<Tuple>(t), std::forward<UnaryOp>(f), Indexes{});
+//     return detail::map_impl(std::forward<Tuple>(t), std::forward<UnaryOp>(f),
+//     Indexes{});
 // }
 
 template <typename TupleLHS, typename TupleRHS, typename BinaryPredicate>
@@ -161,13 +163,25 @@ struct zip {
     // instantiated:
     using sequences = std::tuple<Sequences&...>;
 
+    // using size_type = std::common_type_t<decltype(std::size(std::declval<Sequences&>()))...>;
+    using size_type = std::size_t;
+
     constexpr zip(Sequences&... sqs) noexcept : m_seq{sqs...} {}
 
     constexpr iterator begin() { return begin_impl(std::make_index_sequence<arity>{}); }
 
     constexpr iterator end() { return end_impl(std::make_index_sequence<arity>{}); }
 
-    // private:
+    constexpr size_type size() const noexcept {
+        return size_impl(std::make_index_sequence<arity>{});
+    }
+
+    // template<std::size_t N>
+    // friend constexpr decltype(auto) get() noexcept {
+    //     return std::get<N>(m_seq);
+    // }
+
+   private:   
     template <std::size_t... Indexes>
     constexpr iterator begin_impl(std::index_sequence<Indexes...>) {
         return {std::begin(std::get<Indexes>(m_seq))...};
@@ -176,6 +190,11 @@ struct zip {
     template <std::size_t... Indexes>
     constexpr iterator end_impl(std::index_sequence<Indexes...>) {
         return {std::end(std::get<Indexes>(m_seq))...};
+    }
+
+    template <std::size_t... Indexes>
+    constexpr size_type size_impl(std::index_sequence<Indexes...>) const noexcept {
+        return std::min(std::size(std::get<Indexes>(m_seq))...);
     }
 
     sequences m_seq;
