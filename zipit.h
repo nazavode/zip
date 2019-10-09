@@ -63,7 +63,8 @@ constexpr void for_each(Tuple&& t, UnaryOp&& f) {
 // constexpr Return map(Tuple&& t, UnaryOp&& f) {
 //     using Indexes =
 //         std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tuple>>>;
-//     return detail::map_impl(std::forward<Tuple>(t), std::forward<UnaryOp>(f), Indexes{});
+//     return detail::map_impl(std::forward<Tuple>(t), std::forward<UnaryOp>(f),
+//     Indexes{});
 // }
 
 template <typename TupleLHS, typename TupleRHS, typename BinaryPredicate>
@@ -167,7 +168,7 @@ struct zip {
 
     constexpr iterator end() { return end_impl(std::make_index_sequence<arity>{}); }
 
-    // private:
+   private:
     template <std::size_t... Indexes>
     constexpr iterator begin_impl(std::index_sequence<Indexes...>) {
         return {std::begin(std::get<Indexes>(m_seq))...};

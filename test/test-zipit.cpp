@@ -2,6 +2,76 @@
 
 #include "catch.hpp"
 
+#include <vector>
+#include <array>
+#include <iterator>
+#include <type_traits>
+
+TEST_CASE("zip provides access to stored references to sequences", "[zip]") {
+    std::array<int, 0> a;
+    std::vector<float> b;
+    std::vector<long long> c;
+    auto z = zipit::zip{a, b, c};
+
+    SECTION("via unqualified get") {
+        STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(get<0>(z))>);
+        STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(get<1>(z))>);
+        STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(get<2>(z))>);
+    }
+
+    SECTION("via std::get") {
+        STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(std::get<0>(z))>);
+        STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(std::get<1>(z))>);
+        STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(std::get<2>(z))>);
+    }
+}
+
+TEST_CASE("zip size matches the shortest sequence's size", "[zip]") {
+    std::vector<float> a;
+    std::vector<int> b{0, 0, 0};
+    auto z = zipit::zip{a, b};
+
+    REQUIRE(std::size(z) == 0);
+    b.emplace_back(0);
+    REQUIRE(std::size(z) == 0);
+
+    a.emplace_back(0);
+    REQUIRE(std::size(z) == 1);
+    a.emplace_back(0);
+    REQUIRE(std::size(z) == 2);
+    a.emplace_back(0);
+    REQUIRE(std::size(z) == 3);
+    a.emplace_back(0);
+    REQUIRE(std::size(z) == 4);
+    a.emplace_back(0);
+    REQUIRE(std::size(z) == 5);
+    a.emplace_back(0);
+    REQUIRE(std::size(z) == 6);
+
+    b.emplace_back(0);
+    REQUIRE(std::size(z) == 6);
+}
+
+// TEST_CASE("zip stores references to sequences", "[zip]") {
+//     std::array<int, 0> a;
+//     std::vector<float> b;
+//     std::vector<long long> c;
+
+//     SECTION("when explicitly instantiated") {
+//         auto z = zipit::zip<decltype(a), decltype(b), decltype(c)>{a, b, c};
+//         STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(get<0>(z))>);
+//         STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(get<1>(z))>);
+//         STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(get<2>(z))>);
+//     }
+
+//     SECTION("when template arguments are deduced") {
+//         auto z = zipit::zip{a, b, c};
+//         STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(get<0>(z))>);
+//         STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(get<1>(z))>);
+//         STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(get<2>(z))>);
+//     }
+// }
+
 // int main() {
 //   std::array<int, 10> a{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 //   std::vector<float> b{9, 8, 7, 6, 5, 4, 3};
@@ -89,7 +159,6 @@
 
 //   /*
 
-
 //   auto value = *it;
 //   std::cout << std::get<0>(value) << std::get<1>(value) << std::get<2>(value) <<
 //   std::endl;
@@ -99,10 +168,8 @@
 //   std::cout << std::get<0>(value) << std::get<1>(value) << std::get<2>(value) <<
 //   std::endl;
 
-
 //   const auto it2 = it;
 //   const auto eq = (it == it2);
-
 
 //   // Print<decltype(value)> ppp{};
 //   return std::tuple_size_v<decltype(it)::zip_iterator_type>;

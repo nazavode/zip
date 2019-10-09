@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(zipit VERSION 0.1 LANGUAGES CXX)
 
-option(ZIPIT_ENABLE_TEST "Enable unit tests" ON)
+option(ZIPIT_ENABLE_TEST "Enable building unit tests" ON)
+option(ZIPIT_ENABLE_BENCHMARK "Enable building micro-benchmarks" ON)
 
 # Add extra finders
 set(CMAKE_MODULE_PATH
@@ -76,12 +77,15 @@ target_link_libraries(_Zipit
 # Unit tests
 # Defines target 'zipit::test'
 ###########################################################
-
 add_library(_Catch2 INTERFACE)
 add_library(zipit::catch2 ALIAS _Catch2)
 target_sources(_Catch2
     INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/test/catch.hpp)
+target_compile_definitions(_Catch2
+    INTERFACE
+        # Defer STATIC_REQUIRE failure/success to runtime
+        CATCH_CONFIG_RUNTIME_STATIC_REQUIRE)
 target_include_directories(_Catch2
     INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/test)
