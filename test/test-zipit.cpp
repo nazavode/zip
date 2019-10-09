@@ -17,25 +17,6 @@ TEST_CASE("zip works on empty iteration space", "[zip]") {
     REQUIRE(std::begin(z) == std::end(z));
 }
 
-TEST_CASE("zip stops stops on shortest sequence", "[zip]") {
-    std::vector<int> a{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-    std::vector<float> b{9, 8, 7, 6, 5, 4, 3};
-    auto z = zipit::zip{a, b};
-
-    SECTION("on std::distance") {
-        REQUIRE(std::distance(std::begin(z), std::end(z)) ==
-                std::min(std::size(a), std::size(b)));
-    }
-
-    SECTION("on std::size") {
-        REQUIRE(std::size(z) == std::min(std::size(a), std::size(b)));
-    }
-
-    SECTION("on std::end") {
-        REQUIRE(get<1>(*(std::end(z) - 1)) == *(std::end(b) - 1));
-    }
-}
-
 TEST_CASE("zip works with stl algorithms", "[zip]") {
     std::vector<int> a{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     std::vector<float> b{9, 8, 7, 6, 5, 4, 3};
@@ -121,11 +102,6 @@ TEST_CASE("components can be accessed", "[zip]") {
     SECTION("via structured binding") {}
 } 
 
-// TEST_CASE("zip forward iteration stops on the shortest sequence") {
-//     std::array<int, 10> a{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-//   std::vector<float> b{9, 8, 7, 6, 5, 4, 3};
-//   std::vector<long long> c{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-
 TEST_CASE("zip provides access to stored references to sequences", "[zip]") {
     // std::array<int, 0> a;
     // std::vector<float> b;
@@ -158,27 +134,60 @@ TEST_CASE("zip size matches the size of the shortest sequence", "[zip]") {
     std::vector<int> b{0, 0, 0};
     auto z = zipit::zip{a, b};
 
-    SECTION("with immutable sequences") { REQUIRE(std::size(z) == 0); }
+    REQUIRE(std::size(z) == 0);
+    REQUIRE(std::distance(std::begin(z), std::end(z)) == 0);
+    
+    b.push_back(0);
+    // a = {}
+    // b = {0, 0, 0, 0}
+    REQUIRE(std::size(z) == 0);
+    REQUIRE(std::distance(std::begin(z), std::end(z)) == 0);
+    
+    a.push_back(0);
+    // a = {0}
+    // b = {0, 0, 0, 0}
+    REQUIRE(std::size(z) == 1);
+    REQUIRE(std::distance(std::begin(z), std::end(z)) == 1);
+    
+    a.push_back(0);
+    // a = {0, 0}
+    // b = {0, 0, 0, 0}
+    REQUIRE(std::size(z) == 2);
+    REQUIRE(std::distance(std::begin(z), std::end(z)) == 2);
+    
+    a.push_back(0);
+    // a = {0, 0, 0}
+    // b = {0, 0, 0, 0}
+    REQUIRE(std::size(z) == 3);
+    REQUIRE(std::distance(std::begin(z), std::end(z)) == 3;
+    
+    a.push_back(0);
+    // a = {0, 0, 0, 0}
+    // b = {0, 0, 0, 0}
+    REQUIRE(std::size(z) == 4);
+    REQUIRE(std::distance(std::begin(z), std::end(z)) == 4);
+    
+    a.push_back(0);
+    // a = {0, 0, 0, 0, 0}
+    // b = {0, 0, 0, 0}
+    REQUIRE(std::size(z) == 4);
+    REQUIRE(std::distance(std::begin(z), std::end(z)) == 4);
+    
+    b.push_back(0);
+    // a = {0, 0, 0, 0, 0}
+    // b = {0, 0, 0, 0, 0}
+    REQUIRE(std::size(z) == 5);
+    REQUIRE(std::distance(std::begin(z), std::end(z)) == 5);
 
-    SECTION("with mutating sequences") {
-        REQUIRE(std::size(z) == 0);
-        b.push_back(0);
-        REQUIRE(std::size(z) == 0);
+    b.clear();
+    // a = {0, 0, 0, 0, 0}
+    // b = {}
+    REQUIRE(std::size(z) == 0);
+    REQUIRE(std::distance(std::begin(z), std::end(z)) == 0);
 
-        a.push_back(0);
-        REQUIRE(std::size(z) == 1);
-        a.push_back(0);
-        REQUIRE(std::size(z) == 2);
-        a.push_back(0);
-        REQUIRE(std::size(z) == 3);
-        a.push_back(0);
-        REQUIRE(std::size(z) == 4);
-        a.push_back(0);
-        REQUIRE(std::size(z) == 4);
-
-        b.push_back(0);
-        REQUIRE(std::size(z) == 5);
-    }
+    // SECTION("on std::end") {
+    //     REQUIRE(get<1>(*(std::end(z) - 1)) == *(std::end(b) - 1));
+    // }
 }
 
 // TEST_CASE("zip stores references to sequences", "[zip]") {
