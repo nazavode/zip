@@ -4,6 +4,10 @@
 
 #include <array>
 
+// Rispetto const-ness
+// Modifica valori sequenze via tupla di refs
+// Tuple-like semantics dell'iteratore
+
 TEST_CASE("Random access iterator concept", "[zip_iterator]") {
     constexpr std::array<int, 6>   a{0,  1,  2,  3,  4,   5};
     constexpr std::array<long long, 6> b{4,  3,  2,  1,  0, 666};
