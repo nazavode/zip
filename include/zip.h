@@ -269,7 +269,8 @@ namespace std {
 // Injecting stuff into std is unfortunately required
 
 template <typename... Ts>
-class tuple_size<::zip::zip_iterator<Ts...>> : ::zip::zip_iterator<Ts...>::tuple_size { };
+class tuple_size<::zip::zip_iterator<Ts...>> : 
+    public ::zip::zip_iterator<Ts...>::tuple_size { };
 
 template <std::size_t I, typename... Ts>
 class tuple_element<I, ::zip::zip_iterator<Ts...>> {
