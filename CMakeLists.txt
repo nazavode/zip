@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
-project(zipit VERSION 0.1 LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+project(zip VERSION 0.1 LANGUAGES CXX)
 
-option(ZIPIT_ENABLE_TEST "Enable building unit tests" ON)
-option(ZIPIT_ENABLE_BENCHMARK "Enable building micro-benchmarks" ON)
+option(ZIP_ENABLE_TEST "Enable building unit tests" ON)
+option(ZIP_ENABLE_BENCHMARK "Enable building micro-benchmarks" OFF)
 
 # Add extra finders
 set(CMAKE_MODULE_PATH
@@ -14,10 +14,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Generate compile commands datab
 
 ###########################################################
 # C++ standard level
-# Defines target 'zipit::cxxstd'
+# Defines target 'zip::cxxstd'
 ###########################################################
 add_library(_Cxxstd INTERFACE)
-add_library(zipit::cxxstd ALIAS _Cxxstd)
+add_library(zip::cxxstd ALIAS _Cxxstd)
 # TODO still not sure about switching off language extensions on clients
 set_property(TARGET _Cxxstd PROPERTY INTERFACE_CXX_EXTENSIONS OFF)
 if(cxx_std_17 IN_LIST CMAKE_CXX_COMPILE_FEATURES)
@@ -42,10 +42,10 @@ endif()
 
 ###########################################################
 # Compiler warnings
-# Defines target 'zipit::warnings'
+# Defines target 'zip::warnings'
 ###########################################################
 add_library(_Warnings INTERFACE)
-add_library(zipit::warnings ALIAS _Warnings)
+add_library(zip::warnings ALIAS _Warnings)
 set_property(TARGET _Warnings
              PROPERTY INTERFACE_COMPILE_OPTIONS
                       -Wall
@@ -54,32 +54,32 @@ set_property(TARGET _Warnings
 
 ###########################################################
 # Actual library
-# Defines target 'zipit::zipit'
+# Defines target 'zip::zip'
 ###########################################################
 
-add_library(_Zipit INTERFACE)
-add_library(zipit::zipit ALIAS _Zipit)
+add_library(_Zip INTERFACE)
+add_library(zip::zip ALIAS _Zip)
 
-target_sources(_Zipit
+target_sources(_Zip
     INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/zipit.h)
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/zip.h)
 
-target_include_directories(_Zipit
+target_include_directories(_Zip
     INTERFACE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-target_link_libraries(_Zipit
+target_link_libraries(_Zip
     INTERFACE
-        zipit::cxxstd
-        zipit::warnings)
+        zip::cxxstd
+        zip::warnings)
 
 ###########################################################
 # Unit tests
-# Defines target 'zipit::test'
+# Defines target 'zip::test'
 ###########################################################
 add_library(_Catch2 INTERFACE)
-add_library(zipit::catch2 ALIAS _Catch2)
+add_library(zip::catch2 ALIAS _Catch2)
 target_sources(_Catch2
     INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/test/catch.hpp)
@@ -93,23 +93,52 @@ target_include_directories(_Catch2
 
 add_executable(_Test
     ${CMAKE_CURRENT_SOURCE_DIR}/test/main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/test-zipit.cpp)
-add_executable(zipit::test ALIAS _Test)
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/sanitizer-options.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/test-zip.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/test-iterator.cpp)
+add_executable(zip::test ALIAS _Test)
 set_target_properties(_Test
     PROPERTIES
-        # zipit::cxxstd isn't enough since INTERFACE_CXX_EXTENSIONS
+        # zip::cxxstd isn't enough since INTERFACE_CXX_EXTENSIONS
         # is still broken:
         # https://gitlab.kitware.com/cmake/cmake/issues/17183
         CXX_EXTENSIONS OFF
-        OUTPUT_NAME "zipit-test")
+        OUTPUT_NAME "zip-test")
 target_link_libraries(_Test
     PUBLIC
-        zipit::catch2
-        zipit::zipit)
+        zip::catch2
+        zip::zip)
     
-if(ZIPIT_ENABLE_TEST)
+if(ZIP_ENABLE_TEST)
     enable_testing()
-    add_test(NAME zipit-test COMMAND _Tests)
+    add_test(NAME zip-test COMMAND _Tests)
+endif()
+
+###########################################################
+# Micro-benchmarks
+# Defines target 'zip::benchmark'
+###########################################################
+add_executable(_Benchmark
+    ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/main.cpp)
+add_executable(zip::benchmark ALIAS _Benchmark)
+set_target_properties(_Benchmark
+        PROPERTIES
+            # zip::cxxstd isn't enough since INTERFACE_CXX_EXTENSIONS
+            # is still broken:
+            # https://gitlab.kitware.com/cmake/cmake/issues/17183
+            CXX_EXTENSIONS OFF
+            OUTPUT_NAME "zip-benchmark")
+target_link_libraries(_Benchmark
+    PUBLIC
+        zip::zip)
+if(ZIP_ENABLE_BENCHMARK)
+    # 1. find (and download) Google Benchmark
+    # 2. Link it
+else()
+    # Don't download Google Benchmark and skip target
+    set_target_properties(_Benchmark
+        PROPERTIES
+            EXCLUDE_FROM_ALL ON)
 endif()
 
 ###########################################################
@@ -148,8 +177,9 @@ function(get_target_sources _outvar _target)
 endfunction(get_target_sources)
 
 get_target_sources(_AllSources
-    zipit::zipit
-    zipit::test)
+    zip::zip
+    zip::test
+    zip::benchmark)
 
 find_package(ClangFormat QUIET)
 if(CLANG_FORMAT_FOUND)
@@ -200,7 +230,6 @@ add_build_type(TSAN
 
 add_build_type(ASAN
     -fsanitize=address -fno-optimize-sibling-calls
-    -fsanitize-address-use-after-scope
     -fno-omit-frame-pointer -g -O1)
 
 add_build_type(UBSAN

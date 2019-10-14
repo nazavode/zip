@@ -1,26 +1,26 @@
-#include <zipit.h>
+// #include <zip.h>
 
-#include <array>
-#include <iterator>
-#include <type_traits>
-#include <vector>
+// #include <array>
+// #include <iterator>
+// #include <type_traits>
+// #include <vector>
 
-#include "catch.hpp"
+// #include "catch.hpp"
 
-using Catch::Matchers::Approx;
-using Catch::Matchers::Equals;
+// using Catch::Matchers::Approx;
+// using Catch::Matchers::Equals;
 
-TEST_CASE("empty zip", "[zip]") {
-    auto z = zipit::zip{};
-    STATIC_REQUIRE(decltype(z)::arity == 0);
-}
+// TEST_CASE("empty zip", "[zip]") {
+//     auto z = zip::zip{};
+//     STATIC_REQUIRE(decltype(z)::arity == 0);
+// }
 
-TEST_CASE("zip supports empty iteration space", "[zip]") {
-    std::array<int, 0> a;
-    std::array<float, 0> b;
-    auto z = zipit::zip{a, b};
-    REQUIRE(std::begin(z) == std::end(z));
-}
+// TEST_CASE("zip supports empty iteration space", "[zip]") {
+//     std::array<int, 0> a;
+//     std::array<float, 0> b;
+//     auto z = zip::zip{a, b};
+//     REQUIRE(std::begin(z) == std::end(z));
+// }
 
 // TODO
 // Add tests for iterator concept constraints, e.g.:
@@ -34,7 +34,7 @@ TEST_CASE("zip supports empty iteration space", "[zip]") {
 // TEST_CASE("zip works with stl algorithms", "[zip]") {
 //     std::vector<int> a{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 //     std::vector<float> b{9, 8, 7, 6, 5, 4, 3};
-//     auto z = zipit::zip{a, b};
+//     auto z = zip::zip{a, b};
 
 //     SECTION("op takes zipped tuple by value, modifies components through reference obtained via std::get") {
 //         std::for_each(std::begin(z), std::end(z), [](auto e) {
@@ -79,7 +79,7 @@ TEST_CASE("zip supports empty iteration space", "[zip]") {
 //     std::vector<int> a{9, 8, 7, 6, 5, 4, 3};
 //     std::vector<long long> b{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-//     for (auto [_a, _b] : zipit::zip{a, b}) {
+//     for (auto [_a, _b] : zip::zip{a, b}) {
 //         _a = -1;
 //         _b = -1;
 //     }
@@ -92,7 +92,7 @@ TEST_CASE("zip supports empty iteration space", "[zip]") {
 //     std::array<int, 10> a{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 //     std::vector<float> b{9, 8, 7, 6, 5, 4, 3};
 //     std::vector<long long> c{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-//     auto z = zipit::zip{a, b};
+//     auto z = zip::zip{a, b};
 
 //     for(int i = 0; i < std::size(z); ++i){
 //         const auto e = z[i];
@@ -102,37 +102,37 @@ TEST_CASE("zip supports empty iteration space", "[zip]") {
 //     }    
 // }
 
-TEST_CASE("zip gives access to references to sequences", "[zip]") {
-    std::array<int, 0> a;
-    std::vector<float> b;
-    std::vector<long long> c;
-    auto z = zipit::zip{a, b, c};
+// TEST_CASE("zip gives access to references to sequences", "[zip]") {
+//     std::array<int, 0> a;
+//     std::vector<float> b;
+//     std::vector<long long> c;
+//     auto z = zip::zip{a, b, c};
 
-    SECTION("via unqualified get") {
-        using std::get;
-        STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(get<0>(z))>);
-        STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(get<1>(z))>);
-        STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(get<2>(z))>);
-    }
+//     SECTION("via unqualified get") {
+//         using std::get;
+//         STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(get<0>(z))>);
+//         STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(get<1>(z))>);
+//         STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(get<2>(z))>);
+//     }
 
-    SECTION("via std::get") {
-        STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(std::get<0>(z))>);
-        STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(std::get<1>(z))>);
-        STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(std::get<2>(z))>);
-    }
+//     SECTION("via std::get") {
+//         STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(std::get<0>(z))>);
+//         STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(std::get<1>(z))>);
+//         STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(std::get<2>(z))>);
+//     }
 
-    // SECTION("via structured binding") {
-    //     auto& [_a, _b, _c] = z;
-    //     STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(_a));
-    //     STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(_b));
-    //     STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(_c));
-    // }
-}
+//     // SECTION("via structured binding") {
+//     //     auto& [_a, _b, _c] = z;
+//     //     STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(_a));
+//     //     STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(_b));
+//     //     STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(_c));
+//     // }
+// }
 
 // TEST_CASE("zip size matches the size of the shortest sequence", "[zip]") {
 //     std::vector<float> a;
 //     std::vector<int> b{0, 0, 0};
-//     auto z = zipit::zip{a, b};
+//     auto z = zip::zip{a, b};
 
 //     REQUIRE(std::size(z) == 0);
 //     REQUIRE(std::distance(std::begin(z), std::end(z)) == 0);
