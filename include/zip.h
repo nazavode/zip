@@ -148,13 +148,13 @@ struct zip_iterator {
             }));
     }
     
-    constexpr difference_type operator+(zip_iterator other) const {
+    constexpr difference_type operator+(const zip_iterator& other) const {
         return ttl::inner_product(m_it, other.m_it,
                                   [](auto&& ...prods) { return std::min({prods...}); },
                                   [](auto&& lhs, auto&& rhs) { return lhs + rhs; });
     }
 
-    constexpr difference_type operator-(zip_iterator other) const {
+    constexpr difference_type operator-(const zip_iterator& other) const {
         return ttl::inner_product(m_it, other.m_it,
                                   [](auto&& ...prods) { return std::min({prods...}); },
                                   [](auto&& lhs, auto&& rhs) { return lhs - rhs; });
