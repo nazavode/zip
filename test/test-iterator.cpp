@@ -3,10 +3,31 @@
 #include "catch.hpp"
 
 #include <array>
+#include <type_traits>
 
-// Rispetto const-ness
 // Modifica valori sequenze via tupla di refs
 // Tuple-like semantics dell'iteratore
+
+TEST_CASE("Zipped iterators constness is respected", "[zip_iterator]") {
+    std::array<int, 0> a;
+    std::array<long long, 0> b;
+
+    auto const_const = zip::zip_iterator{std::cbegin(a), std::cbegin(b)};
+    STATIC_REQUIRE(std::is_const_v<decltype(std::get<0>(const_const))>);
+    STATIC_REQUIRE(std::is_const_v<decltype(std::get<1>(const_const))>);
+
+    auto mut_const = zip::zip_iterator{std::begin(a), std::cbegin(b)};
+    STATIC_REQUIRE_FALSE(std::is_const_v<decltype(std::get<0>(mut_const))>);
+    STATIC_REQUIRE(std::is_const_v<decltype(std::get<1>(mut_const))>);
+
+    auto const_mut = zip::zip_iterator{std::cbegin(a), std::begin(b)};
+    STATIC_REQUIRE(std::is_const_v<decltype(std::get<0>(const_mut))>);
+    STATIC_REQUIRE_FALSE(std::is_const_v<decltype(std::get<1>(const_mut))>);
+
+    auto mut_mut = zip::zip_iterator{std::begin(a), std::begin(b)};
+    STATIC_REQUIRE_FALSE(std::is_const_v<decltype(std::get<0>(mut_mut))>);
+    STATIC_REQUIRE_FALSE(std::is_const_v<decltype(std::get<1>(mut_mut))>);
+}
 
 TEST_CASE("Random access iterator concept", "[zip_iterator]") {
     constexpr std::array<int, 6>   a{0,  1,  2,  3,  4,   5};
