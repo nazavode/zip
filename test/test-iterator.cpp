@@ -6,8 +6,6 @@
 #include <type_traits>
 #include <tuple>
 
-// Modifica valori sequenze via tupla di refs
-
 template<typename T>
 constexpr bool is_const = std::is_const_v<std::remove_reference_t<T>>;
 
@@ -43,6 +41,7 @@ TEST_CASE("zip_iterator supports tuple-like semantics", "[zip_iterator]") {
                     std::remove_reference_t<decltype(std::get<1>(it))>,
                     decltype(std::begin(b))>);
         }
+
         SECTION("via unqualified get") {
             using std::get;
             STATIC_REQUIRE(
@@ -54,6 +53,7 @@ TEST_CASE("zip_iterator supports tuple-like semantics", "[zip_iterator]") {
                     std::remove_reference_t<decltype(get<1>(it))>,
                     decltype(std::begin(b))>);
         }
+
         SECTION("via member get") {
             STATIC_REQUIRE(
                 std::is_same_v<
@@ -64,6 +64,7 @@ TEST_CASE("zip_iterator supports tuple-like semantics", "[zip_iterator]") {
                     std::remove_reference_t<decltype(it.get<1>())>,
                     decltype(std::begin(b))>);
         }
+
         SECTION("via structured binding") {
             auto&& [a_bind, b_bind] = it;
             STATIC_REQUIRE(
@@ -78,7 +79,7 @@ TEST_CASE("zip_iterator supports tuple-like semantics", "[zip_iterator]") {
     }
 }
 
-TEST_CASE("zipped iterators constness is respected", "[zip_iterator]") {
+TEST_CASE("zipped iterators constness is preserved", "[zip_iterator]") {
     std::array<int, 0> a;
     std::array<long long, 0> b;
 
@@ -99,44 +100,24 @@ TEST_CASE("zipped iterators constness is respected", "[zip_iterator]") {
     STATIC_REQUIRE_FALSE(is_const<decltype(*std::get<1>(mut_mut))>);
 }
 
-TEST_CASE("random access iterator concept", "[zip_iterator]") {
-    constexpr std::array<int, 6>   a{0,  1,  2,  3,  4,   5};
-    constexpr std::array<long long, 6> b{4,  3,  2,  1,  0, 666};
-    constexpr std::array<signed char, 10>  c{0, -1, -2, -3, -4,  -5, -6, -7, -8, -9};
+TEST_CASE("zip_iterator abides by random access iterator contract", "[zip_iterator]") {
+    std::array<int, 6>   a{0,  1,  2,  3,  4,   5};
+    std::array<long long, 6> b{4,  3,  2,  1,  0, 666};
+    std::array<signed char, 10>  c{0, -1, -2, -3, -4,  -5, -6, -7, -8, -9};
 
     auto begin = zip::zip_iterator{std::begin(a), std::begin(b), std::begin(c)};
     auto end = zip::zip_iterator{std::end(a), std::end(b), std::end(c)};
-    
-    // // Iterators
-    // for(auto it = begin; it != end; ++it) {
-    //     const auto& cur = *it;
-    //     std::cout << std::get<0>(cur) << " " << std::get<1>(cur) << " " << std::get<2>(cur) << std::endl;
-    // }
-    // std::cout << "-----------------" << std::endl;
 
-    // // Iterators + unpack via structured binding
-    // for(auto it = begin; it != end; ++it) {
-    //     auto [aa, bb, cc] = *it;
-    //     std::cout << aa << " " << bb << " " << cc << std::endl;
-    // }
-    // std::cout << "-----------------" << std::endl;
-    
-    // // Random access (subscript) + unpack via structured binding
-    // for(decltype(begin)::difference_type i = 0; i < std::distance(begin, end); ++i) {
-    //     auto [aa, bb, cc] = begin[i];
-    //     std::cout << aa << " " << bb << " " << cc << std::endl;
-    // }
-    // std::cout << "-----------------" << std::endl;
-    {
+    SECTION("operator-(const zip_iterator&)") {
         // operator-(iterator)
         REQUIRE(end - begin == 6);
     }
-    {
-        // distance
+
+    SECTION("std::distance(const zip_iterator&, const zip_iterator&)") {
         REQUIRE(std::distance(begin, end) == 6);
     }
-    {
-        // operator+(difference_type)
+
+    SECTION("operator+(difference_type)") {
         auto it = begin + 1;
         REQUIRE(std::get<0>(it)[2] == 3);
         REQUIRE(std::get<1>(it)[2] == 1);
@@ -146,14 +127,12 @@ TEST_CASE("random access iterator concept", "[zip_iterator]") {
         REQUIRE(std::get<1>(value_tuple) == 3);
         REQUIRE(std::get<2>(value_tuple) == -1);
     }
-    {
-        // operator+=(difference_type)
+
+    SECTION("operator+=(difference_type)") {
         auto it = begin;
-        it += 1;
-        {   
-            auto orig = zip::zip_iterator{std::begin(a), std::begin(b), std::begin(c)};
-            REQUIRE(begin == orig);
-        }
+        it += 1; 
+        auto orig = zip::zip_iterator{std::begin(a), std::begin(b), std::begin(c)};
+        REQUIRE(begin == orig);
         REQUIRE(std::get<0>(it)[2] == 3);
         REQUIRE(std::get<1>(it)[2] == 1);
         REQUIRE(std::get<2>(it)[2] == -3);
@@ -162,8 +141,8 @@ TEST_CASE("random access iterator concept", "[zip_iterator]") {
         REQUIRE(std::get<1>(value_tuple) == 3);
         REQUIRE(std::get<2>(value_tuple) == -1);
     }
-    {
-        // operator-(difference_type)
+
+    SECTION("operator-(difference_type)") {
         auto it = end - 3;
         REQUIRE(std::get<0>(it)[2] == 5);
         REQUIRE(std::get<1>(it)[2] == 666);
@@ -177,14 +156,12 @@ TEST_CASE("random access iterator concept", "[zip_iterator]") {
         // vede comunque la sequenza originale
         REQUIRE(std::get<2>(value_tuple) == -7);
     }
-    {
-        // operator-=(difference_type)
+
+    SECTION("operator-=(difference_type)") {
         auto it = end;
         it -= 3;
-        {
-            auto orig = zip::zip_iterator{std::end(a), std::end(b), std::end(c)};
-            REQUIRE(end == orig);
-        }
+        auto orig = zip::zip_iterator{std::end(a), std::end(b), std::end(c)};
+        REQUIRE(end == orig);
         REQUIRE(std::get<0>(it)[2] == 5);
         REQUIRE(std::get<1>(it)[2] == 666);
         // TODO dovrebbe essere -5, l'iteratore
@@ -197,8 +174,8 @@ TEST_CASE("random access iterator concept", "[zip_iterator]") {
         // vede comunque la sequenza originale
         REQUIRE(std::get<2>(value_tuple) == -7);
     }
-    {
-        // Comparison operators
+
+    SECTION("relational operators") {
         REQUIRE(begin < end);
         REQUIRE(begin <= end);
         REQUIRE(end > begin);
@@ -209,5 +186,50 @@ TEST_CASE("random access iterator concept", "[zip_iterator]") {
         REQUIRE(!(begin != begin));
         REQUIRE(end == end);
         REQUIRE(!(end != end));
+    }
+
+    SECTION("iterator for loop, element access via operator*()") {
+        for(auto it = begin; it != end; ++it) {
+            const auto& cur = *it;
+            REQUIRE(std::get<0>(cur) == a[std::distance(begin, it)]);
+            REQUIRE(std::get<1>(cur) == b[std::distance(begin, it)]);
+            REQUIRE(std::get<2>(cur) == c[std::distance(begin, it)]);
+            std::get<0>(cur) = 777;
+            std::get<1>(cur) = 888;
+            std::get<2>(cur) = 'A';
+            REQUIRE(a[std::distance(begin, it)] == 777);
+            REQUIRE(b[std::distance(begin, it)] == 888);
+            REQUIRE(c[std::distance(begin, it)] == 'A');
+        }
+    }
+
+    SECTION("iterator for loop, element access via structured binding") {
+        for(auto it = begin; it != end; ++it) {
+            auto [a_bind, b_bind, c_bind] = *it;
+            REQUIRE(a_bind == a[std::distance(begin, it)]);
+            REQUIRE(b_bind == b[std::distance(begin, it)]);
+            REQUIRE(c_bind == c[std::distance(begin, it)]);
+            a_bind = 777;
+            b_bind = 888;
+            c_bind = 'A';
+            REQUIRE(a[std::distance(begin, it)] == 777);
+            REQUIRE(b[std::distance(begin, it)] == 888);
+            REQUIRE(c[std::distance(begin, it)] == 'A');
+        }
+    }
+
+    SECTION("operator[](difference_type) for loop, element access via structured binding") {
+        for(decltype(begin)::difference_type i = 0; i < std::distance(begin, end); ++i) {
+            auto [a_bind, b_bind, c_bind] = begin[i];
+            REQUIRE(a_bind == a[i]);
+            REQUIRE(b_bind == b[i]);
+            REQUIRE(c_bind == c[i]);
+            a_bind = 777;
+            b_bind = 888;
+            c_bind = 'A';
+            REQUIRE(a[i] == 777);
+            REQUIRE(b[i] == 888);
+            REQUIRE(c[i] == 'A');
+        }
     }
 }
