@@ -107,8 +107,8 @@ struct zip_iterator {
         std::tuple<std::remove_reference_t<decltype(*std::declval<Iterators>())>&...>;
     using zip_iterator_type = std::tuple<Iterators...>;
 
-    constexpr zip_iterator(
-        Iterators... iterators) /*noexcept TODO fix noexcept and const*/
+    constexpr zip_iterator(Iterators... iterators)
+        /*TODO fix noexcept and const*/
         : m_it{iterators...} {}
 
     constexpr zip_iterator& operator++() {
@@ -153,7 +153,7 @@ struct zip_iterator {
 };
 
 template <typename... Sequences>
-struct zip {
+struct zip : public std::tuple<Sequences&...> {
     static constexpr auto arity = sizeof...(Sequences);
     using iterator =
         // Why the & is needed here:
@@ -161,12 +161,13 @@ struct zip {
         zip_iterator<decltype(std::begin(std::declval<Sequences&>()))...>;
     // This type wraps a reference to each sequence on which has been
     // instantiated:
-    using sequences = std::tuple<Sequences&...>;
 
     // using size_type = std::common_type_t<decltype(std::size(std::declval<Sequences&>()))...>;
     using size_type = std::size_t;
 
-    constexpr zip(Sequences&... sqs) noexcept : m_seq{sqs...} {}
+    // constexpr zip(Sequences&... sqs) noexcept : m_seq{sqs...} {}
+    // using std::tuple<Sequences&...>::tuple;
+    constexpr zip(Sequences&... sqs) noexcept : std::tuple<Sequences&...>{sqs...} {}
 
     constexpr iterator begin() { return begin_impl(std::make_index_sequence<arity>{}); }
 
@@ -184,20 +185,18 @@ struct zip {
    private:   
     template <std::size_t... Indexes>
     constexpr iterator begin_impl(std::index_sequence<Indexes...>) {
-        return {std::begin(std::get<Indexes>(m_seq))...};
+        return {std::begin(std::get<Indexes>(*this))...};
     }
 
     template <std::size_t... Indexes>
     constexpr iterator end_impl(std::index_sequence<Indexes...>) {
-        return {std::end(std::get<Indexes>(m_seq))...};
+        return {std::end(std::get<Indexes>(*this))...};
     }
 
     template <std::size_t... Indexes>
     constexpr size_type size_impl(std::index_sequence<Indexes...>) const noexcept {
-        return std::min(std::size(std::get<Indexes>(m_seq))...);
+        return std::min(std::size(std::get<Indexes>(*this))...);
     }
-
-    sequences m_seq;
 };
 
 // template <typename Zip>

@@ -102,32 +102,32 @@ TEST_CASE("zip supports empty iteration space", "[zip]") {
 //     }    
 // }
 
-// TEST_CASE("zip gives access to references to sequences", "[zip]") {
-//     std::array<int, 0> a;
-//     std::vector<float> b;
-//     std::vector<long long> c;
-//     auto z = zipit::zip{a, b, c};
+TEST_CASE("zip gives access to references to sequences", "[zip]") {
+    std::array<int, 0> a;
+    std::vector<float> b;
+    std::vector<long long> c;
+    auto z = zipit::zip{a, b, c};
 
-//     SECTION("via unqualified get") {
-//         using std::get;
-//         STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(get<0>(z))>);
-//         STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(get<1>(z))>);
-//         STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(get<2>(z))>);
-//     }
+    SECTION("via unqualified get") {
+        using std::get;
+        STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(get<0>(z))>);
+        STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(get<1>(z))>);
+        STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(get<2>(z))>);
+    }
 
-//     SECTION("via std::get") {
-//         STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(std::get<0>(z))>);
-//         STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(std::get<1>(z))>);
-//         STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(std::get<2>(z))>);
-//     }
+    SECTION("via std::get") {
+        STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(std::get<0>(z))>);
+        STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(std::get<1>(z))>);
+        STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(std::get<2>(z))>);
+    }
 
-//     SECTION("via structured binding") {
-//         auto& [_a, _b, _c] = z;
-//         STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(_a));
-//         STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(_b));
-//         STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(_c));
-//     }
-// }
+    // SECTION("via structured binding") {
+    //     auto& [_a, _b, _c] = z;
+    //     STATIC_REQUIRE(std::is_same_v<decltype(a)&, decltype(_a));
+    //     STATIC_REQUIRE(std::is_same_v<decltype(b)&, decltype(_b));
+    //     STATIC_REQUIRE(std::is_same_v<decltype(c)&, decltype(_c));
+    // }
+}
 
 // TEST_CASE("zip size matches the size of the shortest sequence", "[zip]") {
 //     std::vector<float> a;
