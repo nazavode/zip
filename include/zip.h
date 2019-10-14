@@ -232,7 +232,8 @@ struct zip_iterator {
     using tuple_size = std::tuple_size<iterators_tuple_type>;
 
     template<std::size_t I>
-    struct tuple_element {
+    class tuple_element {
+        public:
         using type = std::tuple_element_t<I, iterators_tuple_type>;
     };
 
@@ -268,10 +269,11 @@ namespace std {
 // Injecting stuff into std is unfortunately required
 
 template <typename... Ts>
-struct tuple_size<::zip::zip_iterator<Ts...>> : ::zip::zip_iterator<Ts...>::tuple_size { };
+class tuple_size<::zip::zip_iterator<Ts...>> : ::zip::zip_iterator<Ts...>::tuple_size { };
 
 template <std::size_t I, typename... Ts>
-struct tuple_element<I, ::zip::zip_iterator<Ts...>> {
+class tuple_element<I, ::zip::zip_iterator<Ts...>> {
+    public:
     using type = typename ::zip::zip_iterator<Ts...>::template tuple_element<I>::type;
 };
 
