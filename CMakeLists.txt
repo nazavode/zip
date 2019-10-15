@@ -119,6 +119,7 @@ endif()
 # Defines target 'zip::benchmark'
 ###########################################################
 add_executable(_Benchmark
+    ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/bench-iterator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/main.cpp)
 add_executable(zip::benchmark ALIAS _Benchmark)
 set_target_properties(_Benchmark
@@ -132,8 +133,30 @@ target_link_libraries(_Benchmark
     PUBLIC
         zip::zip)
 if(ZIP_ENABLE_BENCHMARK)
-    # 1. find (and download) Google Benchmark
-    # 2. Link it
+find_package(benchmark QUIET)
+if(NOT benchmark_FOUND)
+    message(STATUS "Installing google benchmark via submodule")
+    execute_process(COMMAND git submodule update --init -- external/benchmark
+                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+    set(vendor_source_dir ${CMAKE_SOURCE_DIR}/external/benchmark)
+    set(vendor_binary_dir ${CMAKE_BINARY_DIR}/external/benchmark)
+
+    set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+    set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+    set(BENCHMARK_DOWNLOAD_DEPENDENCIES OFF CACHE BOOL "" FORCE)
+    set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "" FORCE)
+    set(BENCHMARK_ENABLE_LTO ${CMAKE_INTERPROCEDURAL_OPTIMIZATION} CACHE BOOL "" FORCE)
+
+    # Add benchmark directly to our build. This defines
+    # the 'benchmark' target.
+    add_subdirectory(${vendor_source_dir} ${vendor_binary_dir} EXCLUDE_FROM_ALL)
+
+    target_link_libraries(_Benchmark
+    PUBLIC
+        benchmark)
+endif()
+
 else()
     # Don't download Google Benchmark and skip target
     set_target_properties(_Benchmark

@@ -199,12 +199,22 @@ struct zip_iterator {
     constexpr bool operator==(const zip_iterator& rhs) const {
         // Equivalent to:
         // !(a != a' && b != b' && ...)
+
+        // TODO
+        // VECTORIZE:
+        // return std::get<0>(m_it) == std::get<0>(rhs.m_it);
+        // NO VECTORIZE:
         return ttl::any(m_it, rhs.m_it, std::equal_to{});
     }
 
     constexpr bool operator!=(const zip_iterator& rhs) const {
         // a != a' && b != b' && ...
         // This is needed to stop on the first sequence that hits its own std::end()
+
+        // TODO
+        // VECTORIZE:
+        // return std::get<0>(m_it) != std::get<0>(rhs.m_it);
+        // NO VECTORIZE:
         return ttl::all(m_it, rhs.m_it, std::not_equal_to{});
     }
 
