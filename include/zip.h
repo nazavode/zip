@@ -215,6 +215,12 @@ struct zip_iterator {
         // VECTORIZE:
         // return std::get<0>(m_it) != std::get<0>(rhs.m_it);
         // NO VECTORIZE:
+        // Ad ogni iterazione questo loop non viene unrollato,
+        // llvm non riesce a capire il numero di iterazioni quando
+        // ci sono più di un elemento nella tupla:
+        //                std::get<Indexes>(std::forward<TupleRHS>(rhs))) && ...);
+        //                                                                   ^
+        // zip.h:41:68: remark: loop not vectorized: could not determine number of loop iterations
         return ttl::all(m_it, rhs.m_it, std::not_equal_to{});
     }
 
