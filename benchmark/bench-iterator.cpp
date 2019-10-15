@@ -265,7 +265,7 @@ static void BM_3DZipSumVector(benchmark::State& state) {
 }
 BENCHMARK(BM_3DZipSumVector)->Range(1<<0, 1<<10);
 
-static void BM_3DSubscriptSumVectorSoA(benchmark::State& state) {
+static void BM_3DSubscriptSumVectorAoS(benchmark::State& state) {
     struct Item {
         int x;
         int y;
@@ -296,4 +296,4 @@ static void BM_3DSubscriptSumVectorSoA(benchmark::State& state) {
     state.SetBytesProcessed(
         static_cast<int64_t>(state.iterations() * state.range(0) * sizeof(int) * 3));
 }
-BENCHMARK(BM_3DSubscriptSumVectorSoA)->Range(1<<0, 1<<10);
+BENCHMARK(BM_3DSubscriptSumVectorAoS)->Range(1<<0, 1<<10);
