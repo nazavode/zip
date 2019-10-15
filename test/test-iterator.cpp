@@ -9,17 +9,21 @@
 template<typename T>
 constexpr bool is_const = std::is_const_v<std::remove_reference_t<T>>;
 
-TEST_CASE("zip_iterator is SemiRegular (has pointer semantics)", "[zip_iterator]") {
+TEST_CASE("zip_iterator has reference semantics", "[zip_iterator]") {
     std::array<int, 0> a;
     std::array<long long, 0> b;
+    auto it = zip::zip_iterator{std::begin(a), std::begin(b)};
 
-    SECTION("is copy constructible") {}
-    SECTION("is move constructible") {}
-    SECTION("is copy assignable") {}
-    SECTION("is move assignable") {}
+    STATIC_REQUIRE_FALSE(std::is_default_constructible_v<decltype(it)>);
+    STATIC_REQUIRE(std::is_copy_constructible_v<decltype(it)>);
+    STATIC_REQUIRE(std::is_copy_assignable_v<decltype(it)>);
+    STATIC_REQUIRE(std::is_move_constructible_v<decltype(it)>);
+    STATIC_REQUIRE(std::is_move_assignable_v<decltype(it)>);
+    STATIC_REQUIRE(std::is_destructible_v<decltype(it)>);
+    STATIC_REQUIRE(std::is_swappable_v<decltype(it)>);
 }
 
-TEST_CASE("zip_iterator supports tuple-like semantics", "[zip_iterator]") {
+TEST_CASE("zip_iterator has tuple-like semantics", "[zip_iterator]") {
     std::array<int, 0> a;
     std::array<long long, 0> b;
 
