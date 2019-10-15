@@ -4,24 +4,22 @@
 
 #include <vector>
 
-static void BM_1DSubscriptSumVector_BaselineNoSIMD(benchmark::State& state) {
+static void BM_1DSubscriptSumVectorNoSIMD(benchmark::State& state) {
     const std::vector<int> x(state.range(0), state.range(0));
 
     for (auto _ : state) {
         int sum_x = 0;
 
-        #pragma clang loop vectorize(disable)
         for(std::size_t i = 0; i < std::size(x); ++i) {
             sum_x += x[i];
         }
-        int return_sum_x = sum_x;
-        benchmark::DoNotOptimize(return_sum_x);
+        benchmark::DoNotOptimize(sum_x);
     }
     
     state.SetBytesProcessed(
         static_cast<int64_t>(state.iterations() * state.range(0) * sizeof(int)));
 }
-BENCHMARK(BM_1DSubscriptSumVector_BaselineNoSIMD)->Range(1<<0, 1<<10);
+BENCHMARK(BM_1DSubscriptSumVectorNoSIMD)->Range(1<<0, 1<<10);
 
 
 static void BM_1DSubscriptSumVector(benchmark::State& state) {
