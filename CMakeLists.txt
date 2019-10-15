@@ -204,33 +204,3 @@ if(CLANG_TIDY_FOUND)
                       COMMAND ${tidy_cmd} -fix ${_AllSources}
                       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
-
-###########################################################
-# Sanitizers
-# Defines the following additional build types:
-# - ASAN
-# - TSAN
-# - UBSAN
-###########################################################
-
-function(add_build_type NAME)
-    string(REPLACE ";" " " flags "${ARGN}")
-    set(CMAKE_C_FLAGS_${NAME}
-        ${flags}
-        CACHE STRING "Flags used by the C compiler during ${NAME} builds."
-        FORCE)
-    set(CMAKE_CXX_FLAGS_${NAME}
-        ${flags}
-        CACHE STRING "Flags used by the C++ compiler during ${NAME} builds."
-        FORCE)    
-endfunction(add_build_type)
-
-add_build_type(TSAN
-    -fsanitize=thread -g -O1)
-
-add_build_type(ASAN
-    -fsanitize=address -fno-optimize-sibling-calls
-    -fno-omit-frame-pointer -g -O1)
-
-add_build_type(UBSAN
-    -fsanitize=undefined -g -O1)
