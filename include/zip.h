@@ -117,6 +117,8 @@ constexpr auto inner_product(TupleLHS&& lhs, TupleRHS&& rhs, SumNaryOp&& sum, Pr
 template<typename ...Iterators>
 struct zip_iterator {
 
+    // TODO SFINAE su questo per decidere
+    // se questa versione o quella generica (lenta)
     static_assert((
         std::is_same_v<
             typename std::iterator_traits<Iterators>::iterator_category,
@@ -134,86 +136,102 @@ struct zip_iterator {
     explicit constexpr zip_iterator(Iterators... iterators) noexcept
         : m_it{iterators...} {}
 
-    constexpr zip_iterator operator+(difference_type rhs) const {
-        return std::make_from_tuple<zip_iterator>(
-            ttl::transform<iterators_tuple_type>(m_it, [rhs](auto&& it) {
-                return it + rhs;
-            }));
+    constexpr zip_iterator operator+(difference_type rhs) const noexcept {
+        return zip_iterator{*this, m_offset + rhs};
     }
 
-    constexpr zip_iterator operator-(difference_type rhs) const {
-        return std::make_from_tuple<zip_iterator>(
-            ttl::transform<iterators_tuple_type>(m_it, [rhs](auto&& it) {
-                return it - rhs;
-            }));
+    constexpr zip_iterator operator-(difference_type rhs) const noexcept {
+        return zip_iterator{*this, m_offset - rhs};
     }
     
-    constexpr difference_type operator+(const zip_iterator& other) const {
+    constexpr difference_type operator+(const zip_iterator& other) const noexcept {
         return ttl::inner_product(m_it, other.m_it,
                                   [](auto&& ...prods) { return std::min({prods...}); },
-                                  [](auto&& lhs, auto&& rhs) { return lhs + rhs; });
+                                  [lhs_offset=m_offset, rhs_offset=other.m_offset](auto&& lhs, auto&& rhs) {
+                                      return (lhs + lhs_offset) + (rhs + rhs_offset); });
     }
 
-    constexpr difference_type operator-(const zip_iterator& other) const {
+    constexpr difference_type operator-(const zip_iterator& other) const noexcept {
         return ttl::inner_product(m_it, other.m_it,
                                   [](auto&& ...prods) { return std::min({prods...}); },
-                                  [](auto&& lhs, auto&& rhs) { return lhs - rhs; });
+                                  [lhs_offset=m_offset, rhs_offset=other.m_offset](auto&& lhs, auto&& rhs) {
+                                      return (lhs + lhs_offset) - (rhs + rhs_offset); });
     }
 
-    constexpr zip_iterator& operator++() {
-        ttl::for_each(m_it, [](auto&& it) { ++it; });
+    constexpr zip_iterator& operator++() noexcept {
+        ++m_offset;
         return *this;
     }
 
-    constexpr zip_iterator& operator--() {
-        ttl::for_each(m_it, [](auto&& it) { --it; });
+    constexpr zip_iterator& operator--() noexcept {
+        --m_offset;
         return *this;
     }
 
-    constexpr zip_iterator& operator+=(difference_type rhs) {
-        ttl::for_each(m_it, [rhs](auto&& it) { it += rhs; });
+    constexpr zip_iterator& operator+=(difference_type rhs) noexcept {
+        m_offset += rhs;
         return *this;
     }
 
-    constexpr zip_iterator& operator-=(difference_type rhs) {
-        ttl::for_each(m_it, [rhs](auto&& it) { it -= rhs; });
+    constexpr zip_iterator& operator-=(difference_type rhs) noexcept {
+        m_offset -= rhs;
         return *this;
     }
 
-    constexpr bool operator<(const zip_iterator& rhs) const {
-        return ttl::any(m_it, rhs.m_it, std::less{});
+    constexpr bool operator<(const zip_iterator& rhs) const noexcept {
+        return ttl::any(m_it, rhs.m_it,
+            [lhs_offset=m_offset, rhs_offset=rhs.m_offset]
+            (auto&& lhs_it, auto&& rhs_it) {
+                return (lhs_it + lhs_offset) < (rhs_it + rhs_offset);
+            });
     }
 
-    constexpr bool operator<=(const zip_iterator& rhs) const {
-        return ttl::any(m_it, rhs.m_it, std::less_equal{});
+    constexpr bool operator<=(const zip_iterator& rhs) const noexcept {
+        return ttl::any(m_it, rhs.m_it,
+            [lhs_offset=m_offset, rhs_offset=rhs.m_offset]
+            (auto&& lhs_it, auto&& rhs_it) {
+                return (lhs_it + lhs_offset) <= (rhs_it + rhs_offset);
+            });
     }
 
-    constexpr bool operator>(const zip_iterator& rhs) const {
-        return ttl::any(m_it, rhs.m_it, std::greater{});
+    constexpr bool operator>(const zip_iterator& rhs) const noexcept {
+        return ttl::any(m_it, rhs.m_it,
+            [lhs_offset=m_offset, rhs_offset=rhs.m_offset]
+            (auto&& lhs_it, auto&& rhs_it) {
+                return (lhs_it + lhs_offset) > (rhs_it + rhs_offset);
+            });
     }
 
-    constexpr bool operator>=(const zip_iterator& rhs) const {
-        return ttl::any(m_it, rhs.m_it, std::greater_equal{});
+    constexpr bool operator>=(const zip_iterator& rhs) const noexcept {
+        return ttl::any(m_it, rhs.m_it,
+            [lhs_offset=m_offset, rhs_offset=rhs.m_offset]
+            (auto&& lhs_it, auto&& rhs_it) {
+                return (lhs_it + lhs_offset) >= (rhs_it + rhs_offset);
+            });
     }
 
-    constexpr bool operator==(const zip_iterator& rhs) const {
+    constexpr bool operator==(const zip_iterator& rhs) const noexcept {
         // Equivalent to:
         // !(a != a' && b != b' && ...)
 
         // TODO
         // VECTORIZE:
         // return std::get<0>(m_it) == std::get<0>(rhs.m_it);
+        return (std::get<0>(m_it) + m_offset)
+            == (std::get<0>(rhs.m_it) + rhs.m_offset);
         // NO VECTORIZE:
-        return ttl::any(m_it, rhs.m_it, std::equal_to{});
+        // return ttl::any(m_it, rhs.m_it, std::equal_to{});
     }
 
-    constexpr bool operator!=(const zip_iterator& rhs) const {
+    constexpr bool operator!=(const zip_iterator& rhs) const noexcept {
         // a != a' && b != b' && ...
         // This is needed to stop on the first sequence that hits its own std::end()
 
         // TODO
         // VECTORIZE:
         // return std::get<0>(m_it) != std::get<0>(rhs.m_it);
+        return (std::get<0>(m_it) + m_offset)
+            != (std::get<0>(rhs.m_it) + rhs.m_offset);
         // NO VECTORIZE:
         // Ad ogni iterazione questo loop non viene unrollato,
         // llvm non riesce a capire il numero di iterazioni quando
@@ -224,20 +242,15 @@ struct zip_iterator {
         // NB: la vettorizzazione non viene fatta per via degli operatori
         // short circuited - usando le versioni bitwise il loop
         // sulla tupla viene vettorizzato/unrollato ma va più lento!
-        return ttl::all(m_it, rhs.m_it, std::not_equal_to{});
+        // return ttl::all(m_it, rhs.m_it, std::not_equal_to{});
     }
 
-    constexpr value_type operator*() const {
-        // WARNING: decltype(auto) is vital here, otherwise ttl::transform
-        // is going to construct and return a tuple of values (the ones
-        // returned by this lambda) preventing the caller from modifying
-        // actual values underlying the zipped iterators
-        return ttl::transform<value_type>(m_it, [](auto it) -> decltype(auto) {
-            return *it;
-        });
+    constexpr value_type operator*() const noexcept {
+        return operator[](difference_type{0});
     }
 
-    constexpr value_type operator[](difference_type rhs) const {
+    constexpr value_type operator[](difference_type rhs) const noexcept {
+        rhs += m_offset;
         // WARNING: decltype(auto) is vital here, otherwise ttl::transform
         // is going to construct and return a tuple of values (the ones
         // returned by this lambda) preventing the caller from modifying
@@ -248,35 +261,40 @@ struct zip_iterator {
     }
 
     // Tuple-like semantics support
-    using tuple_size = std::tuple_size<iterators_tuple_type>;
+    // using tuple_size = std::tuple_size<iterators_tuple_type>;
 
-    template<std::size_t I>
-    class tuple_element {
-        public:
-        using type = std::tuple_element_t<I, iterators_tuple_type>;
-    };
+    // template<std::size_t I>
+    // class tuple_element {
+    //     public:
+    //     using type = std::tuple_element_t<I, iterators_tuple_type>;
+    // };
 
-    template <std::size_t I>
-    constexpr auto& get() & noexcept {
-        return std::get<I>(m_it);
-    }
+    // template <std::size_t I>
+    // constexpr auto& get() & noexcept {
+    //     return std::get<I>(m_it) + m_offset;
+    // }
 
-    template <std::size_t I>
-    constexpr auto const& get() const& noexcept {
-        return std::get<I>(m_it);
-    }
+    // template <std::size_t I>
+    // constexpr auto const& get() const& noexcept {
+    //     return std::get<I>(m_it) + m_offset;
+    // }
 
-    template <std::size_t I>
-    constexpr auto&& get() && noexcept {
-        return std::get<I>(std::move(m_it));
-    }
+    // template <std::size_t I>
+    // constexpr auto&& get() && noexcept {
+    //     return std::get<I>(std::move(m_it)) + m_offset;
+    // }
 
-    template <std::size_t I>
-    constexpr auto const&& get() const&& noexcept {
-        return std::get<I>(std::move(m_it));
-    }
+    // template <std::size_t I>
+    // constexpr auto const&& get() const&& noexcept {
+    //     return std::get<I>(std::move(m_it)) + m_offset;
+    // }
 
    private:
+
+   explicit constexpr zip_iterator(const zip_iterator& other, std::ptrdiff_t offset) noexcept
+        : zip_iterator{other}, m_offset{offset} {}
+
+    difference_type m_offset{0};
     iterators_tuple_type m_it;
 };
 
@@ -327,39 +345,39 @@ struct zip_iterator {
 // clang-format on
 }  // namespace zip
 
-namespace std {
-// Enable tuple-like semantics on zip::zip_iterator
-// Injecting stuff into std is unfortunately required
+// namespace std {
+// // Enable tuple-like semantics on zip::zip_iterator
+// // Injecting stuff into std is unfortunately required
 
-template <typename... Ts>
-class tuple_size<::zip::zip_iterator<Ts...>> : 
-    public ::zip::zip_iterator<Ts...>::tuple_size { };
+// template <typename... Ts>
+// class tuple_size<::zip::zip_iterator<Ts...>> : 
+//     public ::zip::zip_iterator<Ts...>::tuple_size { };
 
-template <std::size_t I, typename... Ts>
-class tuple_element<I, ::zip::zip_iterator<Ts...>> {
-    public:
-    using type = typename ::zip::zip_iterator<Ts...>::template tuple_element<I>::type;
-};
+// template <std::size_t I, typename... Ts>
+// class tuple_element<I, ::zip::zip_iterator<Ts...>> {
+//     public:
+//     using type = typename ::zip::zip_iterator<Ts...>::template tuple_element<I>::type;
+// };
 
-template <std::size_t I, typename... Ts>
-constexpr auto& get(::zip::zip_iterator<Ts...>& a) noexcept {
-    return a.template get<I>();
-}
+// template <std::size_t I, typename... Ts>
+// constexpr auto& get(::zip::zip_iterator<Ts...>& a) noexcept {
+//     return a.template get<I>();
+// }
 
-template <std::size_t I, typename... Ts>
-constexpr auto const& get(::zip::zip_iterator<Ts...> const& a) noexcept {
-    return a.template get<I>();
-}
+// template <std::size_t I, typename... Ts>
+// constexpr auto const& get(::zip::zip_iterator<Ts...> const& a) noexcept {
+//     return a.template get<I>();
+// }
 
-template <std::size_t I, typename... Ts>
-constexpr auto&& get(::zip::zip_iterator<Ts...>&& a) noexcept {
-    return std::move(a).template get<I>();
-}
+// template <std::size_t I, typename... Ts>
+// constexpr auto&& get(::zip::zip_iterator<Ts...>&& a) noexcept {
+//     return std::move(a).template get<I>();
+// }
 
-template <std::size_t I, typename... Ts>
-constexpr auto const&& get(::zip::zip_iterator<Ts...> const&& a) noexcept {
-    return std::move(a).template get<I>();
-}
-}
+// template <std::size_t I, typename... Ts>
+// constexpr auto const&& get(::zip::zip_iterator<Ts...> const&& a) noexcept {
+//     return std::move(a).template get<I>();
+// }
+// }
 
 #endif

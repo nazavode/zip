@@ -112,6 +112,10 @@ target_link_libraries(_Test
 if(ZIP_ENABLE_TEST)
     enable_testing()
     add_test(NAME zip-test COMMAND _Tests)
+else()
+    set_target_properties(_Test
+        PROPERTIES
+            EXCLUDE_FROM_ALL ON)
 endif()
 
 ###########################################################
