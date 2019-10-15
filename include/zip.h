@@ -1,4 +1,4 @@
-﻿#ifndef ZIP_H_INCLUDED_20191008
+#ifndef ZIP_H_INCLUDED_20191008
 #define ZIP_H_INCLUDED_20191008
 
 #include <cassert>
@@ -221,6 +221,9 @@ struct zip_iterator {
         //                std::get<Indexes>(std::forward<TupleRHS>(rhs))) && ...);
         //                                                                   ^
         // zip.h:41:68: remark: loop not vectorized: could not determine number of loop iterations
+        // NB: la vettorizzazione non viene fatta per via degli operatori
+        // short circuited - usando le versioni bitwise il loop
+        // sulla tupla viene vettorizzato/unrollato ma va più lento!
         return ttl::all(m_it, rhs.m_it, std::not_equal_to{});
     }
 
