@@ -9,6 +9,16 @@
 template<typename T>
 constexpr bool is_const = std::is_const_v<std::remove_reference_t<T>>;
 
+TEST_CASE("zip_iterator is SemiRegular (has pointer semantics)", "[zip_iterator]") {
+    std::array<int, 0> a;
+    std::array<long long, 0> b;
+
+    SECTION("is copy constructible") {}
+    SECTION("is move constructible") {}
+    SECTION("is copy assignable") {}
+    SECTION("is move assignable") {}
+}
+
 TEST_CASE("zip_iterator supports tuple-like semantics", "[zip_iterator]") {
     std::array<int, 0> a;
     std::array<long long, 0> b;
@@ -109,7 +119,6 @@ TEST_CASE("zip_iterator abides by random access iterator contract", "[zip_iterat
     auto end = zip::zip_iterator{std::end(a), std::end(b), std::end(c)};
 
     SECTION("operator-(const zip_iterator&)") {
-        // operator-(iterator)
         REQUIRE(end - begin == 6);
     }
 
