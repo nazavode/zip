@@ -147,13 +147,6 @@ struct zip_iterator {
         ret.m_offset -= rhs;
         return ret;
     }
-    
-    constexpr difference_type operator+(const zip_iterator& other) const noexcept {
-        return ttl::inner_product(m_it, other.m_it,
-                                  [](auto&& ...prods) { return std::min({prods...}); },
-                                  [lhs_offset=m_offset, rhs_offset=other.m_offset](auto&& lhs, auto&& rhs) {
-                                      return (lhs + lhs_offset) + (rhs + rhs_offset); });
-    }
 
     constexpr difference_type operator-(const zip_iterator& other) const noexcept {
         return ttl::inner_product(m_it, other.m_it,

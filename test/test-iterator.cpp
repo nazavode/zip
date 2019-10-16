@@ -68,10 +68,6 @@ TEST_CASE("zip_iterator abides by random access iterator contract", "[zip_iterat
         REQUIRE(end - begin == 6);
     }
 
-    // SECTION("operator+(const zip_iterator&)") {
-    //     REQUIRE(begin + end == 1);
-    // }
-
     SECTION("std::distance(const zip_iterator&, const zip_iterator&)") {
         REQUIRE(std::distance(begin, end)
              == std::distance(std::begin(a), std::end(a)));
