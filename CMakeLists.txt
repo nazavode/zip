@@ -77,24 +77,10 @@ target_link_libraries(_Zip
 # Unit tests
 # Defines target 'zip::test'
 ###########################################################
-add_library(_Catch2 INTERFACE)
-add_library(zip::catch2 ALIAS _Catch2)
-target_sources(_Catch2
-    INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/test/catch.hpp)
-target_compile_definitions(_Catch2
-    INTERFACE
-        # Defer STATIC_REQUIRE failure/success to runtime
-        CATCH_CONFIG_RUNTIME_STATIC_REQUIRE)
-target_include_directories(_Catch2
-    INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/test)
-
 add_executable(_Test
     ${CMAKE_CURRENT_SOURCE_DIR}/test/test-zip.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test/test-iterator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/sanitize-options.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/main.cpp)
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/sanitize-options.cpp)
 add_executable(zip::test ALIAS _Test)
 set_target_properties(_Test
     PROPERTIES
@@ -107,13 +93,42 @@ target_link_libraries(_Test
     PRIVATE
         zip::cxxstd
         zip::warnings
-        zip::catch2
         zip::zip)
     
 if(ZIP_ENABLE_TEST)
+    find_package(GTest)
+    if(NOT GTEST_FOUND)
+        message(STATUS "Installing googletest via submodule")
+        execute_process(COMMAND git submodule update --init -- vendor/googletest
+                        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+        set(vendor_source_dir ${CMAKE_SOURCE_DIR}/vendor/googletest)
+        set(vendor_binary_dir ${CMAKE_BINARY_DIR}/vendor/googletest)
+        # Prevent overriding the parent project's compiler/linker
+        # settings on Windows
+        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+        set(BUILD_GTEST ON CACHE BOOL "" FORCE)
+        set(BUILD_GMOCK ON CACHE BOOL "" FORCE)
+        set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
+        set(INSTALL_GMOCK OFF CACHE BOOL "" FORCE)
+        # Add googletest directly to our build. This defines
+        # the gtest and gtest_main targets.
+        add_subdirectory(${vendor_source_dir} ${vendor_binary_dir} EXCLUDE_FROM_ALL)
+        # The gtest/gtest_main targets carry header search path
+        # dependencies automatically when using CMake 2.8.11 or
+        # later. Otherwise we have to add them here ourselves.
+        if (CMAKE_VERSION VERSION_LESS 2.8.11)
+            include_directories("${gtest_SOURCE_DIR}/include")
+        endif ()
+    endif()
+
+    target_link_libraries(_Test
+        PRIVATE
+            gtest
+            gtest_main)
     enable_testing()
     add_test(NAME zip-test COMMAND _Tests)
 else()
+    # Don't download Google Test and skip target
     set_target_properties(_Test
         PROPERTIES
             EXCLUDE_FROM_ALL ON)
@@ -141,26 +156,21 @@ target_link_libraries(_Benchmark
         zip::zip)
 
 if(ZIP_ENABLE_BENCHMARK)
-    find_package(benchmark QUIET)
-
+    find_package(benchmark)
     if(NOT benchmark_FOUND)
         message(STATUS "Installing google benchmark via submodule")
-        execute_process(COMMAND git submodule update --init -- external/benchmark
+        execute_process(COMMAND git submodule update --init -- vendor/benchmark
                         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-
-        set(vendor_source_dir ${CMAKE_SOURCE_DIR}/external/benchmark)
-        set(vendor_binary_dir ${CMAKE_BINARY_DIR}/external/benchmark)
-
+        set(vendor_source_dir ${CMAKE_SOURCE_DIR}/vendor/benchmark)
+        set(vendor_binary_dir ${CMAKE_BINARY_DIR}/vendor/benchmark)
         set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
         set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
         set(BENCHMARK_DOWNLOAD_DEPENDENCIES OFF CACHE BOOL "" FORCE)
         set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "" FORCE)
         set(BENCHMARK_ENABLE_LTO ${CMAKE_INTERPROCEDURAL_OPTIMIZATION} CACHE BOOL "" FORCE)
-
         # Add benchmark directly to our build. This defines
         # the 'benchmark' target.
         add_subdirectory(${vendor_source_dir} ${vendor_binary_dir} EXCLUDE_FROM_ALL)
-
         target_link_libraries(_Benchmark
             PRIVATE
                 benchmark)
