@@ -105,7 +105,7 @@ set_target_properties(_Test
         CXX_EXTENSIONS OFF
         OUTPUT_NAME "zip-test")
 target_link_libraries(_Test
-    PUBLIC
+    PRIVATE
         zip::catch2
         zip::zip)
     
@@ -134,39 +134,40 @@ set_target_properties(_Benchmark
             CXX_EXTENSIONS OFF
             OUTPUT_NAME "zip-benchmark")
 target_link_libraries(_Benchmark
-    PUBLIC
+    PRIVATE
         zip::zip)
+
 if(ZIP_ENABLE_BENCHMARK)
-find_package(benchmark QUIET)
-if(NOT benchmark_FOUND)
-    message(STATUS "Installing google benchmark via submodule")
-    execute_process(COMMAND git submodule update --init -- external/benchmark
-                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    find_package(benchmark QUIET)
 
-    set(vendor_source_dir ${CMAKE_SOURCE_DIR}/external/benchmark)
-    set(vendor_binary_dir ${CMAKE_BINARY_DIR}/external/benchmark)
+    if(NOT benchmark_FOUND)
+        message(STATUS "Installing google benchmark via submodule")
+        execute_process(COMMAND git submodule update --init -- external/benchmark
+                        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
-    set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
-    set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
-    set(BENCHMARK_DOWNLOAD_DEPENDENCIES OFF CACHE BOOL "" FORCE)
-    set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "" FORCE)
-    set(BENCHMARK_ENABLE_LTO ${CMAKE_INTERPROCEDURAL_OPTIMIZATION} CACHE BOOL "" FORCE)
+        set(vendor_source_dir ${CMAKE_SOURCE_DIR}/external/benchmark)
+        set(vendor_binary_dir ${CMAKE_BINARY_DIR}/external/benchmark)
 
-    # Add benchmark directly to our build. This defines
-    # the 'benchmark' target.
-    add_subdirectory(${vendor_source_dir} ${vendor_binary_dir} EXCLUDE_FROM_ALL)
+        set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+        set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+        set(BENCHMARK_DOWNLOAD_DEPENDENCIES OFF CACHE BOOL "" FORCE)
+        set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "" FORCE)
+        set(BENCHMARK_ENABLE_LTO ${CMAKE_INTERPROCEDURAL_OPTIMIZATION} CACHE BOOL "" FORCE)
 
-    target_link_libraries(_Benchmark
-    PUBLIC
-        benchmark)
-endif()
+        # Add benchmark directly to our build. This defines
+        # the 'benchmark' target.
+        add_subdirectory(${vendor_source_dir} ${vendor_binary_dir} EXCLUDE_FROM_ALL)
 
-else()
+        target_link_libraries(_Benchmark
+            PRIVATE
+                benchmark)
+    endif()
+else(ZIP_ENABLE_BENCHMARK)
     # Don't download Google Benchmark and skip target
     set_target_properties(_Benchmark
         PROPERTIES
             EXCLUDE_FROM_ALL ON)
-endif()
+endif(ZIP_ENABLE_BENCHMARK)
 
 ###########################################################
 # Tooling
