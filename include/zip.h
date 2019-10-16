@@ -195,11 +195,14 @@ struct zip_iterator {
     }
 
     constexpr bool operator<(const zip_iterator& rhs) const noexcept {
+        // Safe
         return ttl::any(m_it, rhs.m_it,
             [lhs_offset=m_offset, rhs_offset=rhs.m_offset]
             (auto&& lhs_it, auto&& rhs_it) {
                 return (lhs_it + lhs_offset) < (rhs_it + rhs_offset);
             });
+        // Unsafe
+        // return std::get<0>(*this) < std::get<0>(rhs);
     }
 
     constexpr bool operator<=(const zip_iterator& rhs) const noexcept {
@@ -228,15 +231,22 @@ struct zip_iterator {
 
     constexpr bool operator==(const zip_iterator& rhs) const noexcept {
         // Equivalent to:
-        // !(a != a' && b != b' && ...)
+        // !(a != a' && b != b' && ...) ==
+        //   a == a' || b == b' || ...
 
-        // TODO
-        // VECTORIZE:
+        // Vector:
         // return std::get<0>(m_it) == std::get<0>(rhs.m_it);
+        // Offset, vector
         return (std::get<0>(m_it) + m_offset)
             == (std::get<0>(rhs.m_it) + rhs.m_offset);
-        // NO VECTORIZE:
+        // No vector:
         // return ttl::any(m_it, rhs.m_it, std::equal_to{});
+
+        // Offset, no vector:
+        // return ttl::any(m_it, rhs.m_it,
+        //                 [lhs_offset=m_offset, rhs_offset=rhs.m_offset](auto&& lhs_it, auto&& rhs_it){
+        //                     return (lhs_it + lhs_offset) == (rhs_it + rhs_offset);
+        //                 });
     }
 
     constexpr bool operator!=(const zip_iterator& rhs) const noexcept {
@@ -259,6 +269,10 @@ struct zip_iterator {
         // short circuited - usando le versioni bitwise il loop
         // sulla tupla viene vettorizzato/unrollato ma va più lento!
         // return ttl::all(m_it, rhs.m_it, std::not_equal_to{});
+        // return ttl::all(m_it, rhs.m_it,
+        //                 [lhs_offset=m_offset, rhs_offset=rhs.m_offset](auto&& lhs_it, auto&& rhs_it){
+        //                     return (lhs_it + lhs_offset) != (rhs_it + rhs_offset);
+        //                 });
     }
 
     constexpr value_type operator*() const noexcept {
@@ -310,50 +324,6 @@ struct zip_iterator {
     difference_type m_offset{0};
     iterators_tuple_type m_it;
 };
-
-// template <typename... Sequences>
-// struct zip {
-//     static constexpr auto arity = sizeof...(Sequences);
-//     using iterator =
-//         // Why the & is needed here:
-//         // https://stackoverflow.com/questions/42580761/why-does-stdbegin-always-return-const-iterator-in-such-a-case
-//         zip_iterator<decltype(std::begin(std::declval<Sequences&>()))...>;
-//     // This type wraps a reference to each sequence on which has been
-//     // instantiated:
-//     using sequences = std::tuple<Sequences&...>;
-// 
-//     // using size_type = std::common_type_t<decltype(std::size(std::declval<Sequences&>()))...>;
-//     using size_type = std::size_t;
-// 
-//     constexpr zip(Sequences&... sqs) noexcept : m_seq{sqs...} {}
-// 
-//     constexpr iterator begin() { return begin_impl(std::make_index_sequence<arity>{}); }
-// 
-//     constexpr iterator end() { return end_impl(std::make_index_sequence<arity>{}); }
-// 
-//     constexpr size_type size() const noexcept {
-//         return size_impl(std::make_index_sequence<arity>{});
-//     }
-// 
-//    private:   
-//     template <std::size_t... Indexes>
-//     constexpr iterator begin_impl(std::index_sequence<Indexes...>) {
-//         return {std::begin(std::get<Indexes>(m_seq))...};
-//     }
-// 
-//     template <std::size_t... Indexes>
-//     constexpr iterator end_impl(std::index_sequence<Indexes...>) {
-//         return {std::end(std::get<Indexes>(m_seq))...};
-//     }
-// 
-//     template <std::size_t... Indexes>
-//     constexpr size_type size_impl(std::index_sequence<Indexes...>) const noexcept {
-//         return std::min(std::size(std::get<Indexes>(m_seq))...);
-//     }
-// 
-//     sequences m_seq;
-// };
-
 
 // clang-format on
 }  // namespace zip

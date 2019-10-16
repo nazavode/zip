@@ -115,9 +115,9 @@ TEST_CASE("zipped iterators constness is preserved", "[zip_iterator]") {
 }
 
 TEST_CASE("zip_iterator abides by random access iterator contract", "[zip_iterator]") {
-    std::array<int, 6>   a{0,  1,  2,  3,  4,   5};
-    std::array<long long, 6> b{4,  3,  2,  1,  0, 666};
-    std::array<signed char, 10>  c{0, -1, -2, -3, -4,  -5, -6, -7, -8, -9};
+    std::array<int, 6>          a{0,  1,  2,  3,  4,   5};
+    std::array<long long, 6>    b{4,  3,  2,  1,  0, 666};
+    std::array<signed char, 10> c{0, -1, -2, -3, -4,  -5, -6, -7, -8, -9};
 
     auto begin = zip::zip_iterator{std::begin(a), std::begin(b), std::begin(c)};
     auto end = zip::zip_iterator{std::end(a), std::end(b), std::end(c)};
@@ -126,19 +126,20 @@ TEST_CASE("zip_iterator abides by random access iterator contract", "[zip_iterat
         REQUIRE(end - begin == 6);
     }
 
+    SECTION("operator+(const zip_iterator&)") {
+        REQUIRE(begin + end == 1);
+    }
+
     SECTION("std::distance(const zip_iterator&, const zip_iterator&)") {
         REQUIRE(std::distance(begin, end) == 6);
     }
 
     SECTION("operator+(difference_type)") {
         auto it = begin + 1;
-        REQUIRE(std::get<0>(it)[2] == 3);
-        REQUIRE(std::get<1>(it)[2] == 1);
-        REQUIRE(std::get<2>(it)[2] == -3);
-        auto value_tuple = *it;
-        REQUIRE(std::get<0>(value_tuple) == 1);
-        REQUIRE(std::get<1>(value_tuple) == 3);
-        REQUIRE(std::get<2>(value_tuple) == -1);
+        auto [a_item, b_item, c_item] = *it;
+        REQUIRE(a_item == 1);
+        REQUIRE(b_item == 3);
+        REQUIRE(c_item == -1);
     }
 
     SECTION("operator+=(difference_type)") {
@@ -146,28 +147,43 @@ TEST_CASE("zip_iterator abides by random access iterator contract", "[zip_iterat
         it += 1; 
         auto orig = zip::zip_iterator{std::begin(a), std::begin(b), std::begin(c)};
         REQUIRE(begin == orig);
-        REQUIRE(std::get<0>(it)[2] == 3);
-        REQUIRE(std::get<1>(it)[2] == 1);
-        REQUIRE(std::get<2>(it)[2] == -3);
-        auto value_tuple = *it;
-        REQUIRE(std::get<0>(value_tuple) == 1);
-        REQUIRE(std::get<1>(value_tuple) == 3);
-        REQUIRE(std::get<2>(value_tuple) == -1);
+        auto [a_item, b_item, c_item] = *it;
+        REQUIRE(a_item == 1);
+        REQUIRE(b_item == 3);
+        REQUIRE(c_item == -1);
+    }
+
+    SECTION("operator++() [prefix]") {
+        auto it = begin;
+        auto inc = ++it;
+        auto orig = zip::zip_iterator{std::begin(a), std::begin(b), std::begin(c)};
+        REQUIRE(begin == orig);
+        REQUIRE(it == inc);
+        auto [a_item, b_item, c_item] = *it;
+        REQUIRE(a_item == 1);
+        REQUIRE(b_item == 3);
+        REQUIRE(c_item == -1);
+    }
+
+    SECTION("operator++(int) [postfix]") {
+        auto it = begin;
+        auto inc = it++;
+        auto orig = zip::zip_iterator{std::begin(a), std::begin(b), std::begin(c)};
+        REQUIRE(begin == orig);
+        REQUIRE(inc == orig);
+        auto [a_item, b_item, c_item] = *it;
+        REQUIRE(a_item == 1);
+        REQUIRE(b_item == 3);
+        REQUIRE(c_item == -1);
     }
 
     SECTION("operator-(difference_type)") {
         auto it = end - 3;
-        REQUIRE(std::get<0>(it)[2] == 5);
-        REQUIRE(std::get<1>(it)[2] == 666);
-        // TODO dovrebbe essere -5, l'iteratore
-        // vede comunque la sequenza originale
-        REQUIRE(std::get<2>(it)[2] == -9);
-        auto value_tuple = *it;
-        REQUIRE(std::get<0>(value_tuple) == 3);
-        REQUIRE(std::get<1>(value_tuple) == 1);
-        // TODO dovrebbe essere -9, l'iteratore
-        // vede comunque la sequenza originale
-        REQUIRE(std::get<2>(value_tuple) == -7);
+        auto [a_item, b_item, c_item] = *it;
+        REQUIRE(a_item == 3);
+        REQUIRE(b_item == 1);
+        // TODO should be -9, original iterator views the original sequence
+        REQUIRE(c_item == -7);
     }
 
     SECTION("operator-=(difference_type)") {
@@ -175,17 +191,37 @@ TEST_CASE("zip_iterator abides by random access iterator contract", "[zip_iterat
         it -= 3;
         auto orig = zip::zip_iterator{std::end(a), std::end(b), std::end(c)};
         REQUIRE(end == orig);
-        REQUIRE(std::get<0>(it)[2] == 5);
-        REQUIRE(std::get<1>(it)[2] == 666);
-        // TODO dovrebbe essere -5, l'iteratore
-        // vede comunque la sequenza originale
-        REQUIRE(std::get<2>(it)[2] == -9);
-        auto value_tuple = *it;
-        REQUIRE(std::get<0>(value_tuple) == 3);
-        REQUIRE(std::get<1>(value_tuple) == 1);
-        // TODO dovrebbe essere -9, l'iteratore
-        // vede comunque la sequenza originale
-        REQUIRE(std::get<2>(value_tuple) == -7);
+        auto [a_item, b_item, c_item] = *it;
+        REQUIRE(a_item == 3);
+        REQUIRE(b_item == 1);
+        // TODO should be -9, original iterator views the original sequence
+        REQUIRE(c_item == -7);
+    }
+
+    SECTION("operator--() [prefix]") {
+        auto it = end;
+        auto dec = --it;
+        auto orig = zip::zip_iterator{std::end(a), std::end(b), std::end(c)};
+        REQUIRE(end == orig);
+        REQUIRE(it == dec);
+        auto [a_item, b_item, c_item] = *it;
+        REQUIRE(a_item == 5);
+        REQUIRE(b_item == 666);
+        // TODO should be -5, original iterator views the original sequence
+        REQUIRE(c_item == -9);
+    }
+
+    SECTION("operator--(int) [postfix]") {
+        auto it = end;
+        auto dec = it--;
+        auto orig = zip::zip_iterator{std::end(a), std::end(b), std::end(c)};
+        REQUIRE(end == orig);
+        REQUIRE(dec == orig);
+        auto [a_item, b_item, c_item] = *it;
+        REQUIRE(a_item == 5);
+        REQUIRE(b_item == 666);
+        // TODO should be -5, original iterator views the original sequence
+        REQUIRE(c_item == -9);
     }
 
     SECTION("relational operators") {
