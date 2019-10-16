@@ -23,95 +23,37 @@ TEST_CASE("zip_iterator has reference semantics", "[zip_iterator]") {
     STATIC_REQUIRE(std::is_swappable_v<decltype(it)>);
 }
 
-TEST_CASE("zip_iterator has tuple-like semantics", "[zip_iterator]") {
-    std::array<int, 0> a;
-    std::array<long long, 0> b;
-
-    auto it = zip::zip_iterator{std::begin(a), std::begin(b)};
-
-    SECTION("std::tuple_size") {
-        REQUIRE(std::tuple_size_v<decltype(it)> == 2);
-    }
-
-    SECTION("std::tuple_element") {
-        STATIC_REQUIRE(
-            std::is_same_v<
-                std::tuple_element_t<0, decltype(it)>,
-                decltype(std::begin(a))>);
-        STATIC_REQUIRE(
-            std::is_same_v<
-                std::tuple_element_t<1, decltype(it)>,
-                decltype(std::begin(b))>);
-    }
-
-    SECTION("element access") {
-        SECTION("via qualified std::get") {
-            STATIC_REQUIRE(
-                std::is_same_v<
-                    std::remove_reference_t<decltype(std::get<0>(it))>,
-                    decltype(std::begin(a))>);
-            STATIC_REQUIRE(
-                std::is_same_v<
-                    std::remove_reference_t<decltype(std::get<1>(it))>,
-                    decltype(std::begin(b))>);
-        }
-
-        SECTION("via unqualified get") {
-            using std::get;
-            STATIC_REQUIRE(
-                std::is_same_v<
-                    std::remove_reference_t<decltype(get<0>(it))>,
-                    decltype(std::begin(a))>);
-            STATIC_REQUIRE(
-                std::is_same_v<
-                    std::remove_reference_t<decltype(get<1>(it))>,
-                    decltype(std::begin(b))>);
-        }
-
-        SECTION("via member get") {
-            STATIC_REQUIRE(
-                std::is_same_v<
-                    std::remove_reference_t<decltype(it.get<0>())>,
-                    decltype(std::begin(a))>);
-            STATIC_REQUIRE(
-                std::is_same_v<
-                    std::remove_reference_t<decltype(it.get<1>())>,
-                    decltype(std::begin(b))>);
-        }
-
-        SECTION("via structured binding") {
-            auto&& [a_bind, b_bind] = it;
-            STATIC_REQUIRE(
-                std::is_same_v<
-                    std::remove_reference_t<decltype(a_bind)>,
-                    decltype(std::begin(a))>);
-            STATIC_REQUIRE(
-                std::is_same_v<
-                    std::remove_reference_t<decltype(b_bind)>,
-                    decltype(std::begin(b))>);
-        }
-    }
-}
-
 TEST_CASE("zipped iterators constness is preserved", "[zip_iterator]") {
-    std::array<int, 0> a;
-    std::array<long long, 0> b;
+    std::array<int, 1> a;
+    std::array<long long, 1> b;
 
-    auto const_const = zip::zip_iterator{std::cbegin(a), std::cbegin(b)};
-    STATIC_REQUIRE(is_const<decltype(*std::get<0>(const_const))>);
-    STATIC_REQUIRE(is_const<decltype(*std::get<1>(const_const))>);
+    {
+        auto it = zip::zip_iterator{std::cbegin(a), std::cbegin(b)};
+        auto [a_item, b_item] = *it;
+        STATIC_REQUIRE(is_const<decltype(a_item)>);
+        STATIC_REQUIRE(is_const<decltype(b_item)>);
+    }
 
-    auto mut_const = zip::zip_iterator{std::begin(a), std::cbegin(b)};
-    STATIC_REQUIRE_FALSE(is_const<decltype(*std::get<0>(mut_const))>);
-    STATIC_REQUIRE(is_const<decltype(*std::get<1>(mut_const))>);
+    {
+        auto it = zip::zip_iterator{std::begin(a), std::cbegin(b)};
+        auto [a_item, b_item] = *it;
+        STATIC_REQUIRE_FALSE(is_const<decltype(a_item)>);
+        STATIC_REQUIRE(is_const<decltype(b_item)>);
+    }
 
-    auto const_mut = zip::zip_iterator{std::cbegin(a), std::begin(b)};
-    STATIC_REQUIRE(is_const<decltype(*std::get<0>(const_mut))>);
-    STATIC_REQUIRE_FALSE(is_const<decltype(*std::get<1>(const_mut))>);
+    {
+        auto it = zip::zip_iterator{std::cbegin(a), std::begin(b)};
+        auto [a_item, b_item] = *it;
+        STATIC_REQUIRE(is_const<decltype(a_item)>);
+        STATIC_REQUIRE_FALSE(is_const<decltype(b_item)>);
+    }
 
-    auto mut_mut = zip::zip_iterator{std::begin(a), std::begin(b)};
-    STATIC_REQUIRE_FALSE(is_const<decltype(*std::get<0>(mut_mut))>);
-    STATIC_REQUIRE_FALSE(is_const<decltype(*std::get<1>(mut_mut))>);
+    {
+        auto it = zip::zip_iterator{std::begin(a), std::begin(b)};
+        auto [a_item, b_item] = *it;
+        STATIC_REQUIRE_FALSE(is_const<decltype(a_item)>);
+        STATIC_REQUIRE_FALSE(is_const<decltype(b_item)>);
+    }
 }
 
 TEST_CASE("zip_iterator abides by random access iterator contract", "[zip_iterator]") {
@@ -126,9 +68,9 @@ TEST_CASE("zip_iterator abides by random access iterator contract", "[zip_iterat
         REQUIRE(end - begin == 6);
     }
 
-    SECTION("operator+(const zip_iterator&)") {
-        REQUIRE(begin + end == 1);
-    }
+    // SECTION("operator+(const zip_iterator&)") {
+    //     REQUIRE(begin + end == 1);
+    // }
 
     SECTION("std::distance(const zip_iterator&, const zip_iterator&)") {
         REQUIRE(std::distance(begin, end) == 6);
