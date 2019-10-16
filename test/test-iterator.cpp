@@ -73,15 +73,16 @@ TEST_CASE("zip_iterator abides by random access iterator contract", "[zip_iterat
     // }
 
     SECTION("std::distance(const zip_iterator&, const zip_iterator&)") {
-        REQUIRE(std::distance(begin, end) == 6);
+        REQUIRE(std::distance(begin, end)
+             == std::distance(std::begin(a), std::end(a)));
     }
 
     SECTION("operator+(difference_type)") {
         auto it = begin + 1;
         auto [a_item, b_item, c_item] = *it;
-        REQUIRE(a_item == 1);
-        REQUIRE(b_item == 3);
-        REQUIRE(c_item == -1);
+        REQUIRE(a_item == *(std::begin(a) + 1));
+        REQUIRE(b_item == *(std::begin(b) + 1));
+        REQUIRE(c_item == *(std::begin(c) + 1));
     }
 
     SECTION("operator+=(difference_type)") {
@@ -90,9 +91,9 @@ TEST_CASE("zip_iterator abides by random access iterator contract", "[zip_iterat
         auto orig = zip::zip_iterator{std::begin(a), std::begin(b), std::begin(c)};
         REQUIRE(begin == orig);
         auto [a_item, b_item, c_item] = *it;
-        REQUIRE(a_item == 1);
-        REQUIRE(b_item == 3);
-        REQUIRE(c_item == -1);
+        REQUIRE(a_item == *(std::begin(a) + 1));
+        REQUIRE(b_item == *(std::begin(b) + 1));
+        REQUIRE(c_item == *(std::begin(c) + 1));
     }
 
     SECTION("operator++() [prefix]") {
@@ -102,9 +103,9 @@ TEST_CASE("zip_iterator abides by random access iterator contract", "[zip_iterat
         REQUIRE(begin == orig);
         REQUIRE(it == inc);
         auto [a_item, b_item, c_item] = *it;
-        REQUIRE(a_item == 1);
-        REQUIRE(b_item == 3);
-        REQUIRE(c_item == -1);
+        REQUIRE(a_item == *(std::begin(a) + 1));
+        REQUIRE(b_item == *(std::begin(b) + 1));
+        REQUIRE(c_item == *(std::begin(c) + 1));
     }
 
     SECTION("operator++(int) [postfix]") {
@@ -114,18 +115,18 @@ TEST_CASE("zip_iterator abides by random access iterator contract", "[zip_iterat
         REQUIRE(begin == orig);
         REQUIRE(inc == orig);
         auto [a_item, b_item, c_item] = *it;
-        REQUIRE(a_item == 1);
-        REQUIRE(b_item == 3);
-        REQUIRE(c_item == -1);
+        REQUIRE(a_item == *(std::begin(a) + 1));
+        REQUIRE(b_item == *(std::begin(b) + 1));
+        REQUIRE(c_item == *(std::begin(c) + 1));
     }
 
     SECTION("operator-(difference_type)") {
         auto it = end - 3;
         auto [a_item, b_item, c_item] = *it;
-        REQUIRE(a_item == 3);
-        REQUIRE(b_item == 1);
+        REQUIRE(a_item == *(std::end(a)-3));
+        REQUIRE(b_item == *(std::end(b)-3));
         // TODO should be -9, original iterator views the original sequence
-        REQUIRE(c_item == -7);
+        REQUIRE(c_item == *(std::end(c)-3));
     }
 
     SECTION("operator-=(difference_type)") {
@@ -134,10 +135,10 @@ TEST_CASE("zip_iterator abides by random access iterator contract", "[zip_iterat
         auto orig = zip::zip_iterator{std::end(a), std::end(b), std::end(c)};
         REQUIRE(end == orig);
         auto [a_item, b_item, c_item] = *it;
-        REQUIRE(a_item == 3);
-        REQUIRE(b_item == 1);
+        REQUIRE(a_item == *(std::end(a)-3));
+        REQUIRE(b_item == *(std::end(b)-3));
         // TODO should be -9, original iterator views the original sequence
-        REQUIRE(c_item == -7);
+        REQUIRE(c_item == *(std::end(c)-3));
     }
 
     SECTION("operator--() [prefix]") {
@@ -147,10 +148,10 @@ TEST_CASE("zip_iterator abides by random access iterator contract", "[zip_iterat
         REQUIRE(end == orig);
         REQUIRE(it == dec);
         auto [a_item, b_item, c_item] = *it;
-        REQUIRE(a_item == 5);
-        REQUIRE(b_item == 666);
+        REQUIRE(a_item == *(std::end(a)-1));
+        REQUIRE(b_item == *(std::end(b)-1));
         // TODO should be -5, original iterator views the original sequence
-        REQUIRE(c_item == -9);
+        REQUIRE(c_item == *(std::end(c)-1));
     }
 
     SECTION("operator--(int) [postfix]") {
@@ -160,10 +161,10 @@ TEST_CASE("zip_iterator abides by random access iterator contract", "[zip_iterat
         REQUIRE(end == orig);
         REQUIRE(dec == orig);
         auto [a_item, b_item, c_item] = *it;
-        REQUIRE(a_item == 5);
-        REQUIRE(b_item == 666);
+        REQUIRE(a_item == *(std::end(a)-1));
+        REQUIRE(b_item == *(std::end(b)-1));
         // TODO should be -5, original iterator views the original sequence
-        REQUIRE(c_item == -9);
+        REQUIRE(c_item == *(std::end(c)-1));
     }
 
     SECTION("relational operators") {
