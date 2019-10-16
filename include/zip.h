@@ -167,9 +167,21 @@ struct zip_iterator {
         return *this;
     }
 
+    constexpr zip_iterator operator++(int) noexcept {
+        zip_iterator ret{*this};
+        ++m_offset;
+        return ret;
+    }
+
     constexpr zip_iterator& operator--() noexcept {
         --m_offset;
         return *this;
+    }
+
+    constexpr zip_iterator operator--(int) noexcept {
+        zip_iterator ret{*this};
+        --m_offset;
+        return ret;
     }
 
     constexpr zip_iterator& operator+=(difference_type rhs) noexcept {
