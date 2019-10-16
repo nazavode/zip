@@ -290,35 +290,6 @@ struct zip_iterator {
         });
     }
 
-    // Tuple-like semantics support
-    using tuple_size = std::tuple_size<iterators_tuple_type>;
-
-    template<std::size_t I>
-    class tuple_element {
-        public:
-        using type = std::tuple_element_t<I, iterators_tuple_type>;
-    };
-
-    template <std::size_t I>
-    constexpr auto get() & noexcept {
-        return std::get<I>(m_it) + m_offset;
-    }
-
-    template <std::size_t I>
-    constexpr auto get() const& noexcept {
-        return std::get<I>(m_it) + m_offset;
-    }
-
-    template <std::size_t I>
-    constexpr auto&& get() && noexcept {
-        return std::get<I>(std::move(m_it)) + m_offset;
-    }
-
-    template <std::size_t I>
-    constexpr auto const&& get() const&& noexcept {
-        return std::get<I>(std::move(m_it)) + m_offset;
-    }
-
    private:
 
     difference_type m_offset{0};
@@ -327,40 +298,5 @@ struct zip_iterator {
 
 // clang-format on
 }  // namespace zip
-
-namespace std {
-// Enable tuple-like semantics on zip::zip_iterator
-// Injecting stuff into std is unfortunately required
-
-template <typename... Ts>
-class tuple_size<::zip::zip_iterator<Ts...>> : 
-    public ::zip::zip_iterator<Ts...>::tuple_size { };
-
-template <std::size_t I, typename... Ts>
-class tuple_element<I, ::zip::zip_iterator<Ts...>> {
-    public:
-    using type = typename ::zip::zip_iterator<Ts...>::template tuple_element<I>::type;
-};
-
-template <std::size_t I, typename... Ts>
-constexpr auto get(::zip::zip_iterator<Ts...>& a) noexcept {
-    return a.template get<I>();
-}
-
-template <std::size_t I, typename... Ts>
-constexpr auto get(::zip::zip_iterator<Ts...> const& a) noexcept {
-    return a.template get<I>();
-}
-
-template <std::size_t I, typename... Ts>
-constexpr auto&& get(::zip::zip_iterator<Ts...>&& a) noexcept {
-    return std::move(a).template get<I>();
-}
-
-template <std::size_t I, typename... Ts>
-constexpr auto const&& get(::zip::zip_iterator<Ts...> const&& a) noexcept {
-    return std::move(a).template get<I>();
-}
-}
 
 #endif
