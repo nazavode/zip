@@ -71,8 +71,7 @@ target_include_directories(_Zip
 
 target_link_libraries(_Zip
     INTERFACE
-        zip::cxxstd
-        zip::warnings)
+        zip::cxxstd)
 
 ###########################################################
 # Unit tests
@@ -92,10 +91,10 @@ target_include_directories(_Catch2
         ${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 add_executable(_Test
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/sanitizer-options.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test/test-zip.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/test-iterator.cpp)
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/test-iterator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/sanitize-options.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/main.cpp)
 add_executable(zip::test ALIAS _Test)
 set_target_properties(_Test
     PROPERTIES
@@ -106,6 +105,8 @@ set_target_properties(_Test
         OUTPUT_NAME "zip-test")
 target_link_libraries(_Test
     PRIVATE
+        zip::cxxstd
+        zip::warnings
         zip::catch2
         zip::zip)
     
@@ -135,6 +136,8 @@ set_target_properties(_Benchmark
             OUTPUT_NAME "zip-benchmark")
 target_link_libraries(_Benchmark
     PRIVATE
+        zip::cxxstd
+        zip::warnings
         zip::zip)
 
 if(ZIP_ENABLE_BENCHMARK)
