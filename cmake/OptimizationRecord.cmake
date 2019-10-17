@@ -1,4 +1,6 @@
 
+# clang++ -I/home/montag/src/zip/include -O3 -DNDEBUG -march=skylake-avx512 -mtune=skylake-avx512 -Wall -Wextra -Werror -std=c++1z -S -fsave-optimization-record -Rpass-analysis=loop-vectorize -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -c Point3dSoaZipSum.cpp
+
 set(OPTIMIZATION_RECORD_FLAGS -fsave-optimization-record
 
 include(CheckCXXCompilerFlag)

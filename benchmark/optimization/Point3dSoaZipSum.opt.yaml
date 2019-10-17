@@ -1691,9 +1691,9 @@ DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 19, Column: 5 }
 Function:        Point3dSoaZipSum
 Args:
   - String:          'vectorized loop (vectorization width: '
-  - VectorizationFactor: '8'
+  - VectorizationFactor: '16'
   - String:          ', interleaved count: '
-  - InterleaveCount: '2'
+  - InterleaveCount: '4'
   - String:          ')'
 ...
 --- !Missed
@@ -1748,7 +1748,7 @@ Name:            UnsupportedType
 Function:        Point3dSoaZipSum
 Args:
   - String:          'Cannot SLP vectorize list: type '
-  - String:          '<8 x i32> is unsupported by vectorizer'
+  - String:          '<16 x i32> is unsupported by vectorizer'
 ...
 --- !Missed
 Pass:            slp-vectorizer
@@ -1802,16 +1802,6 @@ Args:
   - Treshold:        '0'
 ...
 --- !Passed
-Pass:            loop-unroll
-Name:            PartialUnrolled
-DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 19, Column: 5 }
-Function:        Point3dSoaZipSum
-Args:
-  - String:          'unrolled loop by a factor of '
-  - UnrollCount:     '2'
-  - String:          ' with run-time trip count'
-...
---- !Passed
 Pass:            licm
 Name:            InstSunk
 DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
@@ -1858,46 +1848,6 @@ Args:
 --- !Passed
 Pass:            licm
 Name:            InstSunk
-DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 22, Column: 18 }
-Function:        Point3dSoaZipSum
-Args:
-  - String:          'sinking '
-  - Inst:            bitcast
-    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 22, Column: 18 }
-...
---- !Passed
-Pass:            licm
-Name:            InstSunk
-DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 22, Column: 18 }
-Function:        Point3dSoaZipSum
-Args:
-  - String:          'sinking '
-  - Inst:            bitcast
-    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 22, Column: 18 }
-...
---- !Passed
-Pass:            licm
-Name:            InstSunk
-DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 21, Column: 18 }
-Function:        Point3dSoaZipSum
-Args:
-  - String:          'sinking '
-  - Inst:            bitcast
-    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 21, Column: 18 }
-...
---- !Passed
-Pass:            licm
-Name:            InstSunk
-DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 21, Column: 18 }
-Function:        Point3dSoaZipSum
-Args:
-  - String:          'sinking '
-  - Inst:            bitcast
-    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 21, Column: 18 }
-...
---- !Passed
-Pass:            licm
-Name:            InstSunk
 DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 23, Column: 18 }
 Function:        Point3dSoaZipSum
 Args:
@@ -1934,6 +1884,46 @@ Args:
   - String:          'sinking '
   - Inst:            bitcast
     DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 22, Column: 18 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 22, Column: 18 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            bitcast
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 22, Column: 18 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 22, Column: 18 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            bitcast
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 22, Column: 18 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 21, Column: 18 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            bitcast
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 21, Column: 18 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 21, Column: 18 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            bitcast
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 21, Column: 18 }
 ...
 --- !Passed
 Pass:            licm
@@ -1970,6 +1960,6 @@ Name:            InstructionCount
 DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 11, Column: 0 }
 Function:        Point3dSoaZipSum
 Args:
-  - NumInstructions: '115'
+  - NumInstructions: '105'
   - String:          ' instructions in function'
 ...
