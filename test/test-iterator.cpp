@@ -3,11 +3,7 @@
 
 #include <algorithm>
 #include <array>
-#include <tuple>
 #include <type_traits>
-
-template<typename T>
-constexpr bool is_const = std::is_const_v<std::remove_reference_t<T>>;
 
 class ZipIteratorTest : public ::testing::Test {
    protected:
@@ -25,9 +21,18 @@ class ZipIteratorTest : public ::testing::Test {
         return zip_iterator_type{std::end(x), std::end(y), std::end(z)};
     }
 
+    auto zip_size() noexcept {
+        return std::size(x);
+    }
+
+    template<std::size_t I>
+    auto sentinel() {
+        return 11 + I;
+    }
+
     x_type x{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-    y_type y{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-    z_type z{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    y_type y{9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+    z_type z{0, -1, -2, -3, -4, -5, -6, -7, -8, -9};
 };
 
 TEST_F(ZipIteratorTest, IsNotDefaultConstructible) {
@@ -58,158 +63,230 @@ TEST_F(ZipIteratorTest, IsSwappable) {
     EXPECT_TRUE(std::is_swappable_v<zip_iterator_type>);
 }
 
-TEST_F(ZipIteratorTest, Constness) {
-    std::array<int, 1> a;
-    std::array<long long, 1> b;
-
-    {
-        auto it = zip::zip_iterator{std::cbegin(a), std::cbegin(b)};
-        auto [a_item, b_item] = *it;
-        EXPECT_TRUE(is_const<decltype(a_item)>);
-        EXPECT_TRUE(is_const<decltype(b_item)>);
-    }
-
-    {
-        auto it = zip::zip_iterator{std::begin(a), std::cbegin(b)};
-        auto [a_item, b_item] = *it;
-        EXPECT_FALSE(is_const<decltype(a_item)>);
-        EXPECT_TRUE(is_const<decltype(b_item)>);
-    }
-
-    {
-        auto it = zip::zip_iterator{std::cbegin(a), std::begin(b)};
-        auto [a_item, b_item] = *it;
-        EXPECT_TRUE(is_const<decltype(a_item)>);
-        EXPECT_FALSE(is_const<decltype(b_item)>);
-    }
-
-    {
-        auto it = zip::zip_iterator{std::begin(a), std::begin(b)};
-        auto [a_item, b_item] = *it;
-        EXPECT_FALSE(is_const<decltype(a_item)>);
-        EXPECT_FALSE(is_const<decltype(b_item)>);
-    }
+TEST_F(ZipIteratorTest, ConstnessPreservedConst) {
+    auto it = zip::zip_iterator{std::cbegin(x), std::cbegin(y), std::cbegin(z)};
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_TRUE(std::is_const_v<std::remove_reference_t<decltype(x_item)>>);
+    EXPECT_TRUE(std::is_const_v<std::remove_reference_t<decltype(y_item)>>);
+    EXPECT_TRUE(std::is_const_v<std::remove_reference_t<decltype(z_item)>>);
 }
 
-// TEST_CASE("zip_iterator abides by random access iterator contract", "[zip_iterator]") {
-//     std::array<int, 6>          a{0,  1,  2,  3,  4,   5};
-//     std::array<long long, 6>    b{4,  3,  2,  1,  0, 666};
-//     std::array<signed char, 10> c{0, -1, -2, -3, -4,  -5, -6, -7, -8, -9};
+TEST_F(ZipIteratorTest, ConstnessPreservedMut) {
+    auto it = zip::zip_iterator{std::begin(x), std::begin(y), std::begin(z)};
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_FALSE(std::is_const_v<std::remove_reference_t<decltype(x_item)>>);
+    EXPECT_FALSE(std::is_const_v<std::remove_reference_t<decltype(y_item)>>);
+    EXPECT_FALSE(std::is_const_v<std::remove_reference_t<decltype(z_item)>>);
+}
 
-//     auto begin = zip::zip_iterator{std::begin(a), std::begin(b), std::begin(c)};
-//     auto end = zip::zip_iterator{std::end(a), std::end(b), std::end(c)};
+TEST_F(ZipIteratorTest, ConstnessPreservedMixed) {
+    auto it = zip::zip_iterator{std::begin(x), std::cbegin(y), std::begin(z)};
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_FALSE(std::is_const_v<std::remove_reference_t<decltype(x_item)>>);
+    EXPECT_TRUE(std::is_const_v<std::remove_reference_t<decltype(y_item)>>);
+    EXPECT_FALSE(std::is_const_v<std::remove_reference_t<decltype(z_item)>>);
+}
 
-//     SECTION("operator-(const zip_iterator&)") {
-//         REQUIRE(end - begin == 6);
-//     }
+TEST_F(ZipIteratorTest, OperatorDereferenceBegin) {
+    // operator*()
+    auto value = *zip_begin();
+    auto [x_item, y_item, z_item] = value;
+    EXPECT_EQ(x_item, *(std::begin(x)));
+    EXPECT_EQ(y_item, *(std::begin(y)));
+    EXPECT_EQ(z_item, *(std::begin(z)));
+}
 
-//     SECTION("std::distance(const zip_iterator&, const zip_iterator&)") {
-//         REQUIRE(std::distance(begin, end)
-//              == std::distance(std::begin(a), std::end(a)));
-//     }
+TEST_F(ZipIteratorTest, OperatorSubscript) {
+    // operator[](difference_type)
+    auto value = zip_begin()[0];
+    auto [x_item, y_item, z_item] = value;
+    EXPECT_EQ(x_item, *(std::begin(x)));
+    EXPECT_EQ(y_item, *(std::begin(y)));
+    EXPECT_EQ(z_item, *(std::begin(z)));
+}
 
-//     SECTION("operator+(difference_type)") {
-//         auto it = begin + 1;
-//         auto [a_item, b_item, c_item] = *it;
-//         REQUIRE(a_item == *(std::begin(a) + 1));
-//         REQUIRE(b_item == *(std::begin(b) + 1));
-//         REQUIRE(c_item == *(std::begin(c) + 1));
-//     }
+TEST_F(ZipIteratorTest, OperatorMinusIterator) {
+    // operator-(const zip_iterator&)
+    EXPECT_EQ(zip_end() - zip_begin(), zip_size());
+}
 
-//     SECTION("operator+=(difference_type)") {
-//         auto it = begin;
-//         it += 1;
-//         auto orig = zip::zip_iterator{std::begin(a), std::begin(b), std::begin(c)};
-//         REQUIRE(begin == orig);
-//         auto [a_item, b_item, c_item] = *it;
-//         REQUIRE(a_item == *(std::begin(a) + 1));
-//         REQUIRE(b_item == *(std::begin(b) + 1));
-//         REQUIRE(c_item == *(std::begin(c) + 1));
-//     }
+TEST_F(ZipIteratorTest, OperatorPlusIntegral) {
+    // operator+(difference_type)
+    auto it = zip_begin() + 1;
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_EQ(x_item, *(std::begin(x) + 1));
+    EXPECT_EQ(y_item, *(std::begin(y) + 1));
+    EXPECT_EQ(z_item, *(std::begin(z) + 1));
+}
 
-//     SECTION("operator++() [prefix]") {
-//         auto it = begin;
-//         auto inc = ++it;
-//         auto orig = zip::zip_iterator{std::begin(a), std::begin(b), std::begin(c)};
-//         REQUIRE(begin == orig);
-//         REQUIRE(it == inc);
-//         auto [a_item, b_item, c_item] = *it;
-//         REQUIRE(a_item == *(std::begin(a) + 1));
-//         REQUIRE(b_item == *(std::begin(b) + 1));
-//         REQUIRE(c_item == *(std::begin(c) + 1));
-//     }
+TEST_F(ZipIteratorTest, OperatorPlusEqualIntegral) {
+    // operator+=(difference_type)
+    auto it = zip_begin();
+    it += 1;
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_EQ(x_item, *(std::begin(x) + 1));
+    EXPECT_EQ(y_item, *(std::begin(y) + 1));
+    EXPECT_EQ(z_item, *(std::begin(z) + 1));
+}
 
-//     SECTION("operator++(int) [postfix]") {
-//         auto it = begin;
-//         auto inc = it++;
-//         auto orig = zip::zip_iterator{std::begin(a), std::begin(b), std::begin(c)};
-//         REQUIRE(begin == orig);
-//         REQUIRE(inc == orig);
-//         auto [a_item, b_item, c_item] = *it;
-//         REQUIRE(a_item == *(std::begin(a) + 1));
-//         REQUIRE(b_item == *(std::begin(b) + 1));
-//         REQUIRE(c_item == *(std::begin(c) + 1));
-//     }
+TEST_F(ZipIteratorTest, OperatorIncrementPrefix) {
+    // operator++()
+    auto it = zip_begin();
+    auto inc = ++it;
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_EQ(it, inc);
+    EXPECT_EQ(x_item, *(std::begin(x) + 1));
+    EXPECT_EQ(y_item, *(std::begin(y) + 1));
+    EXPECT_EQ(z_item, *(std::begin(z) + 1));
+}
 
-//     SECTION("operator-(difference_type)") {
-//         auto it = end - 3;
-//         auto [a_item, b_item, c_item] = *it;
-//         REQUIRE(a_item == *(std::end(a)-3));
-//         REQUIRE(b_item == *(std::end(b)-3));
-//         // TODO should be -9, original iterator views the original sequence
-//         REQUIRE(c_item == *(std::end(c)-3));
-//     }
+TEST_F(ZipIteratorTest, OperatorIncrementPostfix) {
+    // operator++(int)
+    auto it = zip_begin();
+    auto inc = it++;
+    EXPECT_NE(it, inc);
+    EXPECT_EQ(inc, zip_begin());
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_EQ(x_item, *(std::begin(x) + 1));
+    EXPECT_EQ(y_item, *(std::begin(y) + 1));
+    EXPECT_EQ(z_item, *(std::begin(z) + 1));
+}
 
-//     SECTION("operator-=(difference_type)") {
-//         auto it = end;
-//         it -= 3;
-//         auto orig = zip::zip_iterator{std::end(a), std::end(b), std::end(c)};
-//         REQUIRE(end == orig);
-//         auto [a_item, b_item, c_item] = *it;
-//         REQUIRE(a_item == *(std::end(a)-3));
-//         REQUIRE(b_item == *(std::end(b)-3));
-//         // TODO should be -9, original iterator views the original sequence
-//         REQUIRE(c_item == *(std::end(c)-3));
-//     }
+TEST_F(ZipIteratorTest, OperatorMinusIntegral) {
+    // operator-(difference_type)
+    auto it = zip_end() - 3;
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_EQ(x_item, *(std::end(x) - 3));
+    EXPECT_EQ(y_item, *(std::end(y) - 3));
+    EXPECT_EQ(z_item, *(std::end(z) - 3));
+}
 
-//     SECTION("operator--() [prefix]") {
-//         auto it = end;
-//         auto dec = --it;
-//         auto orig = zip::zip_iterator{std::end(a), std::end(b), std::end(c)};
-//         REQUIRE(end == orig);
-//         REQUIRE(it == dec);
-//         auto [a_item, b_item, c_item] = *it;
-//         REQUIRE(a_item == *(std::end(a)-1));
-//         REQUIRE(b_item == *(std::end(b)-1));
-//         // TODO should be -5, original iterator views the original sequence
-//         REQUIRE(c_item == *(std::end(c)-1));
-//     }
+TEST_F(ZipIteratorTest, OperatorMinusEqualIntegral) {
+    // operator-=(difference_type)
+    auto it = zip_end();
+    it -= 3;
+    EXPECT_NE(it, zip_end());
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_EQ(x_item, *(std::end(x) - 3));
+    EXPECT_EQ(y_item, *(std::end(y) - 3));
+    EXPECT_EQ(z_item, *(std::end(z) - 3));
+}
 
-//     SECTION("operator--(int) [postfix]") {
-//         auto it = end;
-//         auto dec = it--;
-//         auto orig = zip::zip_iterator{std::end(a), std::end(b), std::end(c)};
-//         REQUIRE(end == orig);
-//         REQUIRE(dec == orig);
-//         auto [a_item, b_item, c_item] = *it;
-//         REQUIRE(a_item == *(std::end(a)-1));
-//         REQUIRE(b_item == *(std::end(b)-1));
-//         // TODO should be -5, original iterator views the original sequence
-//         REQUIRE(c_item == *(std::end(c)-1));
-//     }
+TEST_F(ZipIteratorTest, OperatorDecrementPrefix) {
+    // operator--()
+    auto it = zip_end();
+    auto dec = --it;
+    EXPECT_EQ(it, dec);
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_EQ(x_item, *(std::end(x) - 1));
+    EXPECT_EQ(y_item, *(std::end(y) - 1));
+    EXPECT_EQ(z_item, *(std::end(z) - 1));
+}
 
-//     SECTION("relational operators") {
-//         REQUIRE(begin < end);
-//         REQUIRE(begin <= end);
-//         REQUIRE(end > begin);
-//         REQUIRE(end >= begin);
-//         REQUIRE(begin != end);
-//         REQUIRE(!(begin == end));
-//         REQUIRE(begin == begin);
-//         REQUIRE(!(begin != begin));
-//         REQUIRE(end == end);
-//         REQUIRE(!(end != end));
-//     }
+TEST_F(ZipIteratorTest, OperatorDecrementPostfix) {
+    // operator--(int)
+    auto it = zip_end();
+    auto dec = it--;
+    EXPECT_NE(it, dec);
+    EXPECT_EQ(zip_end(), dec);
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_EQ(x_item, *(std::end(x) - 1));
+    EXPECT_EQ(y_item, *(std::end(y) - 1));
+    EXPECT_EQ(z_item, *(std::end(z) - 1));
+}
+
+TEST_F(ZipIteratorTest, OperatorLT) {
+    EXPECT_LT(zip_begin(), zip_end());
+}
+
+TEST_F(ZipIteratorTest, OperatorLE) {
+    EXPECT_LE(zip_begin(), zip_end());
+    EXPECT_LE(zip_begin(), zip_begin());
+    EXPECT_LE(zip_end(), zip_end());
+}
+
+TEST_F(ZipIteratorTest, OperatorGT) {
+    EXPECT_GT(zip_end(), zip_begin());
+}
+
+TEST_F(ZipIteratorTest, OperatorGE) {
+    EXPECT_GE(zip_end(), zip_begin());
+    EXPECT_GE(zip_begin(), zip_begin());
+    EXPECT_GE(zip_end(), zip_end());
+}
+
+TEST_F(ZipIteratorTest, OperatorNE) {
+    EXPECT_NE(zip_begin(), zip_end());
+}
+
+TEST_F(ZipIteratorTest, OperatorEQ) {
+    EXPECT_EQ(zip_begin(), zip_begin());
+    EXPECT_EQ(zip_end(), zip_end());
+}
+
+TEST_F(ZipIteratorTest, ModifyStdGet) {
+    auto value = *zip_begin();
+    ASSERT_TRUE(std::is_reference_v<decltype(std::get<0>(value))>);
+    ASSERT_TRUE(std::is_reference_v<decltype(std::get<1>(value))>);
+    ASSERT_TRUE(std::is_reference_v<decltype(std::get<2>(value))>);
+    std::get<0>(value) = sentinel<0>();
+    EXPECT_EQ(*std::begin(x), sentinel<0>());
+    std::get<1>(value) = sentinel<1>();
+    EXPECT_EQ(*std::begin(y), sentinel<1>());
+    std::get<2>(value) = sentinel<2>();
+    EXPECT_EQ(*std::begin(z), sentinel<2>());
+}
+
+TEST_F(ZipIteratorTest, ModifyUnqualifiedGet) {
+    using std::get;
+    auto value = *zip_begin();
+    ASSERT_TRUE(std::is_reference_v<decltype(get<0>(value))>);
+    ASSERT_TRUE(std::is_reference_v<decltype(get<1>(value))>);
+    ASSERT_TRUE(std::is_reference_v<decltype(get<2>(value))>);
+    get<0>(value) = sentinel<0>();
+    EXPECT_EQ(*std::begin(x), sentinel<0>());
+    get<1>(value) = sentinel<1>();
+    EXPECT_EQ(*std::begin(y), sentinel<1>());
+    get<2>(value) = sentinel<2>();
+    EXPECT_EQ(*std::begin(z), sentinel<2>());
+}
+
+TEST_F(ZipIteratorTest, ModifyStructuredBinding) {
+    auto [x_bind, y_bind, z_bind] = *zip_begin();
+    ASSERT_TRUE(std::is_reference_v<decltype(x_bind)>);
+    ASSERT_TRUE(std::is_reference_v<decltype(y_bind)>);
+    ASSERT_TRUE(std::is_reference_v<decltype(z_bind)>);
+    x_bind = sentinel<0>();
+    EXPECT_EQ(*std::begin(x), sentinel<0>());
+    y_bind = sentinel<1>();
+    EXPECT_EQ(*std::begin(y), sentinel<1>());
+    z_bind = sentinel<2>();
+    EXPECT_EQ(*std::begin(z), sentinel<2>());
+}
+
+TEST_F(ZipIteratorTest, ModifyRefStructuredBinding) {
+    auto&& [x_bind, y_bind, z_bind] = *zip_begin();
+    ASSERT_TRUE(std::is_reference_v<decltype(x_bind)>);
+    ASSERT_TRUE(std::is_reference_v<decltype(y_bind)>);
+    ASSERT_TRUE(std::is_reference_v<decltype(z_bind)>);
+    x_bind = sentinel<0>();
+    EXPECT_EQ(*std::begin(x), sentinel<0>());
+    y_bind = sentinel<1>();
+    EXPECT_EQ(*std::begin(y), sentinel<1>());
+    z_bind = sentinel<2>();
+    EXPECT_EQ(*std::begin(z), sentinel<2>());
+}
+
+TEST_F(ZipIteratorTest, StdDistance) {
+    EXPECT_EQ(std::distance(zip_begin(), zip_end()), zip_size());
+}
+
+TEST_F(ZipIteratorTest, StdForEach) {}
+TEST_F(ZipIteratorTest, StdTransform) {}
+TEST_F(ZipIteratorTest, StdFind) {}
+TEST_F(ZipIteratorTest, StdIsSorted) {}
+TEST_F(ZipIteratorTest, StdSort) {}
+TEST_F(ZipIteratorTest, StdNthElement) {}
 
 //     SECTION("iterator for loop, element access via operator*()") {
 //         for(auto it = begin; it != end; ++it) {
