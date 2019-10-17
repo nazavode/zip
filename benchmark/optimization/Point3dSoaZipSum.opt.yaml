@@ -1,0 +1,1975 @@
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/vector', 
+                   Line: 1506, Column: 12 }
+Function:        _ZNKSt3__16vectorIiNS_9allocatorIiEEE11__make_iterEPKi
+Args:
+  - Callee:          _ZNSt3__111__wrap_iterIPKiEC2ES2_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1462, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNKSt3__16vectorIiNS_9allocatorIiEEE11__make_iterEPKi
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/vector', 
+                       Line: 1502, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-40'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/vector', 
+                   Line: 1523, Column: 12 }
+Function:        _ZNKSt3__16vectorIiNS_9allocatorIiEEE5beginEv
+Args:
+  - Callee:          _ZNKSt3__16vectorIiNS_9allocatorIiEEE11__make_iterEPKi
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/vector', 
+                       Line: 1502, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNKSt3__16vectorIiNS_9allocatorIiEEE5beginEv
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/vector', 
+                       Line: 1522, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-40'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                   Line: 1713, Column: 16 }
+Function:        _ZNSt3__15beginINS_6vectorIiNS_9allocatorIiEEEEEEDTcldtfp_5beginEERKT_
+Args:
+  - Callee:          _ZNKSt3__16vectorIiNS_9allocatorIiEEE5beginEv
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/vector', 
+                       Line: 1522, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__15beginINS_6vectorIiNS_9allocatorIiEEEEEEDTcldtfp_5beginEERKT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1712, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 221, Column: 24 }
+Function:        _ZNSt3__112__tuple_leafILm0ENS_11__wrap_iterIPKiEELb0EEC2IRS4_vEEOT_
+Args:
+  - Callee:          _ZNSt3__17forwardIRNS_11__wrap_iterIPKiEEEEOT_RNS_16remove_referenceIS6_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_leafILm0ENS_11__wrap_iterIPKiEELb0EEC2IRS4_vEEOT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 222, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 221, Column: 24 }
+Function:        _ZNSt3__112__tuple_leafILm1ENS_11__wrap_iterIPKiEELb0EEC2IRS4_vEEOT_
+Args:
+  - Callee:          _ZNSt3__17forwardIRNS_11__wrap_iterIPKiEEEEOT_RNS_16remove_referenceIS6_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_leafILm1ENS_11__wrap_iterIPKiEELb0EEC2IRS4_vEEOT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 222, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 221, Column: 24 }
+Function:        _ZNSt3__112__tuple_leafILm2ENS_11__wrap_iterIPKiEELb0EEC2IRS4_vEEOT_
+Args:
+  - Callee:          _ZNSt3__17forwardIRNS_11__wrap_iterIPKiEEEEOT_RNS_16remove_referenceIS6_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_leafILm2ENS_11__wrap_iterIPKiEELb0EEC2IRS4_vEEOT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 222, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 377, Column: 36 }
+Function:        _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJNS_11__wrap_iterIPKiEES6_S6_EEC2IJLm0ELm1ELm2EEJS6_S6_S6_EJEJEJRS6_S9_S9_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENSB_IJDpT2_EEEDpOT3_
+Args:
+  - Callee:          _ZNSt3__17forwardIRNS_11__wrap_iterIPKiEEEEOT_RNS_16remove_referenceIS6_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJNS_11__wrap_iterIPKiEES6_S6_EEC2IJLm0ELm1ELm2EEJS6_S6_S6_EJEJEJRS6_S9_S9_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENSB_IJDpT2_EEEDpOT3_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 379, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 377, Column: 13 }
+Function:        _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJNS_11__wrap_iterIPKiEES6_S6_EEC2IJLm0ELm1ELm2EEJS6_S6_S6_EJEJEJRS6_S9_S9_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENSB_IJDpT2_EEEDpOT3_
+Args:
+  - Callee:          _ZNSt3__112__tuple_leafILm2ENS_11__wrap_iterIPKiEELb0EEC2IRS4_vEEOT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 222, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJNS_11__wrap_iterIPKiEES6_S6_EEC2IJLm0ELm1ELm2EEJS6_S6_S6_EJEJEJRS6_S9_S9_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENSB_IJDpT2_EEEDpOT3_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 379, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 377, Column: 36 }
+Function:        _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJNS_11__wrap_iterIPKiEES6_S6_EEC2IJLm0ELm1ELm2EEJS6_S6_S6_EJEJEJRS6_S9_S9_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENSB_IJDpT2_EEEDpOT3_
+Args:
+  - Callee:          _ZNSt3__17forwardIRNS_11__wrap_iterIPKiEEEEOT_RNS_16remove_referenceIS6_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJNS_11__wrap_iterIPKiEES6_S6_EEC2IJLm0ELm1ELm2EEJS6_S6_S6_EJEJEJRS6_S9_S9_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENSB_IJDpT2_EEEDpOT3_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 379, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 377, Column: 13 }
+Function:        _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJNS_11__wrap_iterIPKiEES6_S6_EEC2IJLm0ELm1ELm2EEJS6_S6_S6_EJEJEJRS6_S9_S9_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENSB_IJDpT2_EEEDpOT3_
+Args:
+  - Callee:          _ZNSt3__112__tuple_leafILm1ENS_11__wrap_iterIPKiEELb0EEC2IRS4_vEEOT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 222, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJNS_11__wrap_iterIPKiEES6_S6_EEC2IJLm0ELm1ELm2EEJS6_S6_S6_EJEJEJRS6_S9_S9_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENSB_IJDpT2_EEEDpOT3_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 379, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 377, Column: 36 }
+Function:        _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJNS_11__wrap_iterIPKiEES6_S6_EEC2IJLm0ELm1ELm2EEJS6_S6_S6_EJEJEJRS6_S9_S9_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENSB_IJDpT2_EEEDpOT3_
+Args:
+  - Callee:          _ZNSt3__17forwardIRNS_11__wrap_iterIPKiEEEEOT_RNS_16remove_referenceIS6_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJNS_11__wrap_iterIPKiEES6_S6_EEC2IJLm0ELm1ELm2EEJS6_S6_S6_EJEJEJRS6_S9_S9_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENSB_IJDpT2_EEEDpOT3_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 379, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 377, Column: 13 }
+Function:        _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJNS_11__wrap_iterIPKiEES6_S6_EEC2IJLm0ELm1ELm2EEJS6_S6_S6_EJEJEJRS6_S9_S9_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENSB_IJDpT2_EEEDpOT3_
+Args:
+  - Callee:          _ZNSt3__112__tuple_leafILm0ENS_11__wrap_iterIPKiEELb0EEC2IRS4_vEEOT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 222, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJNS_11__wrap_iterIPKiEES6_S6_EEC2IJLm0ELm1ELm2EEJS6_S6_S6_EJEJEJRS6_S9_S9_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENSB_IJDpT2_EEEDpOT3_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 379, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Missed
+Pass:            gvn
+Name:            LoadClobbered
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 221, Column: 15 }
+Function:        _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJNS_11__wrap_iterIPKiEES6_S6_EEC2IJLm0ELm1ELm2EEJS6_S6_S6_EJEJEJRS6_S9_S9_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENSB_IJDpT2_EEEDpOT3_
+Args:
+  - String:          'load of type '
+  - Type:            i64
+  - String:          ' not eliminated'
+  - String:          ' because it is clobbered by '
+  - ClobberedBy:     store
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 221, Column: 15 }
+...
+--- !Missed
+Pass:            gvn
+Name:            LoadClobbered
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 221, Column: 15 }
+Function:        _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJNS_11__wrap_iterIPKiEES6_S6_EEC2IJLm0ELm1ELm2EEJS6_S6_S6_EJEJEJRS6_S9_S9_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENSB_IJDpT2_EEEDpOT3_
+Args:
+  - String:          'load of type '
+  - Type:            i64
+  - String:          ' not eliminated'
+  - String:          ' because it is clobbered by '
+  - ClobberedBy:     store
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 221, Column: 15 }
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 763, Column: 21 }
+Function:        _ZNSt3__15tupleIJNS_11__wrap_iterIPKiEES4_S4_EEC2IJRS4_S7_S7_ELb0ELb0EEEDpOT_
+Args:
+  - Callee:          _ZNSt3__17forwardIRNS_11__wrap_iterIPKiEEEEOT_RNS_16remove_referenceIS6_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__15tupleIJNS_11__wrap_iterIPKiEES4_S4_EEC2IJRS4_S7_S7_ELb0ELb0EEEDpOT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 763, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 759, Column: 15 }
+Function:        _ZNSt3__15tupleIJNS_11__wrap_iterIPKiEES4_S4_EEC2IJRS4_S7_S7_ELb0ELb0EEEDpOT_
+Args:
+  - Callee:          _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJNS_11__wrap_iterIPKiEES6_S6_EEC2IJLm0ELm1ELm2EEJS6_S6_S6_EJEJEJRS6_S9_S9_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENSB_IJDpT2_EEEDpOT3_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 379, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__15tupleIJNS_11__wrap_iterIPKiEES4_S4_EEC2IJRS4_S7_S7_ELb0ELb0EEEDpOT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 763, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-20'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 763, Column: 21 }
+Function:        _ZNSt3__15tupleIJNS_11__wrap_iterIPKiEES4_S4_EEC2IJRS4_S7_S7_ELb0ELb0EEEDpOT_
+Args:
+  - Callee:          _ZNSt3__17forwardIRNS_11__wrap_iterIPKiEEEEOT_RNS_16remove_referenceIS6_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__15tupleIJNS_11__wrap_iterIPKiEES4_S4_EEC2IJRS4_S7_S7_ELb0ELb0EEEDpOT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 763, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 763, Column: 21 }
+Function:        _ZNSt3__15tupleIJNS_11__wrap_iterIPKiEES4_S4_EEC2IJRS4_S7_S7_ELb0ELb0EEEDpOT_
+Args:
+  - Callee:          _ZNSt3__17forwardIRNS_11__wrap_iterIPKiEEEEOT_RNS_16remove_referenceIS6_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__15tupleIJNS_11__wrap_iterIPKiEES4_S4_EEC2IJRS4_S7_S7_ELb0ELb0EEEDpOT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 763, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Missed
+Pass:            gvn
+Name:            LoadClobbered
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 221, Column: 15 }
+Function:        _ZNSt3__15tupleIJNS_11__wrap_iterIPKiEES4_S4_EEC2IJRS4_S7_S7_ELb0ELb0EEEDpOT_
+Args:
+  - String:          'load of type '
+  - Type:            i64
+  - String:          ' not eliminated'
+  - String:          ' because it is clobbered by '
+  - ClobberedBy:     store
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 221, Column: 15 }
+...
+--- !Missed
+Pass:            gvn
+Name:            LoadClobbered
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 221, Column: 15 }
+Function:        _ZNSt3__15tupleIJNS_11__wrap_iterIPKiEES4_S4_EEC2IJRS4_S7_S7_ELb0ELb0EEEDpOT_
+Args:
+  - String:          'load of type '
+  - Type:            i64
+  - String:          ' not eliminated'
+  - String:          ' because it is clobbered by '
+  - ClobberedBy:     store
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 221, Column: 15 }
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 137, Column: 11 }
+Function:        _ZN3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEC2ES5_S5_S5_
+Args:
+  - Callee:          _ZNSt3__15tupleIJNS_11__wrap_iterIPKiEES4_S4_EEC2IJRS4_S7_S7_ELb0ELb0EEEDpOT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 763, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZN3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEC2ES5_S5_S5_
+    DebugLoc:        { File: 'include/zip.h', Line: 137, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/vector', 
+                   Line: 1539, Column: 12 }
+Function:        _ZNKSt3__16vectorIiNS_9allocatorIiEEE3endEv
+Args:
+  - Callee:          _ZNKSt3__16vectorIiNS_9allocatorIiEEE11__make_iterEPKi
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/vector', 
+                       Line: 1502, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNKSt3__16vectorIiNS_9allocatorIiEEE3endEv
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/vector', 
+                       Line: 1538, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-40'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                   Line: 1729, Column: 16 }
+Function:        _ZNSt3__13endINS_6vectorIiNS_9allocatorIiEEEEEEDTcldtfp_3endEERKT_
+Args:
+  - Callee:          _ZNKSt3__16vectorIiNS_9allocatorIiEEE3endEv
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/vector', 
+                       Line: 1538, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__13endINS_6vectorIiNS_9allocatorIiEEEEEEDTcldtfp_3endEERKT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1728, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 983, Column: 69 }
+Function:        _ZNSt3__13getILm0EJNS_11__wrap_iterIPKiEES4_S4_EEERKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeERKS9_
+Args:
+  - Callee:          _ZNKSt3__112__tuple_leafILm0ENS_11__wrap_iterIPKiEELb0EE3getEv
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 266, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__13getILm0EJNS_11__wrap_iterIPKiEES4_S4_EEERKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeERKS9_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 981, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                   Line: 1430, Column: 38 }
+Function:        _ZNKSt3__111__wrap_iterIPKiEplEl
+Args:
+  - Callee:          _ZNSt3__111__wrap_iterIPKiEpLEl
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1432, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNKSt3__111__wrap_iterIPKiEplEl
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1430, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-40'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                   Line: 1549, Column: 16 }
+Function:        _ZNSt3__1eqIPKiS2_EEbRKNS_11__wrap_iterIT_EERKNS3_IT0_EE
+Args:
+  - Callee:          _ZNKSt3__111__wrap_iterIPKiE4baseEv
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1453, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__1eqIPKiS2_EEbRKNS_11__wrap_iterIT_EERKNS3_IT0_EE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1548, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                   Line: 1549, Column: 30 }
+Function:        _ZNSt3__1eqIPKiS2_EEbRKNS_11__wrap_iterIT_EERKNS3_IT0_EE
+Args:
+  - Callee:          _ZNKSt3__111__wrap_iterIPKiE4baseEv
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1453, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__1eqIPKiS2_EEbRKNS_11__wrap_iterIT_EERKNS3_IT0_EE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1548, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                   Line: 1601, Column: 18 }
+Function:        _ZNSt3__1neIPKiEEbRKNS_11__wrap_iterIT_EES7_
+Args:
+  - Callee:          _ZNSt3__1eqIPKiS2_EEbRKNS_11__wrap_iterIT_EERKNS3_IT0_EE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1548, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__1neIPKiEEbRKNS_11__wrap_iterIT_EES7_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1600, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-25'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 252, Column: 17 }
+Function:        _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEneERKS6_
+Args:
+  - Callee:          _ZNSt3__13getILm0EJNS_11__wrap_iterIPKiEES4_S4_EEERKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeERKS9_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 981, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEneERKS6_
+    DebugLoc:        { File: 'include/zip.h', Line: 245, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 253, Column: 13 }
+Function:        _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEneERKS6_
+Args:
+  - Callee:          _ZNSt3__1neIPKiEEbRKNS_11__wrap_iterIT_EES7_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1600, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEneERKS6_
+    DebugLoc:        { File: 'include/zip.h', Line: 245, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 253, Column: 39 }
+Function:        _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEneERKS6_
+Args:
+  - Callee:          _ZNKSt3__111__wrap_iterIPKiEplEl
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1430, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEneERKS6_
+    DebugLoc:        { File: 'include/zip.h', Line: 245, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 253, Column: 17 }
+Function:        _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEneERKS6_
+Args:
+  - Callee:          _ZNSt3__13getILm0EJNS_11__wrap_iterIPKiEES4_S4_EEERKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeERKS9_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 981, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEneERKS6_
+    DebugLoc:        { File: 'include/zip.h', Line: 245, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 252, Column: 35 }
+Function:        _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEneERKS6_
+Args:
+  - Callee:          _ZNKSt3__111__wrap_iterIPKiEplEl
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1430, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEneERKS6_
+    DebugLoc:        { File: 'include/zip.h', Line: 245, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 282, Column: 20 }
+Function:        _ZZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEixElENKUlTyOT_E_clIRKS5_EEDcS8_
+Args:
+  - Callee:          _ZNKSt3__111__wrap_iterIPKiEixEl
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1445, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEixElENKUlTyOT_E_clIRKS5_EEDcS8_
+    DebugLoc:        { File: 'include/zip.h', Line: 281, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 983, Column: 69 }
+Function:        _ZNSt3__13getILm1EJNS_11__wrap_iterIPKiEES4_S4_EEERKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeERKS9_
+Args:
+  - Callee:          _ZNKSt3__112__tuple_leafILm1ENS_11__wrap_iterIPKiEELb0EE3getEv
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 266, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__13getILm1EJNS_11__wrap_iterIPKiEES4_S4_EEERKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeERKS9_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 981, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 983, Column: 69 }
+Function:        _ZNSt3__13getILm2EJNS_11__wrap_iterIPKiEES4_S4_EEERKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeERKS9_
+Args:
+  - Callee:          _ZNKSt3__112__tuple_leafILm2ENS_11__wrap_iterIPKiEELb0EE3getEv
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 266, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__13getILm2EJNS_11__wrap_iterIPKiEES4_S4_EEERKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeERKS9_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 981, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 221, Column: 24 }
+Function:        _ZNSt3__112__tuple_leafILm0ERKiLb0EEC2IS2_vEEOT_
+Args:
+  - Callee:          _ZNSt3__17forwardIRKiEEOT_RNS_16remove_referenceIS3_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_leafILm0ERKiLb0EEC2IS2_vEEOT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 222, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 221, Column: 24 }
+Function:        _ZNSt3__112__tuple_leafILm1ERKiLb0EEC2IS2_vEEOT_
+Args:
+  - Callee:          _ZNSt3__17forwardIRKiEEOT_RNS_16remove_referenceIS3_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_leafILm1ERKiLb0EEC2IS2_vEEOT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 222, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 221, Column: 24 }
+Function:        _ZNSt3__112__tuple_leafILm2ERKiLb0EEC2IS2_vEEOT_
+Args:
+  - Callee:          _ZNSt3__17forwardIRKiEEOT_RNS_16remove_referenceIS3_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_leafILm2ERKiLb0EEC2IS2_vEEOT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 222, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 377, Column: 36 }
+Function:        _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJRKiS4_S4_EEC2IJLm0ELm1ELm2EEJS4_S4_S4_EJEJEJS4_S4_S4_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENS8_IJDpT2_EEEDpOT3_
+Args:
+  - Callee:          _ZNSt3__17forwardIRKiEEOT_RNS_16remove_referenceIS3_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJRKiS4_S4_EEC2IJLm0ELm1ELm2EEJS4_S4_S4_EJEJEJS4_S4_S4_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENS8_IJDpT2_EEEDpOT3_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 379, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 377, Column: 13 }
+Function:        _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJRKiS4_S4_EEC2IJLm0ELm1ELm2EEJS4_S4_S4_EJEJEJS4_S4_S4_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENS8_IJDpT2_EEEDpOT3_
+Args:
+  - Callee:          _ZNSt3__112__tuple_leafILm2ERKiLb0EEC2IS2_vEEOT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 222, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJRKiS4_S4_EEC2IJLm0ELm1ELm2EEJS4_S4_S4_EJEJEJS4_S4_S4_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENS8_IJDpT2_EEEDpOT3_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 379, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 377, Column: 36 }
+Function:        _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJRKiS4_S4_EEC2IJLm0ELm1ELm2EEJS4_S4_S4_EJEJEJS4_S4_S4_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENS8_IJDpT2_EEEDpOT3_
+Args:
+  - Callee:          _ZNSt3__17forwardIRKiEEOT_RNS_16remove_referenceIS3_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJRKiS4_S4_EEC2IJLm0ELm1ELm2EEJS4_S4_S4_EJEJEJS4_S4_S4_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENS8_IJDpT2_EEEDpOT3_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 379, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 377, Column: 13 }
+Function:        _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJRKiS4_S4_EEC2IJLm0ELm1ELm2EEJS4_S4_S4_EJEJEJS4_S4_S4_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENS8_IJDpT2_EEEDpOT3_
+Args:
+  - Callee:          _ZNSt3__112__tuple_leafILm1ERKiLb0EEC2IS2_vEEOT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 222, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJRKiS4_S4_EEC2IJLm0ELm1ELm2EEJS4_S4_S4_EJEJEJS4_S4_S4_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENS8_IJDpT2_EEEDpOT3_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 379, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 377, Column: 36 }
+Function:        _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJRKiS4_S4_EEC2IJLm0ELm1ELm2EEJS4_S4_S4_EJEJEJS4_S4_S4_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENS8_IJDpT2_EEEDpOT3_
+Args:
+  - Callee:          _ZNSt3__17forwardIRKiEEOT_RNS_16remove_referenceIS3_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJRKiS4_S4_EEC2IJLm0ELm1ELm2EEJS4_S4_S4_EJEJEJS4_S4_S4_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENS8_IJDpT2_EEEDpOT3_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 379, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 377, Column: 13 }
+Function:        _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJRKiS4_S4_EEC2IJLm0ELm1ELm2EEJS4_S4_S4_EJEJEJS4_S4_S4_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENS8_IJDpT2_EEEDpOT3_
+Args:
+  - Callee:          _ZNSt3__112__tuple_leafILm0ERKiLb0EEC2IS2_vEEOT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 222, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJRKiS4_S4_EEC2IJLm0ELm1ELm2EEJS4_S4_S4_EJEJEJS4_S4_S4_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENS8_IJDpT2_EEEDpOT3_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 379, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 668, Column: 11 }
+Function:        _ZNSt3__15tupleIJRKiS2_S2_EEC2ILb1ELb0EEES2_S2_S2_
+Args:
+  - Callee:          _ZNSt3__112__tuple_implINS_15__tuple_indicesIJLm0ELm1ELm2EEEEJRKiS4_S4_EEC2IJLm0ELm1ELm2EEJS4_S4_S4_EJEJEJS4_S4_S4_EEENS1_IJXspT_EEEENS_13__tuple_typesIJDpT0_EEENS1_IJXspT1_EEEENS8_IJDpT2_EEEDpOT3_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 379, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__15tupleIJRKiS2_S2_EEC2ILb1ELb0EEES2_S2_S2_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 673, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 27, Column: 9 }
+Function:        _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+Args:
+  - Callee:          _ZNSt3__17forwardIZNK3zip12zip_iteratorIJNS_11__wrap_iterIPKiEES6_S6_EEixElEUlTyOT_E_EES9_RNS_16remove_referenceIS8_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+    DebugLoc:        { File: 'include/zip.h', Line: 25, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 26, Column: 12 }
+Function:        _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+Args:
+  - Callee:          _ZNSt3__15tupleIJRKiS2_S2_EEC2ILb1ELb0EEES2_S2_S2_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 673, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+    DebugLoc:        { File: 'include/zip.h', Line: 25, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 27, Column: 9 }
+Function:        _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+Args:
+  - Callee:          _ZZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEixElENKUlTyOT_E_clIRKS5_EEDcS8_
+    DebugLoc:        { File: 'include/zip.h', Line: 281, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+    DebugLoc:        { File: 'include/zip.h', Line: 25, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 27, Column: 34 }
+Function:        _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+Args:
+  - Callee:          _ZNSt3__13getILm2EJNS_11__wrap_iterIPKiEES4_S4_EEERKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeERKS9_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 981, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+    DebugLoc:        { File: 'include/zip.h', Line: 25, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 27, Column: 52 }
+Function:        _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+Args:
+  - Callee:          _ZNSt3__17forwardIRKNS_5tupleIJNS_11__wrap_iterIPKiEES5_S5_EEEEEOT_RNS_16remove_referenceIS9_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+    DebugLoc:        { File: 'include/zip.h', Line: 25, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 27, Column: 9 }
+Function:        _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+Args:
+  - Callee:          _ZNSt3__17forwardIZNK3zip12zip_iteratorIJNS_11__wrap_iterIPKiEES6_S6_EEixElEUlTyOT_E_EES9_RNS_16remove_referenceIS8_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+    DebugLoc:        { File: 'include/zip.h', Line: 25, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 27, Column: 9 }
+Function:        _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+Args:
+  - Callee:          _ZZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEixElENKUlTyOT_E_clIRKS5_EEDcS8_
+    DebugLoc:        { File: 'include/zip.h', Line: 281, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+    DebugLoc:        { File: 'include/zip.h', Line: 25, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 27, Column: 34 }
+Function:        _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+Args:
+  - Callee:          _ZNSt3__13getILm1EJNS_11__wrap_iterIPKiEES4_S4_EEERKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeERKS9_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 981, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+    DebugLoc:        { File: 'include/zip.h', Line: 25, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 27, Column: 52 }
+Function:        _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+Args:
+  - Callee:          _ZNSt3__17forwardIRKNS_5tupleIJNS_11__wrap_iterIPKiEES5_S5_EEEEEOT_RNS_16remove_referenceIS9_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+    DebugLoc:        { File: 'include/zip.h', Line: 25, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 27, Column: 9 }
+Function:        _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+Args:
+  - Callee:          _ZNSt3__17forwardIZNK3zip12zip_iteratorIJNS_11__wrap_iterIPKiEES6_S6_EEixElEUlTyOT_E_EES9_RNS_16remove_referenceIS8_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+    DebugLoc:        { File: 'include/zip.h', Line: 25, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 27, Column: 9 }
+Function:        _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+Args:
+  - Callee:          _ZZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEixElENKUlTyOT_E_clIRKS5_EEDcS8_
+    DebugLoc:        { File: 'include/zip.h', Line: 281, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+    DebugLoc:        { File: 'include/zip.h', Line: 25, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 27, Column: 34 }
+Function:        _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+Args:
+  - Callee:          _ZNSt3__13getILm0EJNS_11__wrap_iterIPKiEES4_S4_EEERKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeERKS9_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 981, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+    DebugLoc:        { File: 'include/zip.h', Line: 25, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 27, Column: 52 }
+Function:        _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+Args:
+  - Callee:          _ZNSt3__17forwardIRKNS_5tupleIJNS_11__wrap_iterIPKiEES5_S5_EEEEEOT_RNS_16remove_referenceIS9_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+    DebugLoc:        { File: 'include/zip.h', Line: 25, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 79, Column: 43 }
+Function:        _ZN3zip3ttl9transformINSt3__15tupleIJRKiS5_S5_EEERKNS3_IJNS2_11__wrap_iterIPS4_EES9_S9_EEEZNKS_12zip_iteratorIJS9_S9_S9_EEixElEUlTyOT_E_EEDaOT0_OT1_
+Args:
+  - Callee:          _ZNSt3__17forwardIRKNS_5tupleIJNS_11__wrap_iterIPKiEES5_S5_EEEEEOT_RNS_16remove_referenceIS9_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZN3zip3ttl9transformINSt3__15tupleIJRKiS5_S5_EEERKNS3_IJNS2_11__wrap_iterIPS4_EES9_S9_EEEZNKS_12zip_iteratorIJS9_S9_S9_EEixElEUlTyOT_E_EEDaOT0_OT1_
+    DebugLoc:        { File: 'include/zip.h', Line: 78, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 79, Column: 12 }
+Function:        _ZN3zip3ttl9transformINSt3__15tupleIJRKiS5_S5_EEERKNS3_IJNS2_11__wrap_iterIPS4_EES9_S9_EEEZNKS_12zip_iteratorIJS9_S9_S9_EEixElEUlTyOT_E_EEDaOT0_OT1_
+Args:
+  - Callee:          _ZN3zip3ttl6detail14transform_implINSt3__15tupleIJRKiS6_S6_EEERKNS4_IJNS3_11__wrap_iterIPS5_EESA_SA_EEEZNKS_12zip_iteratorIJSA_SA_SA_EEixElEUlTyOT_E_JLm0ELm1ELm2EEEESG_OT0_OT1_NS3_16integer_sequenceImJXspT2_EEEE
+    DebugLoc:        { File: 'include/zip.h', Line: 25, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZN3zip3ttl9transformINSt3__15tupleIJRKiS5_S5_EEERKNS3_IJNS2_11__wrap_iterIPS4_EES9_S9_EEEZNKS_12zip_iteratorIJS9_S9_S9_EEixElEUlTyOT_E_EEDaOT0_OT1_
+    DebugLoc:        { File: 'include/zip.h', Line: 78, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-10'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 79, Column: 67 }
+Function:        _ZN3zip3ttl9transformINSt3__15tupleIJRKiS5_S5_EEERKNS3_IJNS2_11__wrap_iterIPS4_EES9_S9_EEEZNKS_12zip_iteratorIJS9_S9_S9_EEixElEUlTyOT_E_EEDaOT0_OT1_
+Args:
+  - Callee:          _ZNSt3__17forwardIZNK3zip12zip_iteratorIJNS_11__wrap_iterIPKiEES6_S6_EEixElEUlTyOT_E_EES9_RNS_16remove_referenceIS8_E4typeE
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/type_traits', 
+                       Line: 2288, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZN3zip3ttl9transformINSt3__15tupleIJRKiS5_S5_EEERKNS3_IJNS2_11__wrap_iterIPS4_EES9_S9_EEEZNKS_12zip_iteratorIJS9_S9_S9_EEixElEUlTyOT_E_EEDaOT0_OT1_
+    DebugLoc:        { File: 'include/zip.h', Line: 78, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Missed
+Pass:            inline
+Name:            NoDefinition
+Function:        __clang_call_terminate
+Args:
+  - Callee:          __cxa_begin_catch
+  - String:          ' will not be inlined into '
+  - Caller:          __clang_call_terminate
+  - String:          ' because its definition is unavailable'
+...
+--- !Missed
+Pass:            inline
+Name:            NoDefinition
+Function:        __clang_call_terminate
+Args:
+  - Callee:          _ZSt9terminatev
+  - String:          ' will not be inlined into '
+  - Caller:          __clang_call_terminate
+  - String:          ' because its definition is unavailable'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 281, Column: 16 }
+Function:        _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEixEl
+Args:
+  - Callee:          _ZN3zip3ttl9transformINSt3__15tupleIJRKiS5_S5_EEERKNS3_IJNS2_11__wrap_iterIPS4_EES9_S9_EEEZNKS_12zip_iteratorIJS9_S9_S9_EEixElEUlTyOT_E_EEDaOT0_OT1_
+    DebugLoc:        { File: 'include/zip.h', Line: 78, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEixEl
+    DebugLoc:        { File: 'include/zip.h', Line: 275, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-15'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Missed
+Pass:            inline
+Name:            NeverInline
+DebugLoc:        { File: 'include/zip.h', Line: 281, Column: 9 }
+Function:        _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEixEl
+Args:
+  - Callee:          __clang_call_terminate
+  - String:          ' not inlined into '
+  - Caller:          _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEixEl
+    DebugLoc:        { File: 'include/zip.h', Line: 275, Column: 0 }
+  - String:          ' because it should never be inlined '
+  - String:          '(cost=never)'
+  - String:          ': '
+  - Reason:          noinline function attribute
+...
+--- !Missed
+Pass:            inline
+Name:            NeverInline
+DebugLoc:        { File: 'include/zip.h', Line: 281, Column: 9 }
+Function:        _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEixEl
+Args:
+  - Callee:          __clang_call_terminate
+  - String:          ' not inlined into '
+  - Caller:          _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEixEl
+    DebugLoc:        { File: 'include/zip.h', Line: 275, Column: 0 }
+  - String:          ' because it should never be inlined '
+  - String:          '(cost=never)'
+  - String:          ': '
+  - Reason:          noinline function attribute
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'include/zip.h', Line: 272, Column: 16 }
+Function:        _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEdeEv
+Args:
+  - Callee:          _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEixEl
+    DebugLoc:        { File: 'include/zip.h', Line: 275, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEdeEv
+    DebugLoc:        { File: 'include/zip.h', Line: 271, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-10'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 1003, Column: 72 }
+Function:        _ZNSt3__13getILm0EJRKiS2_S2_EEEOKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeEOKS7_
+Args:
+  - Callee:          _ZNKSt3__112__tuple_leafILm0ERKiLb0EE3getEv
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 266, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__13getILm0EJRKiS2_S2_EEEOKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeEOKS7_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 1000, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 1003, Column: 72 }
+Function:        _ZNSt3__13getILm1EJRKiS2_S2_EEEOKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeEOKS7_
+Args:
+  - Callee:          _ZNKSt3__112__tuple_leafILm1ERKiLb0EE3getEv
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 266, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__13getILm1EJRKiS2_S2_EEEOKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeEOKS7_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 1000, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                   Line: 1003, Column: 72 }
+Function:        _ZNSt3__13getILm2EJRKiS2_S2_EEEOKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeEOKS7_
+Args:
+  - Callee:          _ZNKSt3__112__tuple_leafILm2ERKiLb0EE3getEv
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 266, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          _ZNSt3__13getILm2EJRKiS2_S2_EEEOKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeEOKS7_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 1000, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 16, Column: 42 }
+Function:        Point3dSoaZipSum
+Args:
+  - Callee:          _ZNSt3__15beginINS_6vectorIiNS_9allocatorIiEEEEEEDTcldtfp_5beginEERKT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1712, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          Point3dSoaZipSum
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 11, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 19, Column: 37 }
+Function:        Point3dSoaZipSum
+Args:
+  - Callee:          _ZN3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEppEv
+    DebugLoc:        { File: 'include/zip.h', Line: 158, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          Point3dSoaZipSum
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 11, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 20, Column: 39 }
+Function:        Point3dSoaZipSum
+Args:
+  - Callee:          _ZNSt3__13getILm2EJRKiS2_S2_EEEOKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeEOKS7_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 1000, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          Point3dSoaZipSum
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 11, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 20, Column: 30 }
+Function:        Point3dSoaZipSum
+Args:
+  - Callee:          _ZNSt3__13getILm1EJRKiS2_S2_EEEOKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeEOKS7_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 1000, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          Point3dSoaZipSum
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 11, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 20, Column: 21 }
+Function:        Point3dSoaZipSum
+Args:
+  - Callee:          _ZNSt3__13getILm0EJRKiS2_S2_EEEOKNS_13tuple_elementIXT_ENS_5tupleIJDpT0_EEEE4typeEOKS7_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/tuple', 
+                       Line: 1000, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          Point3dSoaZipSum
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 11, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '487'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 20, Column: 50 }
+Function:        Point3dSoaZipSum
+Args:
+  - Callee:          _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEdeEv
+    DebugLoc:        { File: 'include/zip.h', Line: 271, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          Point3dSoaZipSum
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 11, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-40'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 19, Column: 29 }
+Function:        Point3dSoaZipSum
+Args:
+  - Callee:          _ZNK3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEneERKS6_
+    DebugLoc:        { File: 'include/zip.h', Line: 245, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          Point3dSoaZipSum
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 11, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-35'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 17, Column: 22 }
+Function:        Point3dSoaZipSum
+Args:
+  - Callee:          _ZN3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEC2ES5_S5_S5_
+    DebugLoc:        { File: 'include/zip.h', Line: 137, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          Point3dSoaZipSum
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 11, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-50'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 17, Column: 66 }
+Function:        Point3dSoaZipSum
+Args:
+  - Callee:          _ZNSt3__13endINS_6vectorIiNS_9allocatorIiEEEEEEDTcldtfp_3endEERKT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1728, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          Point3dSoaZipSum
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 11, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 17, Column: 53 }
+Function:        Point3dSoaZipSum
+Args:
+  - Callee:          _ZNSt3__13endINS_6vectorIiNS_9allocatorIiEEEEEEDTcldtfp_3endEERKT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1728, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          Point3dSoaZipSum
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 11, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 17, Column: 40 }
+Function:        Point3dSoaZipSum
+Args:
+  - Callee:          _ZNSt3__13endINS_6vectorIiNS_9allocatorIiEEEEEEDTcldtfp_3endEERKT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1728, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          Point3dSoaZipSum
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 11, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 16, Column: 24 }
+Function:        Point3dSoaZipSum
+Args:
+  - Callee:          _ZN3zip12zip_iteratorIJNSt3__111__wrap_iterIPKiEES5_S5_EEC2ES5_S5_S5_
+    DebugLoc:        { File: 'include/zip.h', Line: 137, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          Point3dSoaZipSum
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 11, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-50'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 16, Column: 72 }
+Function:        Point3dSoaZipSum
+Args:
+  - Callee:          _ZNSt3__15beginINS_6vectorIiNS_9allocatorIiEEEEEEDTcldtfp_5beginEERKT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1712, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          Point3dSoaZipSum
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 11, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 16, Column: 57 }
+Function:        Point3dSoaZipSum
+Args:
+  - Callee:          _ZNSt3__15beginINS_6vectorIiNS_9allocatorIiEEEEEEDTcldtfp_5beginEERKT_
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1712, Column: 0 }
+  - String:          ' inlined into '
+  - Caller:          Point3dSoaZipSum
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 11, Column: 0 }
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                   Line: 1450, Column: 16 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            getelementptr
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1450, Column: 16 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                   Line: 1450, Column: 16 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            getelementptr
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1450, Column: 16 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                   Line: 1450, Column: 16 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            getelementptr
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1450, Column: 16 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                   Line: 1450, Column: 16 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            getelementptr
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1450, Column: 16 }
+...
+--- !Passed
+Pass:            loop-vectorize
+Name:            Vectorized
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 19, Column: 5 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'vectorized loop (vectorization width: '
+  - VectorizationFactor: '8'
+  - String:          ', interleaved count: '
+  - InterleaveCount: '2'
+  - String:          ')'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotBeneficial
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'List vectorization was possible but not beneficial with cost '
+  - Cost:            '0'
+  - String:          ' >= '
+  - Treshold:        '0'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotBeneficial
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'List vectorization was possible but not beneficial with cost '
+  - Cost:            '0'
+  - String:          ' >= '
+  - Treshold:        '0'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 21, Column: 15 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 19, Column: 5 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            UnsupportedType
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'Cannot SLP vectorize list: type '
+  - String:          '<8 x i32> is unsupported by vectorizer'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: 'include/zip.h', Line: 159, Column: 9 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 19, Column: 5 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 19, Column: 5 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotBeneficial
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/vector', 
+                   Line: 1523, Column: 30 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'List vectorization was possible but not beneficial with cost '
+  - Cost:            '0'
+  - String:          ' >= '
+  - Treshold:        '0'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotBeneficial
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/vector', 
+                   Line: 1523, Column: 30 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'List vectorization was possible but not beneficial with cost '
+  - Cost:            '0'
+  - String:          ' >= '
+  - Treshold:        '0'
+...
+--- !Passed
+Pass:            loop-unroll
+Name:            PartialUnrolled
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 19, Column: 5 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'unrolled loop by a factor of '
+  - UnrollCount:     '2'
+  - String:          ' with run-time trip count'
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                   Line: 1450, Column: 16 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            getelementptr
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1450, Column: 16 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                   Line: 1450, Column: 16 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            getelementptr
+    DebugLoc:        { File: 'spack/opt/spack/linux-ubuntu18.04-skylake/gcc-7.4.0/llvm-9.0.0-qtuly6r6joyoqun54yier5k3sujcqkzb/bin/../include/c++/v1/iterator', 
+                       Line: 1450, Column: 16 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 23, Column: 18 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            bitcast
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 23, Column: 18 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 23, Column: 18 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            bitcast
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 23, Column: 18 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 22, Column: 18 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            bitcast
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 22, Column: 18 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 22, Column: 18 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            bitcast
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 22, Column: 18 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 21, Column: 18 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            bitcast
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 21, Column: 18 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 21, Column: 18 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            bitcast
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 21, Column: 18 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 23, Column: 18 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            bitcast
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 23, Column: 18 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 23, Column: 18 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            bitcast
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 23, Column: 18 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 22, Column: 18 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            bitcast
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 22, Column: 18 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 22, Column: 18 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            bitcast
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 22, Column: 18 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 21, Column: 18 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            bitcast
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 21, Column: 18 }
+...
+--- !Passed
+Pass:            licm
+Name:            InstSunk
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 21, Column: 18 }
+Function:        Point3dSoaZipSum
+Args:
+  - String:          'sinking '
+  - Inst:            bitcast
+    DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 21, Column: 18 }
+...
+--- !Analysis
+Pass:            prologepilog
+Name:            StackSize
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 11, Column: 0 }
+Function:        Point3dSoaZipSum
+Args:
+  - NumStackBytes:   '0'
+  - String:          ' stack bytes in function'
+...
+--- !Analysis
+Pass:            asm-printer
+Name:            InstructionCount
+DebugLoc:        { File: Point3dSoaZipSum.cpp, Line: 11, Column: 0 }
+Function:        Point3dSoaZipSum
+Args:
+  - NumInstructions: '115'
+  - String:          ' instructions in function'
+...
