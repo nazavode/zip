@@ -96,7 +96,7 @@ target_link_libraries(_Test
         zip::zip)
     
 if(ZIP_ENABLE_TEST)
-    find_package(GTest)
+    find_package(GTest QUIET)
     if(NOT GTEST_FOUND)
         message(STATUS "Installing googletest via submodule")
         execute_process(COMMAND git submodule update --init -- vendor/googletest
@@ -139,8 +139,7 @@ endif()
 # Defines target 'zip::benchmark'
 ###########################################################
 add_executable(_Benchmark
-    ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/bench-iterator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/main.cpp)
+    ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/bench-iterator.cpp)
 add_executable(zip::benchmark ALIAS _Benchmark)
 set_target_properties(_Benchmark
         PROPERTIES
@@ -156,7 +155,7 @@ target_link_libraries(_Benchmark
         zip::zip)
 
 if(ZIP_ENABLE_BENCHMARK)
-    find_package(benchmark)
+    find_package(benchmark QUIET)
     if(NOT benchmark_FOUND)
         message(STATUS "Installing google benchmark via submodule")
         execute_process(COMMAND git submodule update --init -- vendor/benchmark
@@ -173,7 +172,8 @@ if(ZIP_ENABLE_BENCHMARK)
         add_subdirectory(${vendor_source_dir} ${vendor_binary_dir} EXCLUDE_FROM_ALL)
         target_link_libraries(_Benchmark
             PRIVATE
-                benchmark)
+                benchmark
+                benchmark_main)
     endif()
 else(ZIP_ENABLE_BENCHMARK)
     # Don't download Google Benchmark and skip target
