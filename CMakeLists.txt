@@ -258,8 +258,14 @@ if(ZIP_ENABLE_OPTRECORD)
 
     include(OptimizationRecord)
 
-    add_optimization_record(OptimizationRecords
-        SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point3dSoaZipSum.cpp
+    add_optimization_record(
+        OptimizationRecords
+        SOURCES
+            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point1dIteratorSum.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point1dZipSum.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point2dSoaZipSum.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point3dSoaZipSum.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point4dSoaZipSum.cpp
         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/opt
         COMPILER_FLAGS -O3 -DNDEBUG -std=c++17 -stdlib=libc++
         INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/include
