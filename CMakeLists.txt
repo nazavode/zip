@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project(zip VERSION 0.1 LANGUAGES CXX)
 
-option(ZIP_ENABLE_TEST "Enable building unit tests" ON)
+option(ZIP_ENABLE_TEST      "Enable building unit tests" ON)
 option(ZIP_ENABLE_BENCHMARK "Enable building micro-benchmarks" OFF)
+option(ZIP_ENABLE_OPTRECORD "Enable generation of LLVM optimization records" OFF)
 
 # Add extra finders
 set(CMAKE_MODULE_PATH
@@ -48,9 +49,12 @@ add_library(_Warnings INTERFACE)
 add_library(zip::warnings ALIAS _Warnings)
 set_property(TARGET _Warnings
              PROPERTY INTERFACE_COMPILE_OPTIONS
+                      -pedantic-errors
                       -Wall
                       -Wextra
-                      -Werror)
+                      -Werror
+                      -Wconversion
+                      -Wsign-conversion)
 
 ###########################################################
 # Actual library
@@ -244,4 +248,22 @@ if(CLANG_TIDY_FOUND)
     add_custom_target(tidy-fix
                       COMMAND ${tidy_cmd} -fix ${_AllSources}
                       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
+###########################################################
+# Optimization records
+###########################################################
+
+if(ZIP_ENABLE_OPTRECORD)
+
+    include(OptimizationRecord)
+
+    add_optimization_record(OptimizationRecords
+        SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point3dSoaZipSum.cpp
+        DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/opt
+        COMPILER_FLAGS -O3 -DNDEBUG -std=c++17 -stdlib=libc++
+        INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ARCH skylake-avx512
+        COMPILER_PASSES loop-vectorize)
+
 endif()
