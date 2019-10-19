@@ -18,16 +18,16 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Generate compile commands datab
 # Defines target 'zip::cxxstd'
 ###########################################################
 include(FnAddCxxStdLibrary)
-add_cxxstd_library(_Cxxstd 17)
-add_library(zip::cxxstd ALIAS _Cxxstd)
+add_cxxstd_library(ZipCxxStd 17)
+add_library(zip::cxxstd ALIAS ZipCxxStd)
 
 ###########################################################
 # Compiler warnings
 # Defines target 'zip::warnings'
 ###########################################################
-add_library(_Warnings INTERFACE)
-add_library(zip::warnings ALIAS _Warnings)
-set_property(TARGET _Warnings
+add_library(ZipWarnings INTERFACE)
+add_library(zip::warnings ALIAS ZipWarnings)
+set_property(TARGET ZipWarnings
              PROPERTY INTERFACE_COMPILE_OPTIONS
                       -pedantic-errors
                       -Wall
@@ -41,19 +41,19 @@ set_property(TARGET _Warnings
 # Defines target 'zip::zip'
 ###########################################################
 
-add_library(_Zip INTERFACE)
-add_library(zip::zip ALIAS _Zip)
+add_library(ZipLib INTERFACE)
+add_library(zip::zip ALIAS ZipLib)
 
-target_sources(_Zip
+target_sources(ZipLib
     INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include/zip.h)
 
-target_include_directories(_Zip
+target_include_directories(ZipLib
     INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-target_link_libraries(_Zip
+target_link_libraries(ZipLib
     INTERFACE
         zip::cxxstd)
 
@@ -61,19 +61,19 @@ target_link_libraries(_Zip
 # Unit tests
 # Defines target 'zip::test'
 ###########################################################
-add_executable(_Test
+add_executable(ZipTest
     ${CMAKE_CURRENT_SOURCE_DIR}/test/test-zip.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test/test-iterator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test/sanitize-options.cpp)
-add_executable(zip::test ALIAS _Test)
-set_target_properties(_Test
+add_executable(zip::test ALIAS ZipTest)
+set_target_properties(ZipTest
     PROPERTIES
         # zip::cxxstd isn't enough since INTERFACE_CXX_EXTENSIONS
         # is still broken:
         # https://gitlab.kitware.com/cmake/cmake/issues/17183
         CXX_EXTENSIONS OFF
         OUTPUT_NAME "zip-test")
-target_link_libraries(_Test
+target_link_libraries(ZipTest
     PRIVATE
         zip::cxxstd
         zip::warnings
@@ -105,15 +105,15 @@ if(ZIP_ENABLE_TEST)
         endif ()
     endif()
 
-    target_link_libraries(_Test
+    target_link_libraries(ZipTest
         PRIVATE
             gtest
             gtest_main)
     enable_testing()
-    add_test(NAME zip-test COMMAND _Tests)
+    add_test(NAME zip-test COMMAND ZipTest)
 else(ZIP_ENABLE_TEST)
     # Don't download Google Test and skip target
-    set_target_properties(_Test
+    set_target_properties(ZipTest
         PROPERTIES
             EXCLUDE_FROM_ALL ON)
 endif(ZIP_ENABLE_TEST)
@@ -122,17 +122,17 @@ endif(ZIP_ENABLE_TEST)
 # Micro-benchmarks
 # Defines target 'zip::benchmark'
 ###########################################################
-add_executable(_Benchmark
+add_executable(ZipBenchmark
     ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/bench-iterator.cpp)
-add_executable(zip::benchmark ALIAS _Benchmark)
-set_target_properties(_Benchmark
+add_executable(zip::benchmark ALIAS ZipBenchmark)
+set_target_properties(ZipBenchmark
         PROPERTIES
             # zip::cxxstd isn't enough since INTERFACE_CXX_EXTENSIONS
             # is still broken:
             # https://gitlab.kitware.com/cmake/cmake/issues/17183
             CXX_EXTENSIONS OFF
             OUTPUT_NAME "zip-benchmark")
-target_link_libraries(_Benchmark
+target_link_libraries(ZipBenchmark
     PRIVATE
         zip::cxxstd
         zip::warnings
@@ -154,14 +154,14 @@ if(ZIP_ENABLE_BENCHMARK)
         # Add benchmark directly to our build. This defines
         # the 'benchmark' target.
         add_subdirectory(${vendor_source_dir} ${vendor_binary_dir} EXCLUDE_FROM_ALL)
-        target_link_libraries(_Benchmark
+        target_link_libraries(ZipBenchmark
             PRIVATE
                 benchmark
                 benchmark_main)
     endif()
 else(ZIP_ENABLE_BENCHMARK)
     # Don't download Google Benchmark and skip target
-    set_target_properties(_Benchmark
+    set_target_properties(ZipBenchmark
         PROPERTIES
             EXCLUDE_FROM_ALL ON)
 endif(ZIP_ENABLE_BENCHMARK)
