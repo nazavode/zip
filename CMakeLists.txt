@@ -17,29 +17,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Generate compile commands datab
 # C++ standard level
 # Defines target 'zip::cxxstd'
 ###########################################################
-add_library(_Cxxstd INTERFACE)
+include(FnAddCxxStdLibrary)
+add_cxxstd_library(_Cxxstd 17)
 add_library(zip::cxxstd ALIAS _Cxxstd)
-# TODO still not sure about switching off language extensions on clients
-set_property(TARGET _Cxxstd PROPERTY INTERFACE_CXX_EXTENSIONS OFF)
-if(cxx_std_17 IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-    set_property(TARGET _Cxxstd PROPERTY INTERFACE_COMPILE_FEATURES cxx_std_17)
-else()
-    set(_cxx_std_flag -std=c++17)
-    include(CheckCXXCompilerFlag)
-    check_cxx_compiler_flag(${_cxx_std_flag} COMPILER_SUPPORTS_CXX_STD17_FLAG)
-    if(COMPILER_SUPPORTS_CXX_STD17_FLAG)
-        message(STATUS "CMake compile features not available for the current \
-toolchain or CMake version, setting C++ standard level directly via compiler \
-flags. Please be aware that setting flags doesn't check the actual C++17 \
-standard support provided by the underlying toolchain, e.g.: build may fail \
-on unsupported features.")
-        set_property(TARGET _Cxxstd PROPERTY INTERFACE_COMPILE_OPTIONS ${_cxx_std_flag})
-    else()
-        message(WARNING "Compiler seems to be unable to accept '${_cxx_std_flag}',
-build will probably fail. Please set CMAKE_CXX_FLAGS to some sensible value for \
-your toolchain.")
-    endif()
-endif()
 
 ###########################################################
 # Compiler warnings
@@ -131,12 +111,12 @@ if(ZIP_ENABLE_TEST)
             gtest_main)
     enable_testing()
     add_test(NAME zip-test COMMAND _Tests)
-else()
+else(ZIP_ENABLE_TEST)
     # Don't download Google Test and skip target
     set_target_properties(_Test
         PROPERTIES
             EXCLUDE_FROM_ALL ON)
-endif()
+endif(ZIP_ENABLE_TEST)
 
 ###########################################################
 # Micro-benchmarks
@@ -194,33 +174,7 @@ endif(ZIP_ENABLE_BENCHMARK)
 # - tidy       (run clang-tidy on all sources)
 # - tidy-fix   (run clang-tidy fixers in place on all sources)
 ###########################################################
-function(get_target_sources _outvar _target)
-    # Returns all the source files
-    # (including headers) associated to the given
-    # targets.
-    set(sources "")
-    foreach(tgt ${_target} ${ARGN})
-        get_target_property(tgt_type ${tgt} TYPE)
-        set(properties
-            INTERFACE_SOURCES
-            INTERFACE_HEADER)
-        if(NOT ${tgt_type} STREQUAL "INTERFACE_LIBRARY")
-            set(properties
-                ${properties}
-                SOURCES
-                PUBLIC_HEADER
-                PRIVATE_HEADER)
-        endif()
-        foreach(property ${properties})
-            get_target_property(result ${tgt} ${property})
-            if(NOT ("${result}" STREQUAL "result-NOTFOUND" OR "${result}" STREQUAL ""))
-                list(APPEND sources ${result})
-            endif()
-        endforeach()
-    endforeach()
-    set(${_outvar} ${sources} PARENT_SCOPE)
-endfunction(get_target_sources)
-
+include(FnGetTargetSources)
 get_target_sources(_AllSources
     zip::zip
     zip::test
@@ -234,7 +188,7 @@ if(CLANG_FORMAT_FOUND)
         COMMAND
             ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${_AllSources}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-endif()
+endif(CLANG_FORMAT_FOUND)
 
 find_package(ClangTidy QUIET)
 if(CLANG_TIDY_FOUND)
@@ -248,28 +202,29 @@ if(CLANG_TIDY_FOUND)
     add_custom_target(tidy-fix
                       COMMAND ${tidy_cmd} -fix ${_AllSources}
                       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-endif()
+endif(CLANG_TIDY_FOUND)
 
 ###########################################################
 # Optimization records
 ###########################################################
 
 if(ZIP_ENABLE_OPTRECORD)
-
-    include(OptimizationRecord)
-
-    add_optimization_record(
-        OptimizationRecords
-        SOURCES
-            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point1dIteratorSum.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point1dZipSum.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point2dSoaZipSum.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point3dSoaZipSum.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point4dSoaZipSum.cpp
-        DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/opt
-        COMPILER_FLAGS -O3 -DNDEBUG -std=c++17 -stdlib=libc++
-        INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ARCH skylake-avx512
-        COMPILER_PASSES loop-vectorize)
-
-endif()
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        include(FnAddOptimizationRecord)
+        add_optimization_record(
+            OptimizationRecords
+            SOURCES
+                ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point1dIteratorSum.cpp
+                ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point1dZipSum.cpp
+                ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point2dSoaZipSum.cpp
+                ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point3dSoaZipSum.cpp
+                ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point4dSoaZipSum.cpp
+            DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/opt
+            COMPILER_FLAGS -O3 -DNDEBUG -std=c++17 -stdlib=libc++
+            INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/include
+            ARCH skylake-avx512
+            COMPILER_PASSES loop-vectorize)
+    else()
+        message(WARNING "Optimization record generation is only supported on Clang")
+    endif()
+endif(ZIP_ENABLE_OPTRECORD)

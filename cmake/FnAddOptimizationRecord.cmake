@@ -1,3 +1,6 @@
+# This file is part of:
+# https://github.com/nazavode/cmake-depot.git
+
 set(OPTRECORD_DEFAULT_COMPILER        ${CMAKE_CXX_COMPILER} CACHE STRING "Default compiler used for optimization record generation when no COMPILER argument is provided")
 set(OPTRECORD_DEFAULT_COMPILER_FLAGS  -O3;-DNDEBUG CACHE STRING "Default compiler flags used for optimization record generation when no COMPILER_FLAGS argument is provided")
 set(OPTRECORD_DEFAULT_ARCH            x86-64 CACHE STRING "Default code generation architecture to be targeted when no ARCH argument is provided")

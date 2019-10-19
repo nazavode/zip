@@ -27,7 +27,9 @@ class ZipIteratorTest : public ::testing::Test {
 
     template<std::size_t I>
     auto sentinel() {
-        return 11 + I;
+        if constexpr(I == 0) return 11;
+        else if constexpr(I == 1) return static_cast<long long>(11);
+        else return static_cast<signed char>(-10);
     }
 
     x_type x{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};

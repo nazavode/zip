@@ -12,9 +12,10 @@ class Point3DSoA : public ::benchmark::Fixture {
     using container_type = std::vector<value_type>;
 
     void SetUp(const ::benchmark::State& state) {
-        x.resize(state.range(0));
-        y.resize(state.range(0));
-        z.resize(state.range(0));
+        const auto size = static_cast<std::size_t>(state.range(0));
+        x.resize(size);
+        y.resize(size);
+        z.resize(size);
         std::iota(std::begin(x), std::end(x), value_type{});
         std::iota(std::begin(y), std::end(y), value_type{});
         std::iota(std::begin(z), std::end(z), value_type{});
@@ -22,8 +23,11 @@ class Point3DSoA : public ::benchmark::Fixture {
 
     void TearDown(::benchmark::State& state) {
         state.SetBytesProcessed(
-            static_cast<int64_t>(
-                state.iterations() * state.range(0) * sizeof(value_type) * 3));
+            static_cast<std::int64_t>(
+                state.iterations()
+              * static_cast<std::uint64_t>(state.range(0))
+              * sizeof(value_type)
+              * 3U));
         x.clear();
         y.clear();
         z.clear();
@@ -143,7 +147,8 @@ BENCHMARK_REGISTER_F(Point3DSoA, ZipSum)->Range(1<<0, 1<<10);
 ////////////////////////////////////////////////////////////////////
 
 static void BM_1DSubscriptSumVectorNoSIMD(benchmark::State& state) {
-    const std::vector<int> x(state.range(0), state.range(0));
+    std::vector<int> x(static_cast<std::size_t>(state.range(0)));
+    std::iota(std::begin(x), std::end(x), 0);
 
     for (auto _ : state) {
         int sum_x = 0;
@@ -155,7 +160,10 @@ static void BM_1DSubscriptSumVectorNoSIMD(benchmark::State& state) {
     }
     
     state.SetBytesProcessed(
-        static_cast<int64_t>(state.iterations() * state.range(0) * sizeof(int)));
+        static_cast<std::int64_t>(
+            state.iterations()
+            * static_cast<std::uint64_t>(state.range(0))
+            * sizeof(int)));
 }
 BENCHMARK(BM_1DSubscriptSumVectorNoSIMD)->Range(1<<0, 1<<10);
 
@@ -165,8 +173,9 @@ static void BM_3DSubscriptSumVectorAoS(benchmark::State& state) {
         int y;
         int z;
     };
-    int val = state.range(0);
-    const std::vector<Item> v(state.range(0), {val, val, val});
+    const auto val = static_cast<int>(state.range(0));
+    const std::vector<Item> v(
+        static_cast<std::size_t>(state.range(0)), {val, val, val});
 
     for (auto _ : state) {
         int sum_x = 0;
@@ -188,6 +197,10 @@ static void BM_3DSubscriptSumVectorAoS(benchmark::State& state) {
     }
     
     state.SetBytesProcessed(
-        static_cast<int64_t>(state.iterations() * state.range(0) * sizeof(int) * 3));
+        static_cast<std::int64_t>(
+            state.iterations()
+            * static_cast<std::uint64_t>(state.range(0))
+            * sizeof(int)
+            * 3U));
 }
 BENCHMARK(BM_3DSubscriptSumVectorAoS)->Range(1<<0, 1<<10);
