@@ -4,21 +4,22 @@
 
 #include <numeric>
 #include <vector>
+#include <array>
+#include <algorithm>
 
-class Point3DSoA : public ::benchmark::Fixture {
+template<typename T, std::size_t N>
+class SoA : public ::benchmark::Fixture {
    public:
    
-    using value_type = int;
-    using container_type = std::vector<value_type>;
+    using value_type = T;
+    using container_type = std::vector<T>;
 
     void SetUp(const ::benchmark::State& state) {
         const auto size = static_cast<std::size_t>(state.range(0));
-        x.resize(size);
-        y.resize(size);
-        z.resize(size);
-        std::iota(std::begin(x), std::end(x), value_type{});
-        std::iota(std::begin(y), std::end(y), value_type{});
-        std::iota(std::begin(z), std::end(z), value_type{});
+        std::for_each(std::begin(data), std::end(data), [size](auto&& c) {
+            c.resize(size);
+            std::iota(std::begin(c), std::end(c), value_type{});
+        });
     }
 
     void TearDown(::benchmark::State& state) {
@@ -27,42 +28,196 @@ class Point3DSoA : public ::benchmark::Fixture {
                 state.iterations()
               * static_cast<std::uint64_t>(state.range(0))
               * sizeof(value_type)
-              * 3U));
-        x.clear();
-        y.clear();
-        z.clear();
+              * N));
+        std::for_each(std::begin(data), std::end(data), [](auto&& c) {
+            c.clear();
+        });
     }
     
     constexpr auto size() const noexcept {
-        return std::size(x);
+        return std::size(data[0]);
     }
 
     constexpr auto cbegin() const noexcept {
-        return zip::zip_iterator{std::cbegin(x), std::cbegin(y), std::cbegin(z)};
+        return cbegin_impl(std::make_index_sequence<N>{});
+    }
+
+    template<std::size_t... Indexes>
+    constexpr auto cbegin_impl(std::index_sequence<Indexes...>) const noexcept {
+        return zip::zip_iterator{std::cbegin(data[Indexes])...};
     }
 
     constexpr auto cend() const noexcept {
-        return zip::zip_iterator{std::cend(x), std::cend(y), std::cend(z)};
+        return cend_impl(std::make_index_sequence<N>{});
     }
 
-    container_type x;
-    container_type y;
-    container_type z;
+    template<std::size_t... Indexes>
+    constexpr auto cend_impl(std::index_sequence<Indexes...>) const noexcept {
+        return zip::zip_iterator{std::cend(data[Indexes])...};
+    }
+
+    std::array<container_type, N> data;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+using SoA_Int32_1D = SoA<std::int32_t, 1>;
+///////////////////////////////////////////////////////////////////////////////
+
+BENCHMARK_DEFINE_F(SoA_Int32_1D, SumBaseline)(benchmark::State& state) {
+    for (auto _ : state) {
+        auto sum_x = value_type{};
+
+        for(decltype(size()) i = 0; i < size(); ++i) {
+            sum_x += data[0][i];
+        }
+
+        benchmark::DoNotOptimize(sum_x);
+    }
+}
+BENCHMARK_REGISTER_F(SoA_Int32_1D, SumBaseline)->Range(1<<0, 1<<10);
+
+BENCHMARK_DEFINE_F(SoA_Int32_1D, SumSubscript)(benchmark::State& state) {
+    for (auto _ : state) {
+        auto sum_x = value_type{};
+
+        for(decltype(size()) i = 0; i < size(); ++i) {
+            sum_x += data[0][i];
+        }
+
+        auto return_sum_x = sum_x;
+        benchmark::DoNotOptimize(return_sum_x);
+    }
+}
+BENCHMARK_REGISTER_F(SoA_Int32_1D, SumSubscript)->Range(1<<0, 1<<10);
+
+BENCHMARK_DEFINE_F(SoA_Int32_1D, SumIterator)(benchmark::State& state) {
+    for (auto _ : state) {
+        auto sum_x = value_type{};
+
+        auto it_x = std::cbegin(data[0]);
+        const auto end = std::cend(data[0]);
+
+        while(it_x != end) {
+            sum_x += *it_x++;
+        }
+
+        auto return_sum_x = sum_x;
+        benchmark::DoNotOptimize(return_sum_x);
+    }
+}
+BENCHMARK_REGISTER_F(SoA_Int32_1D, SumIterator)->Range(1<<0, 1<<10);
+
+BENCHMARK_DEFINE_F(SoA_Int32_1D, SumZip)(benchmark::State& state) {
+    for (auto _ : state) {
+        auto sum_x = value_type{};
+
+        for(auto it = cbegin(); it != cend(); ++it) {
+            const auto [value_x] = *it;
+            sum_x += value_x;
+        }
+
+        auto return_sum_x = sum_x;
+        benchmark::DoNotOptimize(return_sum_x);
+    }
+}
+BENCHMARK_REGISTER_F(SoA_Int32_1D, SumZip)->Range(1<<0, 1<<10);
+
+///////////////////////////////////////////////////////////////////////////////
+using SoA_Int32_2D = SoA<std::int32_t, 2>;
+///////////////////////////////////////////////////////////////////////////////
+
+BENCHMARK_DEFINE_F(SoA_Int32_2D, SumBaseline)(benchmark::State& state) {
+    for (auto _ : state) {
+        auto sum_x = value_type{};
+        auto sum_y = value_type{};
+
+        for(decltype(size()) i = 0; i < size(); ++i) {
+            sum_x += data[0][i];
+            sum_y += data[1][i];
+        }
+
+        benchmark::DoNotOptimize(sum_x);
+        benchmark::DoNotOptimize(sum_y);
+    }
+}
+BENCHMARK_REGISTER_F(SoA_Int32_2D, SumBaseline)->Range(1<<0, 1<<10);
+
+BENCHMARK_DEFINE_F(SoA_Int32_2D, SumSubscript)(benchmark::State& state) {
+    for (auto _ : state) {
+        auto sum_x = value_type{};
+        auto sum_y = value_type{};
+
+        for(decltype(size()) i = 0; i < size(); ++i) {
+            sum_x += data[0][i];
+            sum_y += data[1][i];
+        }
+
+        auto return_sum_x = sum_x;
+        auto return_sum_y = sum_y;
+        benchmark::DoNotOptimize(return_sum_x);
+        benchmark::DoNotOptimize(return_sum_y);
+    }
+}
+BENCHMARK_REGISTER_F(SoA_Int32_2D, SumSubscript)->Range(1<<0, 1<<10);
+
+BENCHMARK_DEFINE_F(SoA_Int32_2D, SumIterator)(benchmark::State& state) {
+    for (auto _ : state) {
+        auto sum_x = value_type{};
+        auto sum_y = value_type{};
+
+        auto it_x = std::cbegin(data[0]);
+        auto it_y = std::cbegin(data[1]);
+        const auto end = std::cend(data[0]);
+
+        while(it_x != end) {
+            sum_x += *it_x++;
+            sum_y += *it_y++;
+        }
+
+        auto return_sum_x = sum_x;
+        auto return_sum_y = sum_y;
+        benchmark::DoNotOptimize(return_sum_x);
+        benchmark::DoNotOptimize(return_sum_y);
+    }
+}
+BENCHMARK_REGISTER_F(SoA_Int32_2D, SumIterator)->Range(1<<0, 1<<10);
+
+BENCHMARK_DEFINE_F(SoA_Int32_2D, SumZip)(benchmark::State& state) {
+    for (auto _ : state) {
+        auto sum_x = value_type{};
+        auto sum_y = value_type{};
+
+        for(auto it = cbegin(); it != cend(); ++it) {
+            const auto [value_x, value_y] = *it;
+            sum_x += value_x;
+            sum_y += value_y;
+        }
+
+        auto return_sum_x = sum_x;
+        auto return_sum_y = sum_y;
+        benchmark::DoNotOptimize(return_sum_x);
+        benchmark::DoNotOptimize(return_sum_y);
+    }
+}
+BENCHMARK_REGISTER_F(SoA_Int32_2D, SumZip)->Range(1<<0, 1<<10);
+
+///////////////////////////////////////////////////////////////////////////////
+using SoA_Int32_3D = SoA<std::int32_t, 3>;
+///////////////////////////////////////////////////////////////////////////////
 
 // Baseline for 3d points summation:
 // accumulator variables have been clobberedd to prevent
 // any kind of vectorization
-BENCHMARK_DEFINE_F(Point3DSoA, Baseline)(benchmark::State& state) {
+BENCHMARK_DEFINE_F(SoA_Int32_3D, SumBaseline)(benchmark::State& state) {
     for (auto _ : state) {
         auto sum_x = value_type{};
         auto sum_y = value_type{};
         auto sum_z = value_type{};
 
         for(decltype(size()) i = 0; i < size(); ++i) {
-            sum_x += x[i];
-            sum_y += y[i];
-            sum_z += z[i];
+            sum_x += data[0][i];
+            sum_y += data[1][i];
+            sum_z += data[2][i];
         }
 
         benchmark::DoNotOptimize(sum_x);
@@ -70,18 +225,19 @@ BENCHMARK_DEFINE_F(Point3DSoA, Baseline)(benchmark::State& state) {
         benchmark::DoNotOptimize(sum_z);
     }
 }
-BENCHMARK_REGISTER_F(Point3DSoA, Baseline)->Range(1<<0, 1<<10);
+BENCHMARK_REGISTER_F(SoA_Int32_3D, SumBaseline)->Range(1<<0, 1<<10);
 
-BENCHMARK_DEFINE_F(Point3DSoA, SubscriptSum)(benchmark::State& state) {
+
+BENCHMARK_DEFINE_F(SoA_Int32_3D, SumSubscript)(benchmark::State& state) {
     for (auto _ : state) {
         auto sum_x = value_type{};
         auto sum_y = value_type{};
         auto sum_z = value_type{};
 
         for(decltype(size()) i = 0; i < size(); ++i) {
-            sum_x += x[i];
-            sum_y += y[i];
-            sum_z += z[i];
+            sum_x += data[0][i];
+            sum_y += data[1][i];
+            sum_z += data[2][i];
         }
 
         auto return_sum_x = sum_x;
@@ -92,18 +248,19 @@ BENCHMARK_DEFINE_F(Point3DSoA, SubscriptSum)(benchmark::State& state) {
         benchmark::DoNotOptimize(return_sum_z);
     }
 }
-BENCHMARK_REGISTER_F(Point3DSoA, SubscriptSum)->Range(1<<0, 1<<10);
+BENCHMARK_REGISTER_F(SoA_Int32_3D, SumSubscript)->Range(1<<0, 1<<10);
 
-BENCHMARK_DEFINE_F(Point3DSoA, IteratorSum)(benchmark::State& state) {
+
+BENCHMARK_DEFINE_F(SoA_Int32_3D, SumIterator)(benchmark::State& state) {
     for (auto _ : state) {
         auto sum_x = value_type{};
         auto sum_y = value_type{};
         auto sum_z = value_type{};
 
-        auto it_x = std::cbegin(x);
-        auto it_y = std::cbegin(y);
-        auto it_z = std::cbegin(z);
-        const auto end = std::cend(x);
+        auto it_x = std::cbegin(data[0]);
+        auto it_y = std::cbegin(data[1]);
+        auto it_z = std::cbegin(data[2]);
+        const auto end = std::cend(data[0]);
 
         while(it_x != end) {
             sum_x += *it_x++;
@@ -119,9 +276,9 @@ BENCHMARK_DEFINE_F(Point3DSoA, IteratorSum)(benchmark::State& state) {
         benchmark::DoNotOptimize(return_sum_z);
     }
 }
-BENCHMARK_REGISTER_F(Point3DSoA, IteratorSum)->Range(1<<0, 1<<10);
+BENCHMARK_REGISTER_F(SoA_Int32_3D, SumIterator)->Range(1<<0, 1<<10);
 
-BENCHMARK_DEFINE_F(Point3DSoA, ZipSum)(benchmark::State& state) {
+BENCHMARK_DEFINE_F(SoA_Int32_3D, SumZip)(benchmark::State& state) {
     for (auto _ : state) {
         auto sum_x = value_type{};
         auto sum_y = value_type{};
@@ -142,32 +299,13 @@ BENCHMARK_DEFINE_F(Point3DSoA, ZipSum)(benchmark::State& state) {
         benchmark::DoNotOptimize(return_sum_z);
     }
 }
-BENCHMARK_REGISTER_F(Point3DSoA, ZipSum)->Range(1<<0, 1<<10);
+BENCHMARK_REGISTER_F(SoA_Int32_3D, SumZip)->Range(1<<0, 1<<10);
 
 ////////////////////////////////////////////////////////////////////
 
-static void BM_1DSubscriptSumVectorNoSIMD(benchmark::State& state) {
-    std::vector<int> x(static_cast<std::size_t>(state.range(0)));
-    std::iota(std::begin(x), std::end(x), 0);
+class AoS_Int32_3D : public ::benchmark::Fixture {};
 
-    for (auto _ : state) {
-        int sum_x = 0;
-
-        for(std::size_t i = 0; i < std::size(x); ++i) {
-            sum_x += x[i];
-        }
-        benchmark::DoNotOptimize(sum_x);
-    }
-    
-    state.SetBytesProcessed(
-        static_cast<std::int64_t>(
-            state.iterations()
-            * static_cast<std::uint64_t>(state.range(0))
-            * sizeof(int)));
-}
-BENCHMARK(BM_1DSubscriptSumVectorNoSIMD)->Range(1<<0, 1<<10);
-
-static void BM_3DSubscriptSumVectorAoS(benchmark::State& state) {
+BENCHMARK_DEFINE_F(AoS_Int32_3D, SumSubscript)(benchmark::State& state) {
     struct Item {
         int x;
         int y;
@@ -203,4 +341,4 @@ static void BM_3DSubscriptSumVectorAoS(benchmark::State& state) {
             * sizeof(int)
             * 3U));
 }
-BENCHMARK(BM_3DSubscriptSumVectorAoS)->Range(1<<0, 1<<10);
+BENCHMARK_REGISTER_F(AoS_Int32_3D, SumSubscript)->Range(1<<0, 1<<10);
