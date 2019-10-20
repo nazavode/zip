@@ -115,6 +115,118 @@ constexpr auto inner_product(TupleLHS&& lhs, TupleRHS&& rhs, SumNaryOp&& sum, Pr
 }  // namespace ttl
 
 template<typename ...Iterators>
+struct zip_safe_bidirectional_iterator {
+
+    using iterators_tuple_type = std::tuple<std::remove_reference_t<Iterators>...>;
+
+    using value_type = std::tuple<std::remove_reference_t<decltype(*std::declval<Iterators>())>&...>;
+    using difference_type = std::common_type_t<typename std::iterator_traits<Iterators>::difference_type...>;
+    using reference = value_type;
+    using pointer = value_type;
+    using iterator_category = std::random_access_iterator_tag;
+    
+    explicit constexpr zip_safe_bidirectional_iterator(Iterators... iterators) noexcept
+        : m_it{iterators...} {}
+
+    constexpr zip_safe_bidirectional_iterator operator+(difference_type rhs) const {
+        return std::make_from_tuple<zip_safe_bidirectional_iterator>(
+            ttl::transform<iterators_tuple_type>(m_it, [rhs](auto&& it) {
+                return it + rhs;
+            }));
+    }
+
+    constexpr zip_safe_bidirectional_iterator operator-(difference_type rhs) const {
+        return std::make_from_tuple<zip_safe_bidirectional_iterator>(
+            ttl::transform<iterators_tuple_type>(m_it, [rhs](auto&& it) {
+                return it - rhs;
+            }));
+    }
+    
+    constexpr difference_type operator+(const zip_safe_bidirectional_iterator& other) const {
+        return ttl::inner_product(m_it, other.m_it,
+                                  [](auto&& ...prods) { return std::min({prods...}); },
+                                  [](auto&& lhs, auto&& rhs) { return lhs + rhs; });
+    }
+
+    constexpr difference_type operator-(const zip_safe_bidirectional_iterator& other) const {
+        return ttl::inner_product(m_it, other.m_it,
+                                  [](auto&& ...prods) { return std::min({prods...}); },
+                                  [](auto&& lhs, auto&& rhs) { return lhs - rhs; });
+    }
+
+    constexpr zip_safe_bidirectional_iterator& operator++() {
+        ttl::for_each(m_it, [](auto&& it) { ++it; });
+        return *this;
+    }
+
+    constexpr zip_safe_bidirectional_iterator& operator--() {
+        ttl::for_each(m_it, [](auto&& it) { --it; });
+        return *this;
+    }
+
+    constexpr zip_safe_bidirectional_iterator& operator+=(difference_type rhs) {
+        ttl::for_each(m_it, [rhs](auto&& it) { it += rhs; });
+        return *this;
+    }
+
+    constexpr zip_safe_bidirectional_iterator& operator-=(difference_type rhs) {
+        ttl::for_each(m_it, [rhs](auto&& it) { it -= rhs; });
+        return *this;
+    }
+
+    constexpr bool operator<(const zip_safe_bidirectional_iterator& rhs) const {
+        return ttl::any(m_it, rhs.m_it, std::less{});
+    }
+
+    constexpr bool operator<=(const zip_safe_bidirectional_iterator& rhs) const {
+        return ttl::any(m_it, rhs.m_it, std::less_equal{});
+    }
+
+    constexpr bool operator>(const zip_safe_bidirectional_iterator& rhs) const {
+        return ttl::any(m_it, rhs.m_it, std::greater{});
+    }
+
+    constexpr bool operator>=(const zip_safe_bidirectional_iterator& rhs) const {
+        return ttl::any(m_it, rhs.m_it, std::greater_equal{});
+    }
+
+    constexpr bool operator==(const zip_safe_bidirectional_iterator& rhs) const {
+        // Equivalent to:
+        // !(a != a' && b != b' && ...)
+        return ttl::any(m_it, rhs.m_it, std::equal_to{});
+    }
+
+    constexpr bool operator!=(const zip_safe_bidirectional_iterator& rhs) const {
+        // a != a' && b != b' && ...
+        // This is needed to stop on the first sequence that hits its own std::end()
+        return ttl::all(m_it, rhs.m_it, std::not_equal_to{});
+    }
+
+    constexpr value_type operator*() const {
+        // WARNING: decltype(auto) is vital here, otherwise ttl::transform
+        // is going to construct and return a tuple of values (the ones
+        // returned by this lambda) preventing the caller from modifying
+        // actual values underlying the zipped iterators
+        return ttl::transform<value_type>(m_it, [](auto it) -> decltype(auto) {
+            return *it;
+        });
+    }
+
+    constexpr value_type operator[](difference_type rhs) const {
+        // WARNING: decltype(auto) is vital here, otherwise ttl::transform
+        // is going to construct and return a tuple of values (the ones
+        // returned by this lambda) preventing the caller from modifying
+        // actual values underlying the zipped iterators
+        return ttl::transform<value_type>(m_it, [rhs](auto&& it) -> decltype(auto) {
+            return it[rhs];
+        });
+    }
+
+   private:
+    iterators_tuple_type m_it;
+};
+
+template<typename ...Iterators>
 struct zip_safe_random_access_iterator {
 
     static_assert((
@@ -131,61 +243,61 @@ struct zip_safe_random_access_iterator {
     using pointer = value_type;
     using iterator_category = std::random_access_iterator_tag;
     
-    explicit constexpr zip_iterator(Iterators... iterators) noexcept
+    explicit constexpr zip_safe_random_access_iterator(Iterators... iterators) noexcept
         : m_it{iterators...} {}
 
-    constexpr zip_iterator operator+(difference_type rhs) const noexcept {
-        zip_iterator ret{*this};
+    constexpr zip_safe_random_access_iterator operator+(difference_type rhs) const noexcept {
+        zip_safe_random_access_iterator ret{*this};
         ret.m_offset += rhs;
         return ret;
     }
 
-    constexpr zip_iterator operator-(difference_type rhs) const noexcept {
-        zip_iterator ret{*this};
+    constexpr zip_safe_random_access_iterator operator-(difference_type rhs) const noexcept {
+        zip_safe_random_access_iterator ret{*this};
         ret.m_offset -= rhs;
         return ret;
     }
 
-    constexpr difference_type operator-(const zip_iterator& other) const noexcept {
+    constexpr difference_type operator-(const zip_safe_random_access_iterator& other) const noexcept {
         return ttl::inner_product(m_it, other.m_it,
                                   [](auto&& ...prods) { return std::min({prods...}); },
                                   [lhs_offset=m_offset, rhs_offset=other.m_offset](auto&& lhs, auto&& rhs) {
                                       return (lhs + lhs_offset) - (rhs + rhs_offset); });
     }
 
-    constexpr zip_iterator& operator++() noexcept {
+    constexpr zip_safe_random_access_iterator& operator++() noexcept {
         ++m_offset;
         return *this;
     }
 
-    constexpr zip_iterator operator++(int) noexcept {
-        zip_iterator ret{*this};
+    constexpr zip_safe_random_access_iterator operator++(int) noexcept {
+        zip_safe_random_access_iterator ret{*this};
         ++m_offset;
         return ret;
     }
 
-    constexpr zip_iterator& operator--() noexcept {
+    constexpr zip_safe_random_access_iterator& operator--() noexcept {
         --m_offset;
         return *this;
     }
 
-    constexpr zip_iterator operator--(int) noexcept {
-        zip_iterator ret{*this};
+    constexpr zip_safe_random_access_iterator operator--(int) noexcept {
+        zip_safe_random_access_iterator ret{*this};
         --m_offset;
         return ret;
     }
 
-    constexpr zip_iterator& operator+=(difference_type rhs) noexcept {
+    constexpr zip_safe_random_access_iterator& operator+=(difference_type rhs) noexcept {
         m_offset += rhs;
         return *this;
     }
 
-    constexpr zip_iterator& operator-=(difference_type rhs) noexcept {
+    constexpr zip_safe_random_access_iterator& operator-=(difference_type rhs) noexcept {
         m_offset -= rhs;
         return *this;
     }
 
-    constexpr bool operator<(const zip_iterator& rhs) const noexcept {
+    constexpr bool operator<(const zip_safe_random_access_iterator& rhs) const noexcept {
         return ttl::any(m_it, rhs.m_it,
             [lhs_offset=m_offset, rhs_offset=rhs.m_offset]
             (auto&& lhs_it, auto&& rhs_it) {
@@ -193,7 +305,7 @@ struct zip_safe_random_access_iterator {
             });
     }
 
-    constexpr bool operator<=(const zip_iterator& rhs) const noexcept {
+    constexpr bool operator<=(const zip_safe_random_access_iterator& rhs) const noexcept {
         return ttl::any(m_it, rhs.m_it,
             [lhs_offset=m_offset, rhs_offset=rhs.m_offset]
             (auto&& lhs_it, auto&& rhs_it) {
@@ -201,7 +313,7 @@ struct zip_safe_random_access_iterator {
             });
     }
 
-    constexpr bool operator>(const zip_iterator& rhs) const noexcept {
+    constexpr bool operator>(const zip_safe_random_access_iterator& rhs) const noexcept {
         return ttl::any(m_it, rhs.m_it,
             [lhs_offset=m_offset, rhs_offset=rhs.m_offset]
             (auto&& lhs_it, auto&& rhs_it) {
@@ -209,7 +321,7 @@ struct zip_safe_random_access_iterator {
             });
     }
 
-    constexpr bool operator>=(const zip_iterator& rhs) const noexcept {
+    constexpr bool operator>=(const zip_safe_random_access_iterator& rhs) const noexcept {
         return ttl::any(m_it, rhs.m_it,
             [lhs_offset=m_offset, rhs_offset=rhs.m_offset]
             (auto&& lhs_it, auto&& rhs_it) {
@@ -217,7 +329,7 @@ struct zip_safe_random_access_iterator {
             });
     }
 
-    constexpr bool operator==(const zip_iterator& rhs) const noexcept {
+    constexpr bool operator==(const zip_safe_random_access_iterator& rhs) const noexcept {
         // Equivalent to:
         // !(a != a' && b != b' && ...) ==
         //   a == a' || b == b' || ...
@@ -227,7 +339,7 @@ struct zip_safe_random_access_iterator {
                         });
     }
 
-    constexpr bool operator!=(const zip_iterator& rhs) const noexcept {
+    constexpr bool operator!=(const zip_safe_random_access_iterator& rhs) const noexcept {
         // a != a' && b != b' && ...
         // This is needed to stop on the first sequence that hits its own std::end()
         return ttl::all(m_it, rhs.m_it,
@@ -274,84 +386,84 @@ struct zip_unsafe_random_access_iterator {
     using pointer = value_type;
     using iterator_category = std::random_access_iterator_tag;
     
-    explicit constexpr zip_iterator(Iterators... iterators) noexcept
+    explicit constexpr zip_unsafe_random_access_iterator(Iterators... iterators) noexcept
         : m_it{iterators...} {}
 
-    constexpr zip_iterator operator+(difference_type rhs) const noexcept {
-        zip_iterator ret{*this};
+    constexpr zip_unsafe_random_access_iterator operator+(difference_type rhs) const noexcept {
+        zip_unsafe_random_access_iterator ret{*this};
         ret.m_offset += rhs;
         return ret;
     }
 
-    constexpr zip_iterator operator-(difference_type rhs) const noexcept {
-        zip_iterator ret{*this};
+    constexpr zip_unsafe_random_access_iterator operator-(difference_type rhs) const noexcept {
+        zip_unsafe_random_access_iterator ret{*this};
         ret.m_offset -= rhs;
         return ret;
     }
 
-    constexpr difference_type operator-(const zip_iterator& rhs) const noexcept {
+    constexpr difference_type operator-(const zip_unsafe_random_access_iterator& rhs) const noexcept {
         return (std::get<0>(m_it) + m_offset)
              - (std::get<0>(rhs.m_it) + rhs.m_offset);
     }
 
-    constexpr zip_iterator& operator++() noexcept {
+    constexpr zip_unsafe_random_access_iterator& operator++() noexcept {
         ++m_offset;
         return *this;
     }
 
-    constexpr zip_iterator operator++(int) noexcept {
-        zip_iterator ret{*this};
+    constexpr zip_unsafe_random_access_iterator operator++(int) noexcept {
+        zip_unsafe_random_access_iterator ret{*this};
         ++m_offset;
         return ret;
     }
 
-    constexpr zip_iterator& operator--() noexcept {
+    constexpr zip_unsafe_random_access_iterator& operator--() noexcept {
         --m_offset;
         return *this;
     }
 
-    constexpr zip_iterator operator--(int) noexcept {
-        zip_iterator ret{*this};
+    constexpr zip_unsafe_random_access_iterator operator--(int) noexcept {
+        zip_unsafe_random_access_iterator ret{*this};
         --m_offset;
         return ret;
     }
 
-    constexpr zip_iterator& operator+=(difference_type rhs) noexcept {
+    constexpr zip_unsafe_random_access_iterator& operator+=(difference_type rhs) noexcept {
         m_offset += rhs;
         return *this;
     }
 
-    constexpr zip_iterator& operator-=(difference_type rhs) noexcept {
+    constexpr zip_unsafe_random_access_iterator& operator-=(difference_type rhs) noexcept {
         m_offset -= rhs;
         return *this;
     }
 
-    constexpr bool operator<(const zip_iterator& rhs) const noexcept {
+    constexpr bool operator<(const zip_unsafe_random_access_iterator& rhs) const noexcept {
         return (std::get<0>(m_it) + m_offset)
              < (std::get<0>(rhs.m_it) + rhs.m_offset);
     }
 
-    constexpr bool operator<=(const zip_iterator& rhs) const noexcept {
+    constexpr bool operator<=(const zip_unsafe_random_access_iterator& rhs) const noexcept {
         return (std::get<0>(m_it) + m_offset)
             <= (std::get<0>(rhs.m_it) + rhs.m_offset);
     }
 
-    constexpr bool operator>(const zip_iterator& rhs) const noexcept {
+    constexpr bool operator>(const zip_unsafe_random_access_iterator& rhs) const noexcept {
         return (std::get<0>(m_it) + m_offset)
              > (std::get<0>(rhs.m_it) + rhs.m_offset);
     }
 
-    constexpr bool operator>=(const zip_iterator& rhs) const noexcept {
+    constexpr bool operator>=(const zip_unsafe_random_access_iterator& rhs) const noexcept {
         return (std::get<0>(m_it) + m_offset)
             >= (std::get<0>(rhs.m_it) + rhs.m_offset);
     }
 
-    constexpr bool operator==(const zip_iterator& rhs) const noexcept {
+    constexpr bool operator==(const zip_unsafe_random_access_iterator& rhs) const noexcept {
         return (std::get<0>(m_it) + m_offset)
             == (std::get<0>(rhs.m_it) + rhs.m_offset);
     }
 
-    constexpr bool operator!=(const zip_iterator& rhs) const noexcept {
+    constexpr bool operator!=(const zip_unsafe_random_access_iterator& rhs) const noexcept {
         return (std::get<0>(m_it) + m_offset)
             != (std::get<0>(rhs.m_it) + rhs.m_offset);
     }
