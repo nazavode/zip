@@ -181,6 +181,113 @@ struct PartialRangePredication {
 };
 
 template<typename PredicationPolicy, typename ...Iterators>
+struct bidirectional_iterator : public iterator_base<Iterators...> {
+
+    using iterator_category = std::bidirectional_iterator_tag;
+    using predication_policy = PredicationPolicy;
+    
+    using iterator_base<Iterators...>::iterator_base;
+    
+    constexpr bidirectional_iterator operator+(difference_type rhs) const {
+        return std::make_from_tuple<bidirectional_iterator>(
+            ttl::transform<iterators_tuple_type>(iterators(), [rhs](auto&& it) {
+                return it + rhs;
+            }));
+    }
+
+    constexpr bidirectional_iterator operator-(difference_type rhs) const {
+        return std::make_from_tuple<bidirectional_iterator>(
+            ttl::transform<iterators_tuple_type>(iterators(), [rhs](auto&& it) {
+                return it - rhs;
+            }));
+    }
+
+    // TODO substitute lambdas with std function objects
+
+    constexpr difference_type operator+(const bidirectional_iterator& other) const {
+        return ttl::inner_product(iterators(), other.iterators(),
+                                  [](auto&& ...prods) { return std::min({prods...}); },
+                                  [](auto&& lhs, auto&& rhs) { return lhs + rhs; });
+    }
+
+    constexpr difference_type operator-(const bidirectional_iterator& other) const {
+        return ttl::inner_product(iterators(), other.iterators(),
+                                  [](auto&& ...prods) { return std::min({prods...}); },
+                                  [](auto&& lhs, auto&& rhs) { return lhs - rhs; });
+    }
+
+    constexpr bidirectional_iterator& operator++() {
+        ttl::for_each(iterators(), [](auto&& it) { ++it; });
+        return *this;
+    }
+
+    constexpr bidirectional_iterator& operator++(int) {
+        bidirectional_iterator prev{*this};
+        ttl::for_each(iterators(), [](auto&& it) { ++it; });
+        return prev;
+    }
+
+    constexpr bidirectional_iterator& operator--() {
+        ttl::for_each(iterators(), [](auto&& it) { --it; });
+        return *this;
+    }
+
+    constexpr bidirectional_iterator& operator--(int) {
+        bidirectional_iterator prev{*this};
+        ttl::for_each(iterators(), [](auto&& it) { --it; });
+        return prev;
+    }
+
+    constexpr bidirectional_iterator& operator+=(difference_type rhs) {
+        ttl::for_each(iterators(), [rhs](auto&& it) { it += rhs; });
+        return *this;
+    }
+
+    constexpr bidirectional_iterator& operator-=(difference_type rhs) {
+        ttl::for_each(iterators(), [rhs](auto&& it) { it -= rhs; });
+        return *this;
+    }
+
+    constexpr bool operator<(const bidirectional_iterator& rhs) const {
+        return predication_policy::any(iterators(), rhs.iterators(), std::less{});
+    }
+
+    constexpr bool operator<=(const bidirectional_iterator& rhs) const {
+        return predication_policy::any(iterators(), rhs.iterators(), std::less_equal{});
+    }
+
+    constexpr bool operator>(const bidirectional_iterator& rhs) const {
+        return predication_policy::any(iterators(), rhs.iterators(), std::greater{});
+    }
+
+    constexpr bool operator>=(const bidirectional_iterator& rhs) const {
+        return predication_policy::any(iterators(), rhs.iterators(), std::greater_equal{});
+    }
+
+    constexpr bool operator==(const bidirectional_iterator& rhs) const {
+        // Equivalent to:
+        // !(a != a' && b != b' && ...)
+        return predication_policy::any(iterators(), rhs.iterators(), std::equal_to{});
+    }
+
+    constexpr bool operator!=(const bidirectional_iterator& rhs) const {
+        // a != a' && b != b' && ...
+        // This is needed to stop on the first sequence that hits its own std::end()
+        return predication_policy::all(iterators(), rhs.iterators(), std::not_equal_to{});
+    }
+
+    constexpr value_type operator*() const {
+        // WARNING: decltype(auto) is vital here, otherwise ttl::transform
+        // is going to construct and return a tuple of values (the ones
+        // returned by this lambda) preventing the caller from modifying
+        // actual values underlying the zipped iterators
+        return ttl::transform<value_type>(iterators(), [](auto it) -> decltype(auto) {
+            return *it;
+        });
+    }
+};
+
+template<typename PredicationPolicy, typename ...Iterators>
 struct random_access_iterator : public iterator_base<Iterators...> {
 
     using iterator_category = std::random_access_iterator_tag;
@@ -306,270 +413,16 @@ struct random_access_iterator : public iterator_base<Iterators...> {
     difference_type m_offset{0};
 };
 
-// template<typename ...Iterators>
-// struct zip_safe_random_access_iterator {
-
-//     static_assert((
-//         std::is_same_v<
-//             typename std::iterator_traits<Iterators>::iterator_category,
-//             std::random_access_iterator_tag> && ...),
-//         "zip_safe_random_access_iterator supports only random access iterators");
-
-//     using iterators_tuple_type = std::tuple<std::remove_reference_t<Iterators>...>;
-
-//     using value_type = std::tuple<std::remove_reference_t<decltype(*std::declval<Iterators>())>&...>;
-//     using difference_type = std::common_type_t<typename std::iterator_traits<Iterators>::difference_type...>;
-//     using reference = value_type;
-//     using pointer = value_type;
-//     using iterator_category = std::random_access_iterator_tag;
-    
-//     explicit constexpr iterator(Iterators... iterators) noexcept
-//         : m_it{iterators...} {}
-
-//     constexpr zip_iterator operator+(difference_type rhs) const noexcept {
-//         zip_iterator ret{*this};
-//         ret.m_offset += rhs;
-//         return ret;
-//     }
-
-//     constexpr zip_iterator operator-(difference_type rhs) const noexcept {
-//         zip_iterator ret{*this};
-//         ret.m_offset -= rhs;
-//         return ret;
-//     }
-
-//     constexpr difference_type operator-(const zip_iterator& other) const noexcept {
-//         return ttl::inner_product(m_it, other.m_it,
-//                                   [](auto&& ...prods) { return std::min({prods...}); },
-//                                   [lhs_offset=m_offset, rhs_offset=other.m_offset](auto&& lhs, auto&& rhs) {
-//                                       return (lhs + lhs_offset) - (rhs + rhs_offset); });
-//     }
-
-//     constexpr zip_iterator& operator++() noexcept {
-//         ++m_offset;
-//         return *this;
-//     }
-
-//     constexpr zip_iterator operator++(int) noexcept {
-//         zip_iterator ret{*this};
-//         ++m_offset;
-//         return ret;
-//     }
-
-//     constexpr zip_iterator& operator--() noexcept {
-//         --m_offset;
-//         return *this;
-//     }
-
-//     constexpr zip_iterator operator--(int) noexcept {
-//         zip_iterator ret{*this};
-//         --m_offset;
-//         return ret;
-//     }
-
-//     constexpr zip_iterator& operator+=(difference_type rhs) noexcept {
-//         m_offset += rhs;
-//         return *this;
-//     }
-
-//     constexpr zip_iterator& operator-=(difference_type rhs) noexcept {
-//         m_offset -= rhs;
-//         return *this;
-//     }
-
-//     constexpr bool operator<(const zip_iterator& rhs) const noexcept {
-//         return ttl::any(m_it, rhs.m_it,
-//             [lhs_offset=m_offset, rhs_offset=rhs.m_offset]
-//             (auto&& lhs_it, auto&& rhs_it) {
-//                 return (lhs_it + lhs_offset) < (rhs_it + rhs_offset);
-//             });
-//     }
-
-//     constexpr bool operator<=(const zip_iterator& rhs) const noexcept {
-//         return ttl::any(m_it, rhs.m_it,
-//             [lhs_offset=m_offset, rhs_offset=rhs.m_offset]
-//             (auto&& lhs_it, auto&& rhs_it) {
-//                 return (lhs_it + lhs_offset) <= (rhs_it + rhs_offset);
-//             });
-//     }
-
-//     constexpr bool operator>(const zip_iterator& rhs) const noexcept {
-//         return ttl::any(m_it, rhs.m_it,
-//             [lhs_offset=m_offset, rhs_offset=rhs.m_offset]
-//             (auto&& lhs_it, auto&& rhs_it) {
-//                 return (lhs_it + lhs_offset) > (rhs_it + rhs_offset);
-//             });
-//     }
-
-//     constexpr bool operator>=(const zip_iterator& rhs) const noexcept {
-//         return ttl::any(m_it, rhs.m_it,
-//             [lhs_offset=m_offset, rhs_offset=rhs.m_offset]
-//             (auto&& lhs_it, auto&& rhs_it) {
-//                 return (lhs_it + lhs_offset) >= (rhs_it + rhs_offset);
-//             });
-//     }
-
-//     constexpr bool operator==(const zip_iterator& rhs) const noexcept {
-//         // Equivalent to:
-//         // !(a != a' && b != b' && ...) ==
-//         //   a == a' || b == b' || ...
-//         return ttl::any(m_it, rhs.m_it,
-//                         [lhs_offset=m_offset, rhs_offset=rhs.m_offset](auto&& lhs_it, auto&& rhs_it){
-//                             return (lhs_it + lhs_offset) == (rhs_it + rhs_offset);
-//                         });
-//     }
-
-//     constexpr bool operator!=(const zip_iterator& rhs) const noexcept {
-//         // a != a' && b != b' && ...
-//         // This is needed to stop on the first sequence that hits its own std::end()
-//         return ttl::all(m_it, rhs.m_it,
-//                         [lhs_offset=m_offset, rhs_offset=rhs.m_offset](auto&& lhs_it, auto&& rhs_it){
-//                             return (lhs_it + lhs_offset) != (rhs_it + rhs_offset);
-//                         });
-//     }
-
-//     constexpr value_type operator*() const noexcept {
-//         return operator[](difference_type{0});
-//     }
-
-//     constexpr value_type operator[](difference_type rhs) const noexcept {
-//         rhs += m_offset;
-//         // WARNING: decltype(auto) is vital here, otherwise ttl::transform
-//         // is going to construct and return a tuple of values (the ones
-//         // returned by this lambda) preventing the caller from modifying
-//         // actual values underlying the zipped iterators
-//         return ttl::transform<value_type>(m_it, [rhs](auto&& it) -> decltype(auto) {
-//             return it[rhs];
-//         });
-//     }
-
-//    private:
-
-//     difference_type m_offset{0};
-//     iterators_tuple_type m_it;
-// };
-
-// template<typename ...Iterators>
-// struct zip_unsafe_random_access_iterator {
-
-//     static_assert((
-//         std::is_same_v<
-//             typename std::iterator_traits<Iterators>::iterator_category,
-//             std::random_access_iterator_tag> && ...),
-//         "zip_unsafe_random_access_iterator supports only random access iterators");
-
-//     using iterators_tuple_type = std::tuple<std::remove_reference_t<Iterators>...>;
-
-//     using value_type = std::tuple<std::remove_reference_t<decltype(*std::declval<Iterators>())>&...>;
-//     using difference_type = std::common_type_t<typename std::iterator_traits<Iterators>::difference_type...>;
-//     using reference = value_type;
-//     using pointer = value_type;
-//     using iterator_category = std::random_access_iterator_tag;
-    
-//     explicit constexpr zip_iterator(Iterators... iterators) noexcept
-//         : m_it{iterators...} {}
-
-//     constexpr zip_iterator operator+(difference_type rhs) const noexcept {
-//         zip_iterator ret{*this};
-//         ret.m_offset += rhs;
-//         return ret;
-//     }
-
-//     constexpr zip_iterator operator-(difference_type rhs) const noexcept {
-//         zip_iterator ret{*this};
-//         ret.m_offset -= rhs;
-//         return ret;
-//     }
-
-//     constexpr difference_type operator-(const zip_iterator& rhs) const noexcept {
-//         return (std::get<0>(m_it) + m_offset)
-//              - (std::get<0>(rhs.m_it) + rhs.m_offset);
-//     }
-
-//     constexpr zip_iterator& operator++() noexcept {
-//         ++m_offset;
-//         return *this;
-//     }
-
-//     constexpr zip_iterator operator++(int) noexcept {
-//         zip_iterator ret{*this};
-//         ++m_offset;
-//         return ret;
-//     }
-
-//     constexpr zip_iterator& operator--() noexcept {
-//         --m_offset;
-//         return *this;
-//     }
-
-//     constexpr zip_iterator operator--(int) noexcept {
-//         zip_iterator ret{*this};
-//         --m_offset;
-//         return ret;
-//     }
-
-//     constexpr zip_iterator& operator+=(difference_type rhs) noexcept {
-//         m_offset += rhs;
-//         return *this;
-//     }
-
-//     constexpr zip_iterator& operator-=(difference_type rhs) noexcept {
-//         m_offset -= rhs;
-//         return *this;
-//     }
-
-//     constexpr bool operator<(const zip_iterator& rhs) const noexcept {
-//         return (std::get<0>(m_it) + m_offset)
-//              < (std::get<0>(rhs.m_it) + rhs.m_offset);
-//     }
-
-//     constexpr bool operator<=(const zip_iterator& rhs) const noexcept {
-//         return (std::get<0>(m_it) + m_offset)
-//             <= (std::get<0>(rhs.m_it) + rhs.m_offset);
-//     }
-
-//     constexpr bool operator>(const zip_iterator& rhs) const noexcept {
-//         return (std::get<0>(m_it) + m_offset)
-//              > (std::get<0>(rhs.m_it) + rhs.m_offset);
-//     }
-
-//     constexpr bool operator>=(const zip_iterator& rhs) const noexcept {
-//         return (std::get<0>(m_it) + m_offset)
-//             >= (std::get<0>(rhs.m_it) + rhs.m_offset);
-//     }
-
-//     constexpr bool operator==(const zip_iterator& rhs) const noexcept {
-//         return (std::get<0>(m_it) + m_offset)
-//             == (std::get<0>(rhs.m_it) + rhs.m_offset);
-//     }
-
-//     constexpr bool operator!=(const zip_iterator& rhs) const noexcept {
-//         return (std::get<0>(m_it) + m_offset)
-//             != (std::get<0>(rhs.m_it) + rhs.m_offset);
-//     }
-
-//     constexpr value_type operator*() const noexcept {
-//         return operator[](difference_type{0});
-//     }
-
-//     constexpr value_type operator[](difference_type rhs) const noexcept {
-//         rhs += m_offset;
-//         // WARNING: decltype(auto) is vital here, otherwise ttl::transform
-//         // is going to construct and return a tuple of values (the ones
-//         // returned by this lambda) preventing the caller from modifying
-//         // actual values underlying the zipped iterators
-//         return ttl::transform<value_type>(m_it, [rhs](auto&& it) -> decltype(auto) {
-//             return it[rhs];
-//         });
-//     }
-
-//    private:
-
-//     difference_type m_offset{0};
-//     iterators_tuple_type m_it;
-// };
-
 // clang-format on
+
+template<typename PredicationPolicy, typename... Iterators>
+struct iterator : public std::conditional_t<
+    std::conjunction_v<std::is_same_v<
+        typename std::iterator_traits<Iterators>::iterator_category,
+        std::random_access_iterator_tag>...>,
+    random_access_iterator<PredicationPolicy, Iterators...>,
+    bidirectional_iterator<PredicationPolicy, Iterators...>> {};
+
 }  // namespace zip
 
 #endif
