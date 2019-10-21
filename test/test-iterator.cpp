@@ -5,6 +5,10 @@
 #include <algorithm>
 #include <array>
 #include <type_traits>
+#include <iterator>
+#include <forward_list>
+#include <list>
+#include <vector>
 
 // Matchers
 using ::testing::Each;
@@ -40,6 +44,37 @@ class ZipIteratorTest : public ::testing::Test {
     y_type y{9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
     z_type z{0, -1, -2, -3, -4, -5, -6, -7, -8, -9};
 };
+
+TEST_F(ZipIteratorTest, IteratorCategoryRandomAccess) {
+    EXPECT_TRUE((std::is_same_v<typename zip_iterator_type::iterator_category, 
+                                std::random_access_iterator_tag>));
+    std::array<int, 10> a;
+    std::vector<long long> b;
+    std::array<signed char, 10> c;
+    int d[20];
+    auto it = zip::make_iterator(std::begin(a), std::begin(b), std::begin(c), std::begin(d));
+    EXPECT_TRUE((std::is_same_v<decltype(it)::iterator_category, 
+                                std::random_access_iterator_tag>));
+}
+
+TEST_F(ZipIteratorTest, IteratorCategoryBidirectional) {
+    std::array<int, 10> a;
+    std::list<int> b;
+    std::vector<long long> c;
+    auto it = zip::make_iterator(std::begin(a), std::begin(b), std::begin(c));
+    EXPECT_TRUE((std::is_same_v<decltype(it)::iterator_category, 
+                                std::bidirectional_iterator_tag>));
+}
+
+TEST_F(ZipIteratorTest, IteratorCategoryForward) {
+    std::array<int, 10> a;
+    std::forward_list<int> b;
+    std::vector<long long> c;
+    std::list<int> d;
+    auto it = zip::make_iterator(std::begin(a), std::begin(b), std::begin(c), std::begin(d));
+    EXPECT_TRUE((std::is_same_v<decltype(it)::iterator_category, 
+                                std::forward_iterator_tag>));
+}
 
 TEST_F(ZipIteratorTest, IsNotDefaultConstructible) {
     EXPECT_FALSE(std::is_default_constructible_v<zip_iterator_type>);
