@@ -164,7 +164,8 @@ struct predication_policy<unsafe_iteration_t> {
 };
 
 template <typename... Iterators>
-struct iterator_base {
+class iterator_base {
+    public:
     using value_type =
         std::tuple<std::remove_reference_t<decltype(*std::declval<Iterators>())>&...>;
     using difference_type = common_difference_type_t<Iterators...>;
@@ -190,14 +191,14 @@ struct iterator_base {
 };
 
 template <typename IteratorCategory, typename... Iterators>
-struct iterator_impl;
+class iterator_impl;
 
 template <typename... Iterators>
 class iterator_impl<std::forward_iterator_tag, Iterators...>
     : public iterator_base<Iterators...> {
    protected:
     using base = iterator_base<Iterators...>;
-    using iterator_tuple_type = base::iterator_tuple_type;
+    using iterator_tuple_type = typename base::iterator_tuple_type;
     using base::iterators;
 
    public:
@@ -262,15 +263,6 @@ class iterator_impl<std::forward_iterator_tag, Iterators...>
         return ttl::all(iterators(), rhs.iterators(), std::not_equal_to{});
     }
 
-    constexpr value_type operator*() const {
-        // WARNING: decltype(auto) is vital here, otherwise ttl::transform
-        // is going to construct and return a tuple of values (the ones
-        // returned by this lambda) preventing the caller from modifying
-        // actual values underlying the zipped iterators
-        return ttl::transform<value_type>(m_it,
-                                          [](auto it) -> decltype(auto) { return *it; });
-    }
-
     // Dereference
 
     constexpr value_type operator*() const {
@@ -279,7 +271,7 @@ class iterator_impl<std::forward_iterator_tag, Iterators...>
         // returned by this lambda) preventing the caller from modifying
         // actual values underlying the zipped iterators
         return ttl::transform<value_type>(iterators(),
-                                          (auto&& it)->decltype(auto) { return *it; });
+                                          [](auto&& it)->decltype(auto) { return *it; });
     }
 };
 
@@ -288,7 +280,7 @@ class iterator_impl<std::bidirectional_iterator_tag, Iterators...>
     : public iterator_impl<std::forward_iterator_tag, Iterators...> {
    protected:
     using base = iterator_impl<std::forward_iterator_tag, Iterators...>;
-    using iterator_tuple_type = base::iterator_tuple_type;
+    using iterator_tuple_type = typename base::iterator_tuple_type;
     using base::iterators;
 
    public:
@@ -335,7 +327,7 @@ class iterator_impl<std::random_access_iterator_tag, Iterators...>
     : public iterator_base<Iterators...> {
    protected:
     using base = iterator_base<Iterators...>;
-    using iterator_tuple_type = base::iterator_tuple_type;
+    using iterator_tuple_type = typename base::iterator_tuple_type;
     using base::iterators;
 
    public:

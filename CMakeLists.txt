@@ -108,6 +108,7 @@ if(ZIP_ENABLE_TEST)
     target_link_libraries(ZipTest
         PRIVATE
             gtest
+            gmock
             gtest_main)
     enable_testing()
     add_test(NAME zip-test COMMAND ZipTest)

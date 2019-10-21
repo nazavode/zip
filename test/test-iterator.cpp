@@ -1,9 +1,13 @@
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <zip.h>
 
 #include <algorithm>
 #include <array>
 #include <type_traits>
+
+// Matchers
+using ::testing::Each;
 
 class ZipIteratorTest : public ::testing::Test {
    protected:
@@ -11,14 +15,14 @@ class ZipIteratorTest : public ::testing::Test {
     using y_type = std::array<long long, 10>;
     using z_type = std::array<signed char, 10>;
     using zip_iterator_type =
-        zip::zip_iterator<x_type::iterator, y_type::iterator, z_type::iterator>;
+        zip::iterator_t<x_type::iterator, y_type::iterator, z_type::iterator>;
 
     auto begin() noexcept {
-        return zip_iterator_type{std::begin(x), std::begin(y), std::begin(z)};
+        return zip::make_iterator(std::begin(x), std::begin(y), std::begin(z));
     }
 
     auto end() noexcept {
-        return zip_iterator_type{std::end(x), std::end(y), std::end(z)};
+        return zip::make_iterator(std::end(x), std::end(y), std::end(z));
     }
 
     auto size() noexcept {
@@ -66,7 +70,7 @@ TEST_F(ZipIteratorTest, IsSwappable) {
 }
 
 TEST_F(ZipIteratorTest, ConstnessPreservedConst) {
-    auto it = zip::zip_iterator{std::cbegin(x), std::cbegin(y), std::cbegin(z)};
+    auto it = zip::make_iterator(std::cbegin(x), std::cbegin(y), std::cbegin(z));
     auto [x_item, y_item, z_item] = *it;
     EXPECT_TRUE(std::is_const_v<std::remove_reference_t<decltype(x_item)>>);
     EXPECT_TRUE(std::is_const_v<std::remove_reference_t<decltype(y_item)>>);
@@ -74,7 +78,7 @@ TEST_F(ZipIteratorTest, ConstnessPreservedConst) {
 }
 
 TEST_F(ZipIteratorTest, ConstnessPreservedMut) {
-    auto it = zip::zip_iterator{std::begin(x), std::begin(y), std::begin(z)};
+    auto it = zip::make_iterator(std::begin(x), std::begin(y), std::begin(z));
     auto [x_item, y_item, z_item] = *it;
     EXPECT_FALSE(std::is_const_v<std::remove_reference_t<decltype(x_item)>>);
     EXPECT_FALSE(std::is_const_v<std::remove_reference_t<decltype(y_item)>>);
@@ -82,7 +86,7 @@ TEST_F(ZipIteratorTest, ConstnessPreservedMut) {
 }
 
 TEST_F(ZipIteratorTest, ConstnessPreservedMixed) {
-    auto it = zip::zip_iterator{std::begin(x), std::cbegin(y), std::begin(z)};
+    auto it = zip::make_iterator(std::begin(x), std::cbegin(y), std::begin(z));
     auto [x_item, y_item, z_item] = *it;
     EXPECT_FALSE(std::is_const_v<std::remove_reference_t<decltype(x_item)>>);
     EXPECT_TRUE(std::is_const_v<std::remove_reference_t<decltype(y_item)>>);
@@ -283,9 +287,37 @@ TEST_F(ZipIteratorTest, StdDistance) {
     EXPECT_EQ(std::distance(begin(), end()), size());
 }
 
+TEST_F(ZipIteratorTest, StdForEach) {
+    const auto v_0 = sentinel<0>();
+    const auto v_1 = sentinel<1>();
+    const auto v_2 = sentinel<2>();
+    std::for_each(begin(), end(), [=](auto&& e){
+        std::get<0>(e) = v_0;
+        std::get<1>(e) = v_1;
+        std::get<2>(e) = v_2;
+    });
+    ASSERT_THAT(x, Each(v_0));
+    ASSERT_THAT(y, Each(v_1));
+    ASSERT_THAT(z, Each(v_2));
+}
+
+TEST_F(ZipIteratorTest, StdForEachStructuredBinding) {
+    const auto v_0 = sentinel<0>();
+    const auto v_1 = sentinel<1>();
+    const auto v_2 = sentinel<2>();
+    std::for_each(begin(), end(), [=](auto&& e){
+        auto [xx, yy, zz] = e;
+        xx = v_0;
+        yy = v_1;
+        zz = v_2;
+    });
+    ASSERT_THAT(x, Each(v_0));
+    ASSERT_THAT(y, Each(v_1));
+    ASSERT_THAT(z, Each(v_2));
+}
+
 // TODO
 
-// TEST_F(ZipIteratorTest, StdForEach) {}
 // TEST_F(ZipIteratorTest, StdTransform) {}
 // TEST_F(ZipIteratorTest, StdFind) {}
 // TEST_F(ZipIteratorTest, StdIsSorted) {}
@@ -297,8 +329,8 @@ TEST_F(ZipIteratorTest, StdDistance) {
 //     std::array<long long, 10>   b{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 //     std::array<signed char, 10> c{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-//     auto begin = zip::zip_iterator{std::begin(a), std::begin(b), std::begin(c)};
-//     auto end = zip::zip_iterator{std::end(a), std::end(b), std::end(c)};
+//     auto begin = zip::make_iterator(std::begin(a), std::begin(b), std::begin(c));
+//     auto end = zip::make_iterator(std::end(a), std::end(b), std::end(c));
 
 //     auto offset = GENERATE_COPY(range(as<std::size_t>{}, 0, std::distance(begin,
 //     end)));
