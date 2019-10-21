@@ -11,8 +11,8 @@ Result Point2dSoaZipSum(const std::vector<int>& x, const std::vector<int>& y) {
     int sum_x = 0;
     int sum_y = 0;
 
-    const auto begin = zip::zip_iterator{std::begin(x), std::begin(y)};
-    const auto end = zip::zip_iterator{std::end(x), std::end(y)};
+    const auto begin = zip::make_iterator(std::begin(x), std::begin(y));
+    const auto end = zip::make_iterator(std::end(x), std::end(y));
 
     for(auto it = begin; it != end; ++it) {
         const auto [value_x, value_y] = *it;
