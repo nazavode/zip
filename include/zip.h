@@ -184,6 +184,99 @@ using common_difference_type_t =
 
 namespace detail {
 
+template <typename It>
+class offset_iterator_view {
+    using iterator_type = std::remove_reference_t<It>;
+
+   public:
+    using iterator_category = typename std::iterator_traits<iterator_category>::reference;
+    using difference_type = typename std::iterator_traits<difference_type>::reference;
+    using value_type = typename std::iterator_traits<value_type>::reference;
+    using reference = typename std::iterator_traits<iterator_type>::reference;
+
+    static_assert(std::is_base_of<std::random_access_iterator_tag, iterator_category>);
+
+    constexpr offset_iterator(iterator_type iterator,
+                              difference_type& offset_ref) noexcept
+        : m_iterator{std::move(iterator_ref)}, m_offset{offset_ref} {}
+
+    // Relational interface
+
+    constexpr bool operator<(const offset_iterator_view& rhs) const noexcept {
+        return (m_iterator + m_offset) < (rhs.m_iterator + rhs.m_offset);
+    }
+
+    constexpr bool operator<=(const offset_iterator_view& rhs) const noexcept {
+        return (m_iterator + m_offset) <= (rhs.m_iterator + rhs.m_offset);
+    }
+
+    constexpr bool operator>(const offset_iterator_view& rhs) const noexcept {
+        return (m_iterator + m_offset) > (rhs.m_iterator + rhs.m_offset);
+    }
+
+    constexpr bool operator>=(const offset_iterator_view& rhs) const noexcept {
+        return (m_iterator + m_offset) >= (rhs.m_iterator + rhs.m_offset);
+    }
+
+    constexpr bool operator==(const offset_iterator_view& rhs) const noexcept {
+        return (m_iterator + m_offset) == (rhs.m_iterator + rhs.m_offset);
+    }
+
+    constexpr bool operator!=(const offset_iterator_view& rhs) const noexcept {
+        return (m_iterator + m_offset) != (rhs.m_iterator + rhs.m_offset);
+    }
+
+    // Forward interface
+    // No copying methods (e.g.: postfix)
+
+    constexpr offset_iterator_view& operator++() noexcept {
+        ++m_offset;
+        return *this;
+    }
+
+    constexpr offset_iterator_view& operator+=(difference_type rhs) noexcept {
+        m_offset += rhs;
+        return *this;
+    }
+
+    // Backward interface
+    // No copying methods (e.g.: postfix)
+
+    constexpr difference_type operator-(const offset_iterator_view& rhs) const noexcept {
+        return (m_iterator + m_offset) - (rhs.m_iterator + rhs.m_offset);
+    }
+
+    constexpr offset_iterator_view& operator--() noexcept {
+        --m_offset;
+        return *this;
+    }
+
+    constexpr offset_iterator_view& operator-=(difference_type rhs) noexcept {
+        m_offset -= rhs;
+        return *this;
+    }
+
+    // Dereference
+
+    constexpr reference operator*() const noexcept { return *m_iterator; }
+
+    constexpr reference operator[](difference_type rhs) const noexcept {
+        return m_iterator[m_offset + rhs];
+    }
+
+   private:
+    iterator_type m_iterator;
+    difference_type& m_offset;
+};
+
+template<typename It>
+using iterator_wrap_t = std::conditional_t<
+                            std::is_base_of<std::random_access_iterator_tag,
+                                            std::iterator_traits<It>::iterator_category>,
+                            offset_iterator_view<It>,
+                            It>
+
+
 // TODO safe/unsafe
 
 // struct safe_iteration_t {};
@@ -247,6 +340,8 @@ class iterator_base {
    private:
     iterator_tuple_type m_iterators;
 };
+
+
 
 template <typename IteratorCategory, typename... Iterators>
 class iterator_impl;
