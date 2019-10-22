@@ -24,19 +24,19 @@
 
 // TODO
 // Add tests for iterator concept constraints, e.g.:
-// LegacyRandomAccessIterator = 
+// LegacyRandomAccessIterator =
 //     LegacyIterator +
 //     LegacyForwardIterator +
 //     LegacyBidirectionalIterator +
 //     random access operations
-
 
 // TEST_CASE("zip works with stl algorithms", "[zip]") {
 //     std::vector<int> a{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 //     std::vector<float> b{9, 8, 7, 6, 5, 4, 3};
 //     auto z = zip::zip{a, b};
 
-//     SECTION("op takes zipped tuple by value, modifies components through reference obtained via std::get") {
+//     SECTION("op takes zipped tuple by value, modifies components through reference
+//     obtained via std::get") {
 //         std::for_each(std::begin(z), std::end(z), [](auto e) {
 //             std::get<0>(e) += 1;
 //             std::get<1>(e) += 2;
@@ -45,7 +45,8 @@
 //         REQUIRE_THAT(b, Approx(std::vector<float>{11, 10, 9, 8, 7, 6, 5}));
 //     }
 
-//     SECTION("op takes zipped tuple by value, modifies components through reference obtained via structured binding") {
+//     SECTION("op takes zipped tuple by value, modifies components through reference
+//     obtained via structured binding") {
 //         std::for_each(std::begin(z), std::end(z), [](auto e) {
 //             auto [x, y] = e;
 //             x += 1;
@@ -55,7 +56,8 @@
 //         REQUIRE_THAT(b, Approx(std::vector<float>{11, 10, 9, 8, 7, 6, 5}));
 //     }
 
-//     SECTION("op takes zipped tuple by const reference, modifies components through reference obtained via get") {
+//     SECTION("op takes zipped tuple by const reference, modifies components through
+//     reference obtained via get") {
 //         std::for_each(std::begin(z), std::end(z), [](const auto& e) {
 //             std::get<0>(e) += 1;
 //             std::get<1>(e) += 2;
@@ -64,7 +66,8 @@
 //         REQUIRE_THAT(b, Approx(std::vector<float>{11, 10, 9, 8, 7, 6, 5}));
 //     }
 
-//     SECTION("op takes zipped tuple by const reference, modifies components through non-const reference obtained via structured binding") {
+//     SECTION("op takes zipped tuple by const reference, modifies components through
+//     non-const reference obtained via structured binding") {
 //         std::for_each(std::begin(z), std::end(z), [](const auto& e) {
 //             auto [x, y] = e;
 //             x += 1;
@@ -85,7 +88,8 @@
 //     }
 
 //     REQUIRE_THAT(a, Equals(std::vector<int>{-1, -1, -1, -1, -1, -1, -1}));
-//     REQUIRE_THAT(b, Equals(std::vector<long long>{-1, -1, -1, -1, -1, -1, -1, 7, 8, 9}));
+//     REQUIRE_THAT(b, Equals(std::vector<long long>{-1, -1, -1, -1, -1, -1, -1, 7, 8,
+//     9}));
 // }
 
 // TEST_CASE("zip is random access") {
@@ -99,7 +103,7 @@
 //         REQUIRE(std::get<0>(e) == a[i]);
 //         REQUIRE(std::get<1>(e) == b[i]);
 //         REQUIRE(std::get<2>(e) == c[i]);
-//     }    
+//     }
 // }
 
 // TEST_CASE("zip gives access to references to sequences", "[zip]") {
@@ -137,44 +141,44 @@
 //     REQUIRE(std::size(z) == 0);
 //     REQUIRE(std::distance(std::begin(z), std::end(z)) == 0);
 //     REQUIRE(std::begin(z) == std::end(z));
-    
+
 //     b.push_back(0);
 //     // a = {}
 //     // b = {0, 0, 0, 0}
 //     REQUIRE(std::size(z) == 0);
 //     REQUIRE(std::distance(std::begin(z), std::end(z)) == 0);
 //     REQUIRE(std::begin(z) == std::end(z));
-    
+
 //     a.push_back(0);
 //     // a = {0}
 //     // b = {0, 0, 0, 0}
 //     REQUIRE(std::size(z) == 1);
 //     REQUIRE(std::distance(std::begin(z), std::end(z)) == 1);
-    
+
 //     a.push_back(0);
 //     // a = {0, 0}
 //     // b = {0, 0, 0, 0}
 //     REQUIRE(std::size(z) == 2);
 //     REQUIRE(std::distance(std::begin(z), std::end(z)) == 2);
-    
+
 //     a.push_back(0);
 //     // a = {0, 0, 0}
 //     // b = {0, 0, 0, 0}
 //     REQUIRE(std::size(z) == 3);
 //     REQUIRE(std::distance(std::begin(z), std::end(z)) == 3;
-    
+
 //     a.push_back(0);
 //     // a = {0, 0, 0, 0}
 //     // b = {0, 0, 0, 0}
 //     REQUIRE(std::size(z) == 4);
 //     REQUIRE(std::distance(std::begin(z), std::end(z)) == 4);
-    
+
 //     a.push_back(0);
 //     // a = {0, 0, 0, 0, 0}
 //     // b = {0, 0, 0, 0}
 //     REQUIRE(std::size(z) == 4);
 //     REQUIRE(std::distance(std::begin(z), std::end(z)) == 4);
-    
+
 //     b.push_back(0);
 //     // a = {0, 0, 0, 0, 0}
 //     // b = {0, 0, 0, 0, 0}
@@ -189,15 +193,9 @@
 //     REQUIRE(std::begin(z) == std::end(z));
 // }
 
-
-
-
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-
-
-
 
 // int main() {
 //   std::array<int, 10> a{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};

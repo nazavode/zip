@@ -165,7 +165,7 @@ struct predication_policy<unsafe_iteration_t> {
 
 template <typename... Iterators>
 class iterator_base {
-    public:
+   public:
     using value_type =
         std::tuple<std::remove_reference_t<decltype(*std::declval<Iterators>())>&...>;
     using difference_type = common_difference_type_t<Iterators...>;
@@ -270,8 +270,8 @@ class iterator_impl<std::forward_iterator_tag, Iterators...>
         // is going to construct and return a tuple of values (the ones
         // returned by this lambda) preventing the caller from modifying
         // actual values underlying the zipped iterators
-        return ttl::transform<value_type>(iterators(),
-                                          [](auto&& it)->decltype(auto) { return *it; });
+        return ttl::transform<value_type>(
+            iterators(), [](auto&& it) -> decltype(auto) { return *it; });
     }
 };
 
@@ -428,7 +428,8 @@ class iterator_impl<std::random_access_iterator_tag, Iterators...>
 
     constexpr difference_type operator-(const iterator_impl& other) const {
         return ttl::inner_product(
-            iterators(), other.iterators(), [](auto&&... prods) { return std::min({prods...}); },
+            iterators(), other.iterators(),
+            [](auto&&... prods) { return std::min({prods...}); },
             [lhs_offset = m_offset, rhs_offset = other.m_offset](auto&& lhs, auto&& rhs) {
                 return (lhs + lhs_offset) - (rhs + rhs_offset);
             });
@@ -452,9 +453,7 @@ class iterator_impl<std::random_access_iterator_tag, Iterators...>
 
     // Dereference
 
-    constexpr value_type operator*() const noexcept {
-        return operator[](0);
-    }
+    constexpr value_type operator*() const noexcept { return operator[](0); }
 
     constexpr value_type operator[](difference_type rhs) const noexcept {
         rhs += m_offset;

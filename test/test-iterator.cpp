@@ -1,13 +1,13 @@
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 #include <zip.h>
 
 #include <algorithm>
 #include <array>
-#include <type_traits>
-#include <iterator>
 #include <forward_list>
+#include <iterator>
 #include <list>
+#include <type_traits>
 #include <vector>
 
 // Matchers
@@ -29,15 +29,16 @@ class ZipIteratorTest : public ::testing::Test {
         return zip::make_iterator(std::end(x), std::end(y), std::end(z));
     }
 
-    auto size() noexcept {
-        return std::size(x);
-    }
+    auto size() noexcept { return std::size(x); }
 
-    template<std::size_t I>
+    template <std::size_t I>
     auto sentinel() {
-        if constexpr(I == 0) return 11;
-        else if constexpr(I == 1) return static_cast<long long>(11);
-        else return static_cast<signed char>(-10);
+        if constexpr (I == 0)
+            return 11;
+        else if constexpr (I == 1)
+            return static_cast<long long>(11);
+        else
+            return static_cast<signed char>(-10);
     }
 
     x_type x{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -46,14 +47,15 @@ class ZipIteratorTest : public ::testing::Test {
 };
 
 TEST_F(ZipIteratorTest, IteratorCategoryRandomAccess) {
-    EXPECT_TRUE((std::is_same_v<typename zip_iterator_type::iterator_category, 
+    EXPECT_TRUE((std::is_same_v<typename zip_iterator_type::iterator_category,
                                 std::random_access_iterator_tag>));
     std::array<int, 10> a;
     std::vector<long long> b;
     std::array<signed char, 10> c;
     int d[20];
-    auto it = zip::make_iterator(std::begin(a), std::begin(b), std::begin(c), std::begin(d));
-    EXPECT_TRUE((std::is_same_v<decltype(it)::iterator_category, 
+    auto it =
+        zip::make_iterator(std::begin(a), std::begin(b), std::begin(c), std::begin(d));
+    EXPECT_TRUE((std::is_same_v<decltype(it)::iterator_category,
                                 std::random_access_iterator_tag>));
 }
 
@@ -62,7 +64,7 @@ TEST_F(ZipIteratorTest, IteratorCategoryBidirectional) {
     std::list<int> b;
     std::vector<long long> c;
     auto it = zip::make_iterator(std::begin(a), std::begin(b), std::begin(c));
-    EXPECT_TRUE((std::is_same_v<decltype(it)::iterator_category, 
+    EXPECT_TRUE((std::is_same_v<decltype(it)::iterator_category,
                                 std::bidirectional_iterator_tag>));
 }
 
@@ -71,9 +73,10 @@ TEST_F(ZipIteratorTest, IteratorCategoryForward) {
     std::forward_list<int> b;
     std::vector<long long> c;
     std::list<int> d;
-    auto it = zip::make_iterator(std::begin(a), std::begin(b), std::begin(c), std::begin(d));
-    EXPECT_TRUE((std::is_same_v<decltype(it)::iterator_category, 
-                                std::forward_iterator_tag>));
+    auto it =
+        zip::make_iterator(std::begin(a), std::begin(b), std::begin(c), std::begin(d));
+    EXPECT_TRUE(
+        (std::is_same_v<decltype(it)::iterator_category, std::forward_iterator_tag>));
 }
 
 TEST_F(ZipIteratorTest, IsNotDefaultConstructible) {
@@ -236,9 +239,7 @@ TEST_F(ZipIteratorTest, OperatorDecrementPostfix) {
     EXPECT_EQ(z_item, *(std::end(z) - 1));
 }
 
-TEST_F(ZipIteratorTest, OperatorLT) {
-    EXPECT_LT(begin(), end());
-}
+TEST_F(ZipIteratorTest, OperatorLT) { EXPECT_LT(begin(), end()); }
 
 TEST_F(ZipIteratorTest, OperatorLE) {
     EXPECT_LE(begin(), end());
@@ -246,9 +247,7 @@ TEST_F(ZipIteratorTest, OperatorLE) {
     EXPECT_LE(end(), end());
 }
 
-TEST_F(ZipIteratorTest, OperatorGT) {
-    EXPECT_GT(end(), begin());
-}
+TEST_F(ZipIteratorTest, OperatorGT) { EXPECT_GT(end(), begin()); }
 
 TEST_F(ZipIteratorTest, OperatorGE) {
     EXPECT_GE(end(), begin());
@@ -256,9 +255,7 @@ TEST_F(ZipIteratorTest, OperatorGE) {
     EXPECT_GE(end(), end());
 }
 
-TEST_F(ZipIteratorTest, OperatorNE) {
-    EXPECT_NE(begin(), end());
-}
+TEST_F(ZipIteratorTest, OperatorNE) { EXPECT_NE(begin(), end()); }
 
 TEST_F(ZipIteratorTest, OperatorEQ) {
     EXPECT_EQ(begin(), begin());
@@ -318,15 +315,13 @@ TEST_F(ZipIteratorTest, ModifyRefStructuredBinding) {
     EXPECT_EQ(*std::begin(z), sentinel<2>());
 }
 
-TEST_F(ZipIteratorTest, StdDistance) {
-    EXPECT_EQ(std::distance(begin(), end()), size());
-}
+TEST_F(ZipIteratorTest, StdDistance) { EXPECT_EQ(std::distance(begin(), end()), size()); }
 
 TEST_F(ZipIteratorTest, StdForEach) {
     const auto v_0 = sentinel<0>();
     const auto v_1 = sentinel<1>();
     const auto v_2 = sentinel<2>();
-    std::for_each(begin(), end(), [=](auto&& e){
+    std::for_each(begin(), end(), [=](auto&& e) {
         std::get<0>(e) = v_0;
         std::get<1>(e) = v_1;
         std::get<2>(e) = v_2;
@@ -340,7 +335,7 @@ TEST_F(ZipIteratorTest, StdForEachStructuredBinding) {
     const auto v_0 = sentinel<0>();
     const auto v_1 = sentinel<1>();
     const auto v_2 = sentinel<2>();
-    std::for_each(begin(), end(), [=](auto&& e){
+    std::for_each(begin(), end(), [=](auto&& e) {
         auto [xx, yy, zz] = e;
         xx = v_0;
         yy = v_1;
