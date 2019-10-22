@@ -1,5 +1,5 @@
 ---
 Checks: '-*,cppcoreguidelines-*,modernize-*,bugprone-*,performance-*,portability-*,readability-*,misc-*'
-HeaderFilterRegex: '*\.h$'
+HeaderFilterRegex: 'src/*\.(h|hpp)$'
 FormatStyle: file
 ...
