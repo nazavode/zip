@@ -19,7 +19,7 @@ class ZipIteratorTest : public ::testing::Test {
     using y_type = std::array<long long, 10>;
     using z_type = std::array<signed char, 10>;
     using zip_iterator_type =
-        zip::iterator_t<x_type::iterator, y_type::iterator, z_type::iterator>;
+        zip::iterator_type_t<x_type::iterator, y_type::iterator, z_type::iterator>;
 
     auto begin() noexcept {
         return zip::make_iterator(std::begin(x), std::begin(y), std::begin(z));
