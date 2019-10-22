@@ -348,7 +348,7 @@ constexpr bool equal_to(Lhs&& lhs, S lhs_offset, Rhs&& rhs, S rhs_offset,
 }
 
 template <typename Lhs, typename Rhs, typename S>
-constexpr bool equal_to(Lhs&& lhs, S lhs_offset, Rhs&& rhs, S rhs_offset,
+constexpr bool not_equal_to(Lhs&& lhs, S lhs_offset, Rhs&& rhs, S rhs_offset,
                         safe_iteration_t) noexcept {
     // Equivalent to:
     // !(a != a' && b != b' && ...) ==
@@ -397,9 +397,9 @@ constexpr bool equal_to(Lhs&& lhs, S lhs_offset, Rhs&& rhs, S rhs_offset,
 }
 
 template <typename Lhs, typename Rhs, typename S>
-constexpr bool equal_to(Lhs&& lhs, S lhs_offset, Rhs&& rhs, S rhs_offset,
+constexpr bool not_equal_to(Lhs&& lhs, S lhs_offset, Rhs&& rhs, S rhs_offset,
                         unsafe_iteration_t) noexcept {
-    return (std::get<0>(std::forward<Lhs>(lhs)) + lhs_offset) ==
+    return (std::get<0>(std::forward<Lhs>(lhs)) + lhs_offset) !=
            (std::get<0>(std::forward<Rhs>(rhs)) + rhs_offset);
 }
 
