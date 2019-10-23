@@ -174,6 +174,12 @@ using safe_iterator_tag_t = typename safe_iterator_tag<T>::type;
 
 // Iterator traits
 
+struct safe_iteration_t {};
+struct unsafe_iteration_t {};
+
+inline constexpr auto safe = safe_iteration_t{};
+inline constexpr auto unsafe = unsafe_iteration_t{};
+
 template <typename... Iterators>
 using common_iterator_category_t =
     std::common_type_t<typename std::iterator_traits<Iterators>::iterator_category...>;
@@ -185,12 +191,6 @@ using common_difference_type_t =
 namespace detail {
 
 // TODO safe/unsafe
-
-// struct safe_iteration_t {};
-// struct unsafe_iteration_t {};
-
-// inline constexpr auto safe_iteration = safe_iteration_t{};
-// inline constexpr auto unsafe_iteration = safe_iteration_t{};
 
 // template <typename IterationPolicy>
 // struct predication_policy;
@@ -225,9 +225,6 @@ namespace detail {
 // Operations
 ///////////////////////////////////////////////////////////////////////////////
 namespace op {
-
-struct safe_iteration_t {};
-struct unsafe_iteration_t {};
 
 // Safe
 
@@ -437,27 +434,23 @@ class iterator_base {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Concrete iterators
-inline constexpr auto safe_iteration = op::safe_iteration_t{};
-inline constexpr auto unsafe_iteration = op::unsafe_iteration_t{};
 ///////////////////////////////////////////////////////////////////////////////
 
-template <typename IteratorCategory, typename... Iterators>
+template <typename IteratorCategory, typename IterationPolicy, typename... Iterators>
 class iterator_impl;
 
-template <typename... Iterators>
-class iterator_impl<std::random_access_iterator_tag, Iterators...>
+template <typename IterationPolicy, typename... Iterators>
+class iterator_impl<std::random_access_iterator_tag, IterationPolicy, Iterators...>
     : public iterator_base<Iterators...> {
    private:
     using base = iterator_base<Iterators...>;
     using base::iterators;
 
-    // TODO
-    using iteration_policy = op::unsafe_iteration_t;
-
    public:
     using iterator_category = std::random_access_iterator_tag;
     using difference_type = typename base::difference_type;
     using value_type = typename base::value_type;
+    using iteration_policy = IterationPolicy;
 
     // Construction
 
@@ -529,7 +522,7 @@ class iterator_impl<std::random_access_iterator_tag, Iterators...>
 
     constexpr difference_type operator-(const iterator_impl& other) const {
         // TODO
-        if constexpr (std::is_same_v<iteration_policy, op::unsafe_iteration_t>) {
+        if constexpr (std::is_same_v<iteration_policy, unsafe_iteration_t>) {
             return (std::get<0>(iterators()) + m_offset) -
                    (std::get<0>(other.iterators()) + other.m_offset);
         } else {
@@ -572,14 +565,11 @@ class iterator_impl<std::random_access_iterator_tag, Iterators...>
     difference_type m_offset{0};
 };  // namespace detail
 
-template <typename... Iterators>
-class iterator_impl<std::forward_iterator_tag, Iterators...>
+template <typename IterationPolicy, typename... Iterators>
+class iterator_impl<std::forward_iterator_tag, IterationPolicy, Iterators...>
     : public iterator_base<Iterators...> {
    private:
     using base = iterator_base<Iterators...>;
-
-    // TODO
-    using iteration_policy = op::unsafe_iteration_t;
 
    protected:
     using base::iterators;
@@ -588,6 +578,7 @@ class iterator_impl<std::forward_iterator_tag, Iterators...>
     using iterator_category = std::forward_iterator_tag;
     using difference_type = typename base::difference_type;
     using value_type = typename base::value_type;
+    using iteration_policy = IterationPolicy;
 
     // Construction
 
@@ -651,14 +642,11 @@ class iterator_impl<std::forward_iterator_tag, Iterators...>
     }
 };
 
-template <typename... Iterators>
-class iterator_impl<std::bidirectional_iterator_tag, Iterators...>
-    : public iterator_impl<std::forward_iterator_tag, Iterators...> {
+template <typename IterationPolicy, typename... Iterators>
+class iterator_impl<std::bidirectional_iterator_tag, IterationPolicy, Iterators...>
+    : public iterator_impl<std::forward_iterator_tag, IterationPolicy, Iterators...> {
    private:
-    using base = iterator_impl<std::forward_iterator_tag, Iterators...>;
-
-    // TODO
-    using iteration_policy = op::unsafe_iteration_t;
+    using base = iterator_impl<std::forward_iterator_tag, IterationPolicy, Iterators...>;
 
    protected:
     using base::iterators;
@@ -666,6 +654,7 @@ class iterator_impl<std::bidirectional_iterator_tag, Iterators...>
    public:
     using iterator_category = std::bidirectional_iterator_tag;
     using difference_type = typename base::difference_type;
+    using iteration_policy = IterationPolicy;
 
     // Construction
 
@@ -681,7 +670,7 @@ class iterator_impl<std::bidirectional_iterator_tag, Iterators...>
 
     constexpr difference_type operator-(const iterator_impl& other) const {
         // TODO
-        if constexpr (std::is_same_v<iteration_policy, op::unsafe_iteration_t>) {
+        if constexpr (std::is_same_v<iteration_policy, unsafe_iteration_t>) {
             return std::get<0>(iterators()) - std::get<0>(other.iterators());
         } else {
             return ttl::inner_product(
@@ -708,33 +697,22 @@ class iterator_impl<std::bidirectional_iterator_tag, Iterators...>
     }
 };
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
 }  // namespace detail
 
-template <typename... Iterators>
-using iterator_type_t =
-    detail::iterator_impl<common_iterator_category_t<Iterators...>, Iterators...>;
+template <typename IterationPolicy, typename... Iterators>
+using iterator_type_t = detail::iterator_impl<common_iterator_category_t<Iterators...>,
+                                              IterationPolicy, Iterators...>;
 
-// No tmp argument deduction for type aliases, just add the usual factory:
-
-template <typename... Iterators>
-constexpr auto make_iterator(Iterators&&... args) noexcept {
-    return iterator_type_t<Iterators...>{std::forward<Iterators>(args)...};
+template <typename T, typename... Iterators>
+constexpr auto make_iterator([[maybe_unused]] T&& t, Iterators&&... args) noexcept {
+    if constexpr (std::is_same_v<T, safe_iteration_t> ||
+                  std::is_same_v<T, unsafe_iteration_t>) {
+        return iterator_type_t<T, Iterators...>{std::forward<Iterators>(args)...};
+    } else {
+        return iterator_type_t<unsafe_iteration_t, T, Iterators...>{
+            std::forward<T>(t), std::forward<Iterators>(args)...};
+    }
 }
-
-// TODO safe/unsafe
-// template <typename... Iterators>
-// constexpr auto make_iterator(safe_iteration_t, Iterators&&... args) noexcept {
-//     return iterator_type_t<Iterators...>{std::forward<Iterators>(args)...};
-// }
-
-// template <typename... Iterators>
-// constexpr auto make_iterator(unsafe_iteration_t, Iterators&&... args) noexcept {
-//     return iterator_type_t<Iterators...>{std::forward<Iterators>(args)...};
-// }
 
 }  // namespace zip
 
