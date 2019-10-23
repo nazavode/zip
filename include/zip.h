@@ -114,65 +114,9 @@ constexpr auto inner_product(TupleLHS&& lhs, TupleRHS&& rhs, SumNaryOp&& sum, Pr
 // clang-format on
 }  // namespace ttl
 
-// Additional iterator categories
-
-// struct unsafe_forward_iterator_tag : public std::forward_iterator_tag {};
-// struct unsafe_bidirectional_iterator_tag : public std::bidirectional_iterator_tag {};
-// struct unsafe_random_access_iterator_tag : public std::random_access_iterator_tag {};
-
-struct unsafe_forward_iterator_tag {};
-struct unsafe_bidirectional_iterator_tag : public unsafe_forward_iterator_tag {};
-struct unsafe_random_access_iterator_tag : public unsafe_bidirectional_iterator_tag {};
-
-// Type trait:
-// unsafe_iterator_tag
-
-template <typename T>
-struct unsafe_iterator_tag;
-
-template <>
-struct unsafe_iterator_tag<std::forward_iterator_tag> {
-    using type = unsafe_forward_iterator_tag;
-};
-
-template <>
-struct unsafe_iterator_tag<std::bidirectional_iterator_tag> {
-    using type = unsafe_bidirectional_iterator_tag;
-};
-
-template <>
-struct unsafe_iterator_tag<std::random_access_iterator_tag> {
-    using type = unsafe_random_access_iterator_tag;
-};
-
-template <typename T>
-using unsafe_iterator_tag_t = typename unsafe_iterator_tag<T>::type;
-
-// Type trait:
-// safe_iterator_tag
-
-template <typename T>
-struct safe_iterator_tag;
-
-template <>
-struct safe_iterator_tag<unsafe_forward_iterator_tag> {
-    using type = std::forward_iterator_tag;
-};
-
-template <>
-struct safe_iterator_tag<unsafe_bidirectional_iterator_tag> {
-    using type = std::bidirectional_iterator_tag;
-};
-
-template <>
-struct safe_iterator_tag<unsafe_random_access_iterator_tag> {
-    using type = std::random_access_iterator_tag;
-};
-
-template <typename T>
-using safe_iterator_tag_t = typename safe_iterator_tag<T>::type;
-
+///////////////////////////////////////////////////////////////////////////////
 // Iterator traits
+///////////////////////////////////////////////////////////////////////////////
 
 struct safe_iteration_t {};
 struct unsafe_iteration_t {};
@@ -189,37 +133,6 @@ using common_difference_type_t =
     std::common_type_t<typename std::iterator_traits<Iterators>::difference_type...>;
 
 namespace detail {
-
-// TODO safe/unsafe
-
-// template <typename IterationPolicy>
-// struct predication_policy;
-
-// template <>
-// struct predication_policy<safe_iteration_t> {
-//     using iteration_policy = safe_iteration_t;
-
-//     template <typename TupleLHS, typename TupleRHS, typename BinaryPredicate>
-//     static constexpr bool any(TupleLHS&& lhs, TupleRHS&& rhs,
-//                               BinaryPredicate&& op) noexcept;
-
-//     template <typename TupleLHS, typename TupleRHS, typename BinaryPredicate>
-//     static constexpr bool all(TupleLHS&& lhs, TupleRHS&& rhs,
-//                               BinaryPredicate&& op) noexcept;
-// };
-
-// template <>
-// struct predication_policy<unsafe_iteration_t> {
-//     using iteration_policy = unsafe_iteration_t;
-
-//     template <typename TupleLHS, typename TupleRHS, typename BinaryPredicate>
-//     static constexpr bool any(TupleLHS&& lhs, TupleRHS&& rhs,
-//                               BinaryPredicate&& op) noexcept;
-
-//     template <typename TupleLHS, typename TupleRHS, typename BinaryPredicate>
-//     static constexpr bool all(TupleLHS&& lhs, TupleRHS&& rhs,
-//                               BinaryPredicate&& op) noexcept;
-// };
 
 ///////////////////////////////////////////////////////////////////////////////
 // Operations
@@ -699,14 +612,17 @@ class iterator_impl<std::bidirectional_iterator_tag, IterationPolicy, Iterators.
 
 }  // namespace detail
 
+template <typename T>
+inline constexpr bool is_iteration_policy_v =
+    std::is_same_v<T, safe_iteration_t> || std::is_same_v<T, unsafe_iteration_t>;
+
 template <typename IterationPolicy, typename... Iterators>
 using iterator_type_t = detail::iterator_impl<common_iterator_category_t<Iterators...>,
                                               IterationPolicy, Iterators...>;
 
 template <typename T, typename... Iterators>
 constexpr auto make_iterator([[maybe_unused]] T&& t, Iterators&&... args) noexcept {
-    if constexpr (std::is_same_v<T, safe_iteration_t> ||
-                  std::is_same_v<T, unsafe_iteration_t>) {
+    if constexpr (is_iteration_policy_v<T>) {
         return iterator_type_t<T, Iterators...>{std::forward<Iterators>(args)...};
     } else {
         return iterator_type_t<unsafe_iteration_t, T, Iterators...>{
