@@ -349,7 +349,7 @@ constexpr bool equal_to(Lhs&& lhs, S lhs_offset, Rhs&& rhs, S rhs_offset,
 
 template <typename Lhs, typename Rhs, typename S>
 constexpr bool not_equal_to(Lhs&& lhs, S lhs_offset, Rhs&& rhs, S rhs_offset,
-                        safe_iteration_t) noexcept {
+                            safe_iteration_t) noexcept {
     // Equivalent to:
     // !(a != a' && b != b' && ...) ==
     //   a == a' || b == b' || ...
@@ -398,7 +398,7 @@ constexpr bool equal_to(Lhs&& lhs, S lhs_offset, Rhs&& rhs, S rhs_offset,
 
 template <typename Lhs, typename Rhs, typename S>
 constexpr bool not_equal_to(Lhs&& lhs, S lhs_offset, Rhs&& rhs, S rhs_offset,
-                        unsafe_iteration_t) noexcept {
+                            unsafe_iteration_t) noexcept {
     return (std::get<0>(std::forward<Lhs>(lhs)) + lhs_offset) !=
            (std::get<0>(std::forward<Rhs>(rhs)) + rhs_offset);
 }
@@ -437,27 +437,6 @@ class iterator_base {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Concrete iterators
-///////////////////////////////////////////////////////////////////////////////
-
-// template <typename... Iterators>
-// class iterator : public iterator_base<Iterators...> {
-//    private:
-//     using base = iterator_base<Iterators...>;
-//     using value_type = typename base::value_type;
-
-//    public:
-//     // Construction
-//     using base::base;
-
-//     // Dereference
-//     constexpr value_type operator*() const {
-//         return ttl::transform<value_type>(
-//             iterators(), [](auto&& it) -> decltype(auto) { return *it; });
-//     }
-// };
-
-///////////////////////////////////////////////////////////////////////////////
-// Policies
 inline constexpr auto safe_iteration = op::safe_iteration_t{};
 inline constexpr auto unsafe_iteration = op::unsafe_iteration_t{};
 ///////////////////////////////////////////////////////////////////////////////
@@ -471,13 +450,14 @@ class iterator_impl<std::random_access_iterator_tag, Iterators...>
    private:
     using base = iterator_base<Iterators...>;
     using base::iterators;
-    using base::offset;
 
     // TODO
     using iteration_policy = op::unsafe_iteration_t;
 
    public:
     using iterator_category = std::random_access_iterator_tag;
+    using difference_type = typename base::difference_type;
+    using value_type = typename base::value_type;
 
     // Construction
 
@@ -552,15 +532,14 @@ class iterator_impl<std::random_access_iterator_tag, Iterators...>
         if constexpr (std::is_same_v<iteration_policy, op::unsafe_iteration_t>) {
             return (std::get<0>(iterators()) + m_offset) -
                    (std::get<0>(other.iterators()) + other.m_offset);
-            else {
-                return ttl::inner_product(
-                    iterators(), other.iterators(),
-                    [](auto&&... prods) { return std::min({prods...}); },
-                    [lhs_offset = m_offset, rhs_offset = other.m_offset](auto&& lhs,
-                                                                         auto&& rhs) {
-                        return (lhs + lhs_offset) - (rhs + rhs_offset);
-                    });
-            }
+        } else {
+            return ttl::inner_product(
+                iterators(), other.iterators(),
+                [](auto&&... prods) { return std::min({prods...}); },
+                [lhs_offset = m_offset, rhs_offset = other.m_offset](auto&& lhs,
+                                                                     auto&& rhs) {
+                    return (lhs + lhs_offset) - (rhs + rhs_offset);
+                });
         }
     }
 
@@ -591,7 +570,7 @@ class iterator_impl<std::random_access_iterator_tag, Iterators...>
 
    private:
     difference_type m_offset{0};
-};
+};  // namespace detail
 
 template <typename... Iterators>
 class iterator_impl<std::forward_iterator_tag, Iterators...>
@@ -602,8 +581,13 @@ class iterator_impl<std::forward_iterator_tag, Iterators...>
     // TODO
     using iteration_policy = op::unsafe_iteration_t;
 
+   protected:
+    using base::iterators;
+
    public:
     using iterator_category = std::forward_iterator_tag;
+    using difference_type = typename base::difference_type;
+    using value_type = typename base::value_type;
 
     // Construction
 
@@ -638,8 +622,9 @@ class iterator_impl<std::forward_iterator_tag, Iterators...>
     // Forward interface
 
     constexpr iterator_impl operator+(difference_type rhs) const {
-        return std::make_from_tuple<iterator_impl>(ttl::transform<iterator_tuple_type>(
-            iterators(), [rhs](auto&& it) { return it + rhs; }));
+        return std::make_from_tuple<iterator_impl>(
+            ttl::transform<typename base::iterator_tuple_type>(
+                iterators(), [rhs](auto&& it) { return it + rhs; }));
     }
 
     constexpr iterator_impl& operator++() {
@@ -669,11 +654,18 @@ class iterator_impl<std::forward_iterator_tag, Iterators...>
 template <typename... Iterators>
 class iterator_impl<std::bidirectional_iterator_tag, Iterators...>
     : public iterator_impl<std::forward_iterator_tag, Iterators...> {
-   protected:
+   private:
     using base = iterator_impl<std::forward_iterator_tag, Iterators...>;
+
+    // TODO
+    using iteration_policy = op::unsafe_iteration_t;
+
+   protected:
+    using base::iterators;
 
    public:
     using iterator_category = std::bidirectional_iterator_tag;
+    using difference_type = typename base::difference_type;
 
     // Construction
 
@@ -682,15 +674,15 @@ class iterator_impl<std::bidirectional_iterator_tag, Iterators...>
     // Backward interface
 
     constexpr iterator_impl operator-(difference_type rhs) const {
-        return std::make_from_tuple<iterator_impl>(ttl::transform<iterator_tuple_type>(
-            iterators(), [rhs](auto&& it) { return it - rhs; }));
+        return std::make_from_tuple<iterator_impl>(
+            ttl::transform<typename base::iterator_tuple_type>(
+                iterators(), [rhs](auto&& it) { return it - rhs; }));
     }
 
     constexpr difference_type operator-(const iterator_impl& other) const {
         // TODO
         if constexpr (std::is_same_v<iteration_policy, op::unsafe_iteration_t>) {
-            return std::get<0>(iterators()) -
-                   std::get<0>(other.iterators();
+            return std::get<0>(iterators()) - std::get<0>(other.iterators());
         } else {
             return ttl::inner_product(
                 iterators(), other.iterators(),
