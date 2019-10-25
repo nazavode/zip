@@ -139,19 +139,19 @@ class iterator : public IteratorPack,
 /////////////////////////////////////////////////////////////////////////////////////
 
 template <typename... Iterators>
-class iterator_pack {
+class pack {
    public:
     using value_type =
         std::tuple<std::remove_reference_t<decltype(*std::declval<Iterators>())>&...>;
     using pointer = value_type;
     using reference = value_type;
-    using iterator_pack_type = std::tuple<std::remove_reference_t<Iterators>...>;
+    using pack_type = std::tuple<std::remove_reference_t<Iterators>...>;
     using iterator_category = std::common_type_t<
         typename std::iterator_traits<Iterators>::iterator_category...>;
     using difference_type =
         std::common_type_t<typename std::iterator_traits<Iterators>::difference_type...>;
 
-    explicit constexpr iterator_pack(Iterators... iterators) noexcept
+    explicit constexpr pack(Iterators... iterators) noexcept
         : m_iterators{std::move(iterators)...} {}
 
     constexpr auto& iterators() & noexcept { return m_iterators; }
@@ -163,7 +163,7 @@ class iterator_pack {
     constexpr auto const&& iterators() const&& noexcept { return std::move(m_iterators); }
 
    private:
-    iterator_pack_type m_iterators;
+    pack_type m_iterators;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -236,10 +236,9 @@ class forward {
     ADD_BASE_ACCESSOR(base_type)
 
    public:
-    constexpr base_type operator+(
-        typename IteratorPack::difference_type rhs) const {
+    constexpr base_type operator+(typename IteratorPack::difference_type rhs) const {
         return std::make_from_tuple<base_type>(
-            ttl::transform<typename IteratorPack::iterator_pack_type>(
+            ttl::transform<typename IteratorPack::pack_type>(
                 base().iterators(), [rhs](auto&& it) { return it + rhs; }));
     }
 
@@ -254,8 +253,7 @@ class forward {
         return prev;
     }
 
-    constexpr base_type& operator+=(
-        typename IteratorPack::difference_type rhs) {
+    constexpr base_type& operator+=(typename IteratorPack::difference_type rhs) {
         ttl::for_each(base().iterators(), [rhs](auto&& it) { it += rhs; });
         return base();
     }
@@ -268,17 +266,17 @@ class backward {
 
    public:
     constexpr base_type operator-(typename IteratorPack::difference_type rhs) const {
-        return std::make_from_tuple<base_type>(ttl::transform<typename IteratorPack::iterator_pack_type>(
-            base().iterators(), [rhs](auto&& it) { return it - rhs; }));
+        return std::make_from_tuple<base_type>(
+            ttl::transform<typename IteratorPack::pack_type>(
+                base().iterators(), [rhs](auto&& it) { return it - rhs; }));
     }
 
-    constexpr typename IteratorPack::difference_type operator-(const base_type& other) const {
+    constexpr typename IteratorPack::difference_type operator-(
+        const base_type& other) const {
         return ttl::inner_product(
             base().iterators(), other.iterators(),
-            [](auto&&... prods) { return std::min({prods...}); },  // TODO
-            [](auto&& lhs, auto&& rhs) { return lhs - rhs; });
-        // return ttl::inner_product(base().iterators(), other.iterators(), std::min,
-        // std::minus);
+            [](auto&&... prods) { return std::min({prods...}); },
+            std::minus{});
     }
 
     constexpr base_type& operator--() {
@@ -375,7 +373,8 @@ struct offset {
         return ret;
     }
 
-    constexpr typename IteratorPack::difference_type operator-(const base_type& rhs) const {
+    constexpr typename IteratorPack::difference_type operator-(
+        const base_type& rhs) const {
         using std::get;
         return (get<0>(base().iterators()) + m_offset) -
                (get<0>(rhs.iterators()) + rhs.m_offset);
@@ -403,24 +402,21 @@ struct offset {
 struct offset_iterator_tag {};
 
 template <typename... Iterators>
-using forward_iterator =
-    detail::iterator<detail::iterator_pack<Iterators...>, detail::dereference,
-                     detail::comparison, detail::forward>;
+using forward_iterator = detail::iterator<detail::pack<Iterators...>, detail::dereference,
+                                          detail::comparison, detail::forward>;
 
 template <typename... Iterators>
 using bidirectional_iterator =
-    detail::iterator<detail::iterator_pack<Iterators...>, detail::dereference,
-                     detail::comparison, detail::forward, detail::backward>;
+    detail::iterator<detail::pack<Iterators...>, detail::dereference, detail::comparison,
+                     detail::forward, detail::backward>;
 
 template <typename... Iterators>
 using random_access_iterator =
-    detail::iterator<detail::iterator_pack<Iterators...>, detail::dereference,
-                     detail::comparison, detail::forward, detail::backward,
-                     detail::subscript>;
+    detail::iterator<detail::pack<Iterators...>, detail::dereference, detail::comparison,
+                     detail::forward, detail::backward, detail::subscript>;
 
 template <typename... Iterators>
-using offset_iterator =
-    detail::iterator<detail::iterator_pack<Iterators...>, detail::offset>;
+using offset_iterator = detail::iterator<detail::pack<Iterators...>, detail::offset>;
 
 template <typename IteratorCategory, typename FirstIterator, typename... Iterators>
 struct iterator_type;
@@ -446,8 +442,9 @@ struct iterator_type<offset_iterator_tag, FirstIterator, Iterators...> {
 };
 
 template <typename... Iterators>
-using iterator_type_t = typename iterator_type<
-    typename detail::iterator_pack<Iterators...>::iterator_category, Iterators...>::type;
+using iterator_type_t =
+    typename iterator_type<typename detail::pack<Iterators...>::iterator_category,
+                           Iterators...>::type;
 
 template <typename... Iterators>
 constexpr auto make_iterator(Iterators&&... args) {
