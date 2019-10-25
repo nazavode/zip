@@ -9,6 +9,17 @@
 #include <type_traits>
 #include <utility>
 
+// TODO
+#define ADD_BASE_ACCESSOR(BASE_TYPE)                                                \
+    constexpr auto& base() & noexcept { return static_cast<BASE_TYPE&>(*this); }    \
+    constexpr auto const& base() const& noexcept {                                  \
+        return static_cast<BASE_TYPE const&>(*this);                                \
+    }                                                                               \
+    constexpr auto&& base() && noexcept { return static_cast<BASE_TYPE&&>(*this); } \
+    constexpr auto const&& base() const&& noexcept {                                \
+        return static_cast<BASE_TYPE const&&>(*this);                               \
+    }
+
 namespace zip {
 
 namespace ttl {
@@ -114,16 +125,7 @@ constexpr auto inner_product(TupleLHS&& lhs, TupleRHS&& rhs, SumNaryOp&& sum, Pr
 // clang-format on
 }  // namespace ttl
 
-// TODO
-#define ADD_BASE_ACCESSOR(BASE_TYPE)                                                \
-    constexpr auto& base() & noexcept { return static_cast<BASE_TYPE&>(*this); }    \
-    constexpr auto const& base() const& noexcept {                                  \
-        return static_cast<BASE_TYPE const&>(*this);                                \
-    }                                                                               \
-    constexpr auto&& base() && noexcept { return static_cast<BASE_TYPE&&>(*this); } \
-    constexpr auto const&& base() const&& noexcept {                                \
-        return static_cast<BASE_TYPE const&&>(*this);                               \
-    }
+namespace detail {
 
 template <typename IteratorPack, template <typename, typename> typename... Policies>
 class iterator : public IteratorPack,
@@ -403,24 +405,29 @@ struct offset {
     }
 };
 
+}  // namespace detail
+
 struct offset_iterator_tag {};
 
 template <typename... Iterators>
-using forward_iterator = zip::iterator<zip::iterator_pack<Iterators...>, zip::dereference,
-                                       zip::comparison, zip::forward>;
+using forward_iterator =
+    detail::iterator<detail::iterator_pack<Iterators...>, detail::dereference,
+                     detail::comparison, detail::forward>;
 
 template <typename... Iterators>
 using bidirectional_iterator =
-    zip::iterator<zip::iterator_pack<Iterators...>, zip::dereference, zip::comparison,
-                  zip::forward, zip::backward>;
+    detail::iterator<detail::iterator_pack<Iterators...>, detail::dereference,
+                     detail::comparison, detail::forward, detail::backward>;
 
 template <typename... Iterators>
 using random_access_iterator =
-    zip::iterator<zip::iterator_pack<Iterators...>, zip::dereference, zip::comparison,
-                  zip::forward, zip::backward, zip::subscript>;
+    detail::iterator<detail::iterator_pack<Iterators...>, detail::dereference,
+                     detail::comparison, detail::forward, detail::backward,
+                     detail::subscript>;
 
 template <typename... Iterators>
-using offset_iterator = zip::iterator<zip::iterator_pack<Iterators...>, zip::offset>;
+using offset_iterator =
+    detail::iterator<detail::iterator_pack<Iterators...>, detail::offset>;
 
 template <typename IteratorCategory, typename FirstIterator, typename... Iterators>
 struct iterator_type;
@@ -450,8 +457,8 @@ using iterator_type_t =
     typename iterator_type<typename iterator_pack<Iterators...>::iterator_category,
                            Iterators...>::type;
 
-template<typename ...Iterators>
-constexpr auto make_iterator(Iterator&& ...args) {
+template <typename... Iterators>
+constexpr auto make_iterator(Iterator&&... args) {
     return iterator_type_t<Iterators...>{std::forward<Iterators>(args)...};
 }
 
@@ -502,5 +509,9 @@ constexpr auto make_iterator(Iterator&& ...args) {
 // };
 
 }  // namespace zip
+
+#ifdef ADD_BASE_ACCESSOR
+#undef ADD_BASE_ACCESSOR
+#endif
 
 #endif
