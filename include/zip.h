@@ -293,7 +293,7 @@ class backward {
 
     constexpr base_type operator--(int) {
         base_type prev{base()};
-        ttl::for_each(iterators(), [](auto&& it) { --it; });
+        ttl::for_each(base().iterators(), [](auto&& it) { --it; });
         return prev;
     }
 
@@ -454,11 +454,11 @@ struct iterator_type<offset_iterator_tag, FirstIterator, Iterators...> {
 
 template <typename... Iterators>
 using iterator_type_t =
-    typename iterator_type<typename iterator_pack<Iterators...>::iterator_category,
+    typename iterator_type<typename detail::iterator_pack<Iterators...>::iterator_category,
                            Iterators...>::type;
 
 template <typename... Iterators>
-constexpr auto make_iterator(Iterator&&... args) {
+constexpr auto make_iterator(Iterators&&... args) {
     return iterator_type_t<Iterators...>{std::forward<Iterators>(args)...};
 }
 
@@ -509,9 +509,5 @@ constexpr auto make_iterator(Iterator&&... args) {
 // };
 
 }  // namespace zip
-
-#ifdef ADD_BASE_ACCESSOR
-#undef ADD_BASE_ACCESSOR
-#endif
 
 #endif
