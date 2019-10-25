@@ -114,127 +114,41 @@ constexpr auto inner_product(TupleLHS&& lhs, TupleRHS&& rhs, SumNaryOp&& sum, Pr
 // clang-format on
 }  // namespace ttl
 
-// Additional iterator categories
+// TODO
+#define ADD_BASE_ACCESSOR(BASE_TYPE)                                                \
+    constexpr auto& base() & noexcept { return static_cast<BASE_TYPE&>(*this); }    \
+    constexpr auto const& base() const& noexcept {                                  \
+        return static_cast<BASE_TYPE const&>(*this);                                \
+    }                                                                               \
+    constexpr auto&& base() && noexcept { return static_cast<BASE_TYPE&&>(*this); } \
+    constexpr auto const&& base() const&& noexcept {                                \
+        return static_cast<BASE_TYPE const&&>(*this);                               \
+    }
 
-// struct unsafe_forward_iterator_tag : public std::forward_iterator_tag {};
-// struct unsafe_bidirectional_iterator_tag : public std::bidirectional_iterator_tag {};
-// struct unsafe_random_access_iterator_tag : public std::random_access_iterator_tag {};
-
-struct unsafe_forward_iterator_tag {};
-struct unsafe_bidirectional_iterator_tag : public unsafe_forward_iterator_tag {};
-struct unsafe_random_access_iterator_tag : public unsafe_bidirectional_iterator_tag {};
-
-// Type trait:
-// unsafe_iterator_tag
-
-template <typename T>
-struct unsafe_iterator_tag;
-
-template <>
-struct unsafe_iterator_tag<std::forward_iterator_tag> {
-    using type = unsafe_forward_iterator_tag;
+template <typename IteratorPack, template <typename, typename> typename... Policies>
+class iterator : public IteratorPack,
+                 public Policies<iterator<IteratorPack, Policies...>, IteratorPack>... {
+   public:
+    using IteratorPack::IteratorPack;
 };
 
-template <>
-struct unsafe_iterator_tag<std::bidirectional_iterator_tag> {
-    using type = unsafe_bidirectional_iterator_tag;
-};
-
-template <>
-struct unsafe_iterator_tag<std::random_access_iterator_tag> {
-    using type = unsafe_random_access_iterator_tag;
-};
-
-template <typename T>
-using unsafe_iterator_tag_t = typename unsafe_iterator_tag<T>::type;
-
-// Type trait:
-// safe_iterator_tag
-
-template <typename T>
-struct safe_iterator_tag;
-
-template <>
-struct safe_iterator_tag<unsafe_forward_iterator_tag> {
-    using type = std::forward_iterator_tag;
-};
-
-template <>
-struct safe_iterator_tag<unsafe_bidirectional_iterator_tag> {
-    using type = std::bidirectional_iterator_tag;
-};
-
-template <>
-struct safe_iterator_tag<unsafe_random_access_iterator_tag> {
-    using type = std::random_access_iterator_tag;
-};
-
-template <typename T>
-using safe_iterator_tag_t = typename safe_iterator_tag<T>::type;
-
-// Iterator traits
+/////////////////////////////////////////////////////////////////////////////////////
+// Pack
+/////////////////////////////////////////////////////////////////////////////////////
 
 template <typename... Iterators>
-using common_iterator_category_t =
-    std::common_type_t<typename std::iterator_traits<Iterators>::iterator_category...>;
-
-template <typename... Iterators>
-using common_difference_type_t =
-    std::common_type_t<typename std::iterator_traits<Iterators>::difference_type...>;
-
-namespace detail {
-
-// TODO safe/unsafe
-
-// struct safe_iteration_t {};
-// struct unsafe_iteration_t {};
-
-// inline constexpr auto safe_iteration = safe_iteration_t{};
-// inline constexpr auto unsafe_iteration = safe_iteration_t{};
-
-// template <typename IterationPolicy>
-// struct predication_policy;
-
-// template <>
-// struct predication_policy<safe_iteration_t> {
-//     using iteration_policy = safe_iteration_t;
-
-//     template <typename TupleLHS, typename TupleRHS, typename BinaryPredicate>
-//     static constexpr bool any(TupleLHS&& lhs, TupleRHS&& rhs,
-//                               BinaryPredicate&& op) noexcept;
-
-//     template <typename TupleLHS, typename TupleRHS, typename BinaryPredicate>
-//     static constexpr bool all(TupleLHS&& lhs, TupleRHS&& rhs,
-//                               BinaryPredicate&& op) noexcept;
-// };
-
-// template <>
-// struct predication_policy<unsafe_iteration_t> {
-//     using iteration_policy = unsafe_iteration_t;
-
-//     template <typename TupleLHS, typename TupleRHS, typename BinaryPredicate>
-//     static constexpr bool any(TupleLHS&& lhs, TupleRHS&& rhs,
-//                               BinaryPredicate&& op) noexcept;
-
-//     template <typename TupleLHS, typename TupleRHS, typename BinaryPredicate>
-//     static constexpr bool all(TupleLHS&& lhs, TupleRHS&& rhs,
-//                               BinaryPredicate&& op) noexcept;
-// };
-
-template <typename... Iterators>
-class iterator_base {
+class iterator_pack {
    public:
     using value_type =
         std::tuple<std::remove_reference_t<decltype(*std::declval<Iterators>())>&...>;
-    using difference_type = common_difference_type_t<Iterators...>;
-    using reference = value_type;
-    using pointer = value_type;
+    using iterator_pack_type = std::tuple<std::remove_reference_t<Iterators>...>;
+    using iterator_category = std::common_type_t<
+        typename std::iterator_traits<Iterators>::iterator_category...>;
+    using difference_type =
+        std::common_type_t<typename std::iterator_traits<Iterators>::difference_type...>;
 
-    explicit constexpr iterator_base(Iterators... iterators) noexcept
+    explicit constexpr iterator_pack(Iterators... iterators) noexcept
         : m_iterators{std::move(iterators)...} {}
-
-   protected:
-    using iterator_tuple_type = std::tuple<std::remove_reference_t<Iterators>...>;
 
     constexpr auto& iterators() & noexcept { return m_iterators; }
 
@@ -245,374 +159,347 @@ class iterator_base {
     constexpr auto const&& iterators() const&& noexcept { return std::move(m_iterators); }
 
    private:
-    iterator_tuple_type m_iterators;
+    iterator_pack_type m_iterators;
 };
 
-template <typename IteratorCategory, typename... Iterators>
-class iterator_impl;
+/////////////////////////////////////////////////////////////////////////////////////
+// Policies
+/////////////////////////////////////////////////////////////////////////////////////
 
-template <typename... Iterators>
-class iterator_impl<std::forward_iterator_tag, Iterators...>
-    : public iterator_base<Iterators...> {
-   protected:
-    using base = iterator_base<Iterators...>;
-    using iterator_tuple_type = typename base::iterator_tuple_type;
-    using base::iterators;
+template <typename IteratorBase, typename IteratorPack>
+class dereference {
+    using base_type = IteratorBase;
+    using value_type = typename IteratorPack::value_type;
+
+    ADD_BASE_ACCESSOR(base_type)
 
    public:
-    using iterator_category = std::forward_iterator_tag;
-    using difference_type = typename base::difference_type;
-    using value_type = typename base::value_type;
+    constexpr value_type operator*() const {
+        return ttl::transform<value_type>(
+            base().iterators(), [](auto&& it) -> decltype(auto) { return *it; });
+    }
+};
 
-    // Construction
+template <typename IteratorBase, typename IteratorPack>
+class subscript {
+    using base_type = IteratorBase;
+    using value_type = typename IteratorPack::value_type;
+    using difference_type = typename IteratorPack::difference_type;
 
-    using base::base;
+    ADD_BASE_ACCESSOR(base_type)
 
-    // Forward interface
+   public:
+    constexpr value_type operator[](difference_type rhs) const {
+        return ttl::transform<value_type>(
+            base().iterators(), [rhs](auto&& it) -> decltype(auto) { return it[rhs]; });
+    }
+};
 
-    constexpr iterator_impl operator+(difference_type rhs) const {
-        return std::make_from_tuple<iterator_impl>(ttl::transform<iterator_tuple_type>(
-            iterators(), [rhs](auto&& it) { return it + rhs; }));
+template <typename IteratorBase, typename IteratorPack>
+class comparison {
+    using base_type = IteratorBase;
+    ADD_BASE_ACCESSOR(base_type)
+
+   public:
+    constexpr bool operator<(const base_type& rhs) const {
+        return ttl::any(base().iterators(), rhs.iterators(), std::less{});
     }
 
-    constexpr iterator_impl& operator++() {
-        ttl::for_each(iterators(), [](auto&& it) { ++it; });
-        return *this;
+    constexpr bool operator<=(const base_type& rhs) const {
+        return ttl::any(base().iterators(), rhs.iterators(), std::less_equal{});
     }
 
-    constexpr iterator_impl& operator++(int) {
-        iterator_impl prev{*this};
-        ttl::for_each(iterators(), [](auto&& it) { ++it; });
-        return prev;
+    constexpr bool operator>(const base_type& rhs) const {
+        return ttl::any(base().iterators(), rhs.iterators(), std::greater{});
     }
 
-    constexpr iterator_impl& operator+=(difference_type rhs) {
-        ttl::for_each(iterators(), [rhs](auto&& it) { it += rhs; });
-        return *this;
+    constexpr bool operator>=(const base_type& rhs) const {
+        return ttl::any(base().iterators(), rhs.iterators(), std::greater_equal{});
     }
 
-    // Relational interface
-
-    constexpr bool operator<(const iterator_impl& rhs) const {  // Safe
-        return ttl::any(iterators(), rhs.iterators(), std::less{});
-    }
-
-    constexpr bool operator<=(const iterator_impl& rhs) const {  // Safe
-        return ttl::any(iterators(), rhs.iterators(), std::less_equal{});
-    }
-
-    constexpr bool operator>(const iterator_impl& rhs) const {  // Safe
-        return ttl::any(iterators(), rhs.iterators(), std::greater{});
-    }
-
-    constexpr bool operator>=(const iterator_impl& rhs) const {  // Safe
-        return ttl::any(iterators(), rhs.iterators(), std::greater_equal{});
-    }
-
-    constexpr bool operator==(const iterator_impl& rhs) const {  // Safe
+    constexpr bool operator==(const base_type& rhs) const {
         // Equivalent to:
         // !(a != a' && b != b' && ...)
-        return ttl::any(iterators(), rhs.iterators(), std::equal_to{});
+        return ttl::any(base().iterators(), rhs.iterators(), std::equal_to{});
     }
 
-    constexpr bool operator!=(const iterator_impl& rhs) const {  // Safe
+    constexpr bool operator!=(const base_type& rhs) const {
         // a != a' && b != b' && ...
         // This is needed to stop on the first sequence that hits its own std::end()
-        return ttl::all(iterators(), rhs.iterators(), std::not_equal_to{});
-    }
-
-    // Dereference
-
-    constexpr value_type operator*() const {
-        // WARNING: decltype(auto) is vital here, otherwise ttl::transform
-        // is going to construct and return a tuple of values (the ones
-        // returned by this lambda) preventing the caller from modifying
-        // actual values underlying the zipped iterators
-        return ttl::transform<value_type>(
-            iterators(), [](auto&& it) -> decltype(auto) { return *it; });
+        return ttl::all(base().iterators(), rhs.iterators(), std::not_equal_to{});
     }
 };
 
-template <typename... Iterators>
-class iterator_impl<std::bidirectional_iterator_tag, Iterators...>
-    : public iterator_impl<std::forward_iterator_tag, Iterators...> {
-   protected:
-    using base = iterator_impl<std::forward_iterator_tag, Iterators...>;
-    using iterator_tuple_type = typename base::iterator_tuple_type;
-    using base::iterators;
+template <typename IteratorBase, typename IteratorPack>
+class forward {
+    using base_type = IteratorBase;
+    using difference_type = typename IteratorPack::difference_type;
+    using iterator_pack_type = typename IteratorPack::iterator_pack_type;
+
+    ADD_BASE_ACCESSOR(base_type)
 
    public:
-    using iterator_category = std::bidirectional_iterator_tag;
-    using difference_type = typename base::difference_type;
-    using value_type = typename base::value_type;
-
-    // Construction
-
-    using base::base;
-
-    // Backward interface
-
-    constexpr iterator_impl operator-(difference_type rhs) const {
-        return std::make_from_tuple<iterator_impl>(ttl::transform<iterator_tuple_type>(
-            iterators(), [rhs](auto&& it) { return it - rhs; }));
+    constexpr base_type operator+(difference_type rhs) const {
+        return std::make_from_tuple<base_type>(ttl::transform<iterator_pack_type>(
+            base().iterators(), [rhs](auto&& it) { return it + rhs; }));
     }
 
-    constexpr difference_type operator-(const iterator_impl& other) const {  // Safe
-        return ttl::inner_product(iterators(), other.iterators(),
-                                  [](auto&&... prods) { return std::min({prods...}); },
-                                  [](auto&& lhs, auto&& rhs) { return lhs - rhs; });
+    constexpr base_type& operator++() {
+        ttl::for_each(base().iterators(), [](auto&& it) { ++it; });
+        return base();
     }
 
-    constexpr iterator_impl& operator--() {
-        ttl::for_each(iterators(), [](auto&& it) { --it; });
-        return *this;
+    constexpr base_type operator++(int) {
+        base_type prev{base()};
+        ttl::for_each(base().iterators(), [](auto&& it) { ++it; });
+        return prev;
     }
 
-    constexpr iterator_impl& operator--(int) {
-        iterator_impl prev{*this};
+    constexpr base_type& operator+=(difference_type rhs) {
+        ttl::for_each(base().iterators(), [rhs](auto&& it) { it += rhs; });
+        return base();
+    }
+};
+
+template <typename IteratorBase, typename IteratorPack>
+class backward {
+    using base_type = IteratorBase;
+    using difference_type = typename IteratorPack::difference_type;
+    using iterator_pack_type = typename IteratorPack::iterator_pack_type;
+
+    ADD_BASE_ACCESSOR(base_type)
+
+   public:
+    constexpr base_type operator-(difference_type rhs) const {
+        return std::make_from_tuple<base_type>(ttl::transform<iterator_pack_type>(
+            base().iterators(), [rhs](auto&& it) { return it - rhs; }));
+    }
+
+    constexpr difference_type operator-(const base_type& other) const {
+        return ttl::inner_product(
+            base().iterators(), other.iterators(),
+            [](auto&&... prods) { return std::min({prods...}); },  // TODO
+            [](auto&& lhs, auto&& rhs) { return lhs - rhs; });
+        // return ttl::inner_product(base().iterators(), other.iterators(), std::min,
+        // std::minus);
+    }
+
+    constexpr base_type& operator--() {
+        ttl::for_each(base().iterators(), [](auto&& it) { --it; });
+        return base();
+    }
+
+    constexpr base_type operator--(int) {
+        base_type prev{base()};
         ttl::for_each(iterators(), [](auto&& it) { --it; });
         return prev;
     }
 
-    constexpr iterator_impl& operator-=(difference_type rhs) {
-        ttl::for_each(iterators(), [rhs](auto&& it) { it -= rhs; });
-        return *this;
+    constexpr base_type& operator-=(difference_type rhs) {
+        ttl::for_each(base().iterators(), [rhs](auto&& it) { it -= rhs; });
+        return base();
     }
 };
 
-template <typename... Iterators>
-class iterator_impl<std::random_access_iterator_tag, Iterators...>
-    : public iterator_base<Iterators...> {
-   protected:
-    using base = iterator_base<Iterators...>;
-    using iterator_tuple_type = typename base::iterator_tuple_type;
-    using base::iterators;
+template <typename IteratorBase, typename IteratorPack>
+struct offset {
+    using base_type = IteratorBase;
+    using difference_type = typename IteratorPack::difference_type;
+    using iterator_pack_type = typename IteratorPack::iterator_pack_type;
 
-    constexpr auto& offset() & noexcept { return m_offset; }
+    ADD_BASE_ACCESSOR(base_type)
 
-    constexpr auto const& offset() const& noexcept { return m_offset; }
-
-    constexpr auto&& offset() && noexcept { return std::move(m_offset); }
-
-    constexpr auto const&& offset() const&& noexcept { return std::move(m_offset); }
+    difference_type m_offset{};
 
    public:
-    using iterator_category = std::random_access_iterator_tag;
-    using difference_type = typename base::difference_type;
-    using value_type = typename base::value_type;
-
-    // Construction
-
-    using base::base;
-
-    // Relational interface
-
-    constexpr bool operator<(const iterator_impl& rhs) const {
-        return ttl::any(iterators(), rhs.iterators(),
-                        [lhs_offset = m_offset, rhs_offset = rhs.m_offset](
-                            auto&& lhs_it, auto&& rhs_it) {
-                            return (lhs_it + lhs_offset) < (rhs_it + rhs_offset);
-                        });
+    constexpr bool operator<(const base_type& rhs) const noexcept {
+        using std::get;
+        return (get<0>(base().iterators()) + m_offset) <
+               (get<0>(rhs.iterators()) + rhs.m_offset);
     }
 
-    constexpr bool operator<=(const iterator_impl& rhs) const {
-        return ttl::any(iterators(), rhs.iterators(),
-                        [lhs_offset = m_offset, rhs_offset = rhs.m_offset](
-                            auto&& lhs_it, auto&& rhs_it) {
-                            return (lhs_it + lhs_offset) <= (rhs_it + rhs_offset);
-                        });
+    constexpr bool operator<=(const base_type& rhs) const noexcept {
+        using std::get;
+        return (get<0>(base().iterators()) + m_offset) <=
+               (get<0>(rhs.iterators()) + rhs.m_offset);
     }
 
-    constexpr bool operator>(const iterator_impl& rhs) const {
-        return ttl::any(iterators(), rhs.iterators(),
-                        [lhs_offset = m_offset, rhs_offset = rhs.m_offset](
-                            auto&& lhs_it, auto&& rhs_it) {
-                            return (lhs_it + lhs_offset) > (rhs_it + rhs_offset);
-                        });
+    constexpr bool operator>(const base_type& rhs) const noexcept {
+        using std::get;
+        return (get<0>(base().iterators()) + m_offset) >
+               (get<0>(rhs.iterators()) + rhs.m_offset);
     }
 
-    constexpr bool operator>=(const iterator_impl& rhs) const {
-        return ttl::any(iterators(), rhs.iterators(),
-                        [lhs_offset = m_offset, rhs_offset = rhs.m_offset](
-                            auto&& lhs_it, auto&& rhs_it) {
-                            return (lhs_it + lhs_offset) >= (rhs_it + rhs_offset);
-                        });
+    constexpr bool operator>=(const base_type& rhs) const noexcept {
+        using std::get;
+        return (get<0>(base().iterators()) + m_offset) >=
+               (get<0>(rhs.iterators()) + rhs.m_offset);
     }
 
-    constexpr bool operator==(const iterator_impl& rhs) const {
-        // Equivalent to:
-        // !(a != a' && b != b' && ...) ==
-        //   a == a' || b == b' || ...
-        return ttl::any(iterators(), rhs.iterators(),
-                        [lhs_offset = m_offset, rhs_offset = rhs.m_offset](
-                            auto&& lhs_it, auto&& rhs_it) {
-                            return (lhs_it + lhs_offset) == (rhs_it + rhs_offset);
-                        });
+    constexpr bool operator==(const base_type& rhs) const noexcept {
+        using std::get;
+        return (get<0>(base().iterators()) + m_offset) ==
+               (get<0>(rhs.iterators()) + rhs.m_offset);
     }
 
-    constexpr bool operator!=(const iterator_impl& rhs) const {
-        // a != a' && b != b' && ...
-        // This is needed to stop on the first sequence that hits its own std::end()
-        return ttl::all(iterators(), rhs.iterators(),
-                        [lhs_offset = m_offset, rhs_offset = rhs.m_offset](
-                            auto&& lhs_it, auto&& rhs_it) {
-                            return (lhs_it + lhs_offset) != (rhs_it + rhs_offset);
-                        });
+    constexpr bool operator!=(const base_type& rhs) const noexcept {
+        using std::get;
+        return (get<0>(base().iterators()) + m_offset) !=
+               (get<0>(rhs.iterators()) + rhs.m_offset);
     }
 
     // Forward interface
 
-    constexpr iterator_impl operator+(difference_type rhs) const {
-        iterator_impl ret{*this};
+    constexpr base_type operator+(difference_type rhs) const {
+        base_type ret{base()};
         ret.m_offset += rhs;
         return ret;
     }
 
-    constexpr iterator_impl& operator++() {
+    constexpr base_type& operator++() {
         ++m_offset;
-        return *this;
+        return base();
     }
 
-    constexpr iterator_impl operator++(int) {
-        iterator_impl prev{*this};
+    constexpr base_type operator++(int) {
+        base_type prev{base()};
         ++m_offset;
         return prev;
     }
 
-    constexpr iterator_impl& operator+=(difference_type rhs) {
+    constexpr base_type& operator+=(difference_type rhs) {
         m_offset += rhs;
-        return *this;
+        return base();
     }
 
     // Backward interface
 
-    constexpr iterator_impl operator-(difference_type rhs) const {
-        iterator_impl ret{*this};
+    constexpr base_type operator-(difference_type rhs) const {
+        base_type ret{base()};
         ret.m_offset -= rhs;
         return ret;
     }
 
-    constexpr difference_type operator-(const iterator_impl& other) const {
-        return ttl::inner_product(
-            iterators(), other.iterators(),
-            [](auto&&... prods) { return std::min({prods...}); },
-            [lhs_offset = m_offset, rhs_offset = other.m_offset](auto&& lhs, auto&& rhs) {
-                return (lhs + lhs_offset) - (rhs + rhs_offset);
-            });
+    constexpr difference_type operator-(const base_type& rhs) const {
+        using std::get;
+        return (get<0>(base().iterators()) + m_offset) -
+               (get<0>(rhs.iterators()) + rhs.m_offset);
     }
 
-    constexpr iterator_impl& operator--() noexcept {
+    constexpr base_type& operator--() noexcept {
         --m_offset;
-        return *this;
+        return base();
     }
 
-    constexpr iterator_impl operator--(int) noexcept {
-        iterator_impl ret{*this};
+    constexpr base_type operator--(int) noexcept {
+        base_type ret{base()};
         --m_offset;
         return ret;
     }
 
-    constexpr iterator_impl& operator-=(difference_type rhs) noexcept {
+    constexpr base_type& operator-=(difference_type rhs) noexcept {
         m_offset -= rhs;
-        return *this;
+        return base();
     }
-
-    // Dereference
-
-    constexpr value_type operator*() const noexcept { return operator[](0); }
-
-    constexpr value_type operator[](difference_type rhs) const noexcept {
-        rhs += m_offset;
-        // WARNING: decltype(auto) is vital here, otherwise ttl::transform
-        // is going to construct and return a tuple of values (the ones
-        // returned by this lambda) preventing the caller from modifying
-        // actual values underlying the zipped iterators
-        return ttl::transform<value_type>(
-            iterators(), [rhs](auto&& it) -> decltype(auto) { return it[rhs]; });
-    }
-
-   private:
-    difference_type m_offset{0};
 };
+
+struct offset_iterator_tag {};
 
 template <typename... Iterators>
-class iterator_impl<unsafe_random_access_iterator_tag, Iterators...>
-    : public iterator_impl<std::random_access_iterator_tag, Iterators...> {
-   protected:
-    using base = iterator_impl<std::random_access_iterator_tag, Iterators...>;
-    using base::iterators;
-    using base::offset;
+using forward_iterator = zip::iterator<zip::iterator_pack<Iterators...>, zip::dereference,
+                                       zip::comparison, zip::forward>;
 
-   public:
-    // using iterator_category = unsafe_random_access_iterator_tag; // TODO don't override
-    // parent's category?
-    using difference_type = typename base::difference_type;
+template <typename... Iterators>
+using bidirectional_iterator =
+    zip::iterator<zip::iterator_pack<Iterators...>, zip::dereference, zip::comparison,
+                  zip::forward, zip::backward>;
 
-    // Construction
+template <typename... Iterators>
+using random_access_iterator =
+    zip::iterator<zip::iterator_pack<Iterators...>, zip::dereference, zip::comparison,
+                  zip::forward, zip::backward, zip::subscript>;
 
-    using base::base;
+template <typename... Iterators>
+using offset_iterator = zip::iterator<zip::iterator_pack<Iterators...>, zip::offset>;
 
-    // Relational interface
+template <typename IteratorCategory, typename FirstIterator, typename... Iterators>
+struct iterator_type;
 
-    constexpr bool operator<(const iterator_impl& rhs) const noexcept {
-        return (std::get<0>(iterators()) + offset()) <
-               (std::get<0>(rhs.iterators()) + rhs.offset());
-    }
-
-    constexpr bool operator<=(const iterator_impl& rhs) const noexcept {
-        return (std::get<0>(iterators()) + offset()) <=
-               (std::get<0>(rhs.iterators()) + rhs.offset());
-    }
-
-    constexpr bool operator>(const iterator_impl& rhs) const noexcept {
-        return (std::get<0>(iterators()) + offset()) >
-               (std::get<0>(rhs.iterators()) + rhs.offset());
-    }
-
-    constexpr bool operator>=(const iterator_impl& rhs) const noexcept {
-        return (std::get<0>(iterators()) + offset()) >=
-               (std::get<0>(rhs.iterators()) + rhs.offset());
-    }
-
-    constexpr bool operator==(const iterator_impl& rhs) const noexcept {
-        return (std::get<0>(iterators()) + offset()) ==
-               (std::get<0>(rhs.iterators()) + rhs.offset());
-    }
-
-    constexpr bool operator!=(const iterator_impl& rhs) const noexcept {
-        return (std::get<0>(iterators()) + offset()) !=
-               (std::get<0>(rhs.iterators()) + rhs.offset());
-    }
-
-    constexpr difference_type operator-(const iterator_impl& rhs) const noexcept {
-        return (std::get<0>(iterators()) + offset()) -
-               (std::get<0>(rhs.iterators()) + rhs.offset());
-    }
+template <typename FirstIterator, typename... Iterators>
+struct iterator_type<std::forward_iterator_tag, FirstIterator, Iterators...> {
+    using type = forward_iterator<FirstIterator, Iterators...>;
 };
 
-}  // namespace detail
+template <typename FirstIterator, typename... Iterators>
+struct iterator_type<std::bidirectional_iterator_tag, FirstIterator, Iterators...> {
+    using type = bidirectional_iterator<FirstIterator, Iterators...>;
+};
+
+template <typename FirstIterator, typename... Iterators>
+struct iterator_type<std::random_access_iterator_tag, FirstIterator, Iterators...> {
+    using type = random_access_iterator<FirstIterator, Iterators...>;
+};
+
+template <typename FirstIterator, typename... Iterators>
+struct iterator_type<offset_iterator_tag, FirstIterator, Iterators...> {
+    using type = offset_iterator<FirstIterator, Iterators...>;
+};
 
 template <typename... Iterators>
 using iterator_type_t =
-    detail::iterator_impl<common_iterator_category_t<Iterators...>, Iterators...>;
+    typename iterator_type<typename iterator_pack<Iterators...>::iterator_category,
+                           Iterators...>::type;
 
-// No tmp argument deduction for type aliases, just add the usual factory:
-
-template <typename... Iterators>
-constexpr auto make_iterator(Iterators&&... args) noexcept {
+template<typename ...Iterators>
+constexpr auto make_iterator(Iterator&& ...args) {
     return iterator_type_t<Iterators...>{std::forward<Iterators>(args)...};
 }
 
-// TODO safe/unsafe
-// template <typename... Iterators>
-// constexpr auto make_iterator(safe_iteration_t, Iterators&&... args) noexcept {
-//     return iterator_type_t<Iterators...>{std::forward<Iterators>(args)...};
-// }
-
-// template <typename... Iterators>
-// constexpr auto make_iterator(unsafe_iteration_t, Iterators&&... args) noexcept {
-//     return iterator_type_t<Iterators...>{std::forward<Iterators>(args)...};
-// }
+// template <typename... Sequences>
+// struct zip_view {
+//     static constexpr auto arity = sizeof...(Sequences);
+//     using iterator =
+//         // Why the & is needed here:
+//         //
+//         https://stackoverflow.com/questions/42580761/why-does-stdbegin-always-return-const-iterator-in-such-a-case
+//         zip_iterator<decltype(std::begin(std::declval<Sequences&>()))...>;
+//     // This type wraps a reference to each sequence on which has been
+//     // instantiated:
+//     using sequences = std::tuple<Sequences&...>;
+//
+//     // using size_type =
+//     std::common_type_t<decltype(std::size(std::declval<Sequences&>()))...>; using
+//     size_type = std::size_t;
+//
+//     constexpr zip_view(Sequences&... sqs) noexcept : m_seq{sqs...} {}
+//
+//     constexpr iterator begin() { return begin_impl(std::make_index_sequence<arity>{});
+//     }
+//
+//     constexpr iterator end() { return end_impl(std::make_index_sequence<arity>{}); }
+//
+//     constexpr size_type size() const noexcept {
+//         return size_impl(std::make_index_sequence<arity>{});
+//     }
+//
+//    private:
+//     template <std::size_t... Indexes>
+//     constexpr iterator begin_impl(std::index_sequence<Indexes...>) {
+//         return {std::begin(std::get<Indexes>(m_seq))...};
+//     }
+//
+//     template <std::size_t... Indexes>
+//     constexpr iterator end_impl(std::index_sequence<Indexes...>) {
+//         return {std::end(std::get<Indexes>(m_seq))...};
+//     }
+//
+//     template <std::size_t... Indexes>
+//     constexpr size_type size_impl(std::index_sequence<Indexes...>) const noexcept {
+//         return std::min(std::size(std::get<Indexes>(m_seq))...);
+//     }
+//
+//     sequences m_seq;
+// };
 
 }  // namespace zip
 
