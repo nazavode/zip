@@ -428,60 +428,99 @@ using random_access_iterator =
 template <typename... Iterators>
 using offset_iterator = iterator<pack<Iterators...>, offset>;
 
-template <typename IteratorCategory, typename FirstIterator, typename... Iterators>
+//
+// Traits
+//
+
+template <typename T>
+inline constexpr bool is_iterator_category_v =
+    std::is_convertible_v<T, std::forward_iterator_tag>;
+
+template <typename A, typename B>
+inline constexpr bool is_compatible_iterator_category_v =
+    is_iterator_category_v<A>&& is_iterator_category_v<B>&& std::is_convertible_v<A, B>;
+
+template <typename IteratorCategory, typename... Iterators>
 struct iterator_type;
 
-template <typename FirstIterator, typename... Iterators>
-struct iterator_type<std::forward_iterator_tag, FirstIterator, Iterators...> {
-    using type = forward_iterator<FirstIterator, Iterators...>;
-};
-
-template <typename FirstIterator, typename... Iterators>
-struct iterator_type<std::bidirectional_iterator_tag, FirstIterator, Iterators...> {
-    using type = bidirectional_iterator<FirstIterator, Iterators...>;
-};
-
-template <typename FirstIterator, typename... Iterators>
-struct iterator_type<std::random_access_iterator_tag, FirstIterator, Iterators...> {
-    using type = random_access_iterator<FirstIterator, Iterators...>;
-};
-
-template <typename FirstIterator, typename... Iterators>
-struct iterator_type<offset_iterator_tag, FirstIterator, Iterators...> {
-    using type = offset_iterator<FirstIterator, Iterators...>;
+template <typename... Iterators>
+struct iterator_type<std::forward_iterator_tag, Iterators...> {
+    using type = forward_iterator<Iterators...>;
 };
 
 template <typename... Iterators>
-using iterator_type_t =
-    typename iterator_type<typename pack<Iterators...>::iterator_category,
-                           Iterators...>::type;
+struct iterator_type<std::bidirectional_iterator_tag, Iterators...> {
+    using type = bidirectional_iterator<Iterators...>;
+};
+
+template <typename... Iterators>
+struct iterator_type<std::random_access_iterator_tag, Iterators...> {
+    using type = random_access_iterator<Iterators...>;
+};
+
+template <typename... Iterators>
+struct iterator_type<offset_iterator_tag, Iterators...> {
+    using type = offset_iterator<Iterators...>;
+};
+
+template <typename IteratorCategory, typename... Iterators>
+using iterator_type_t = typename iterator_type<IteratorCategory, Iterators...>::type;
+
+template <typename... Iterators>
+using common_iterator_category_t = typename pack<Iterators...>::iterator_category;
+
+//
+// Factory
+//
 
 template <typename... Iterators>
 constexpr auto make_iterator(Iterators&&... args) {
-    return iterator_type_t<Iterators...>{std::forward<Iterators>(args)...};
+    using iterator_category = common_iterator_category_t<Iterators...>;
+    return iterator_type_t<iterator_category, Iterators...>{
+        std::forward<Iterators>(args)...};
 }
 
 template <typename... Iterators>
 constexpr auto make_iterator(std::forward_iterator_tag, Iterators&&... args) {
-    return typename iterator_type<std::forward_iterator_tag, Iterators...>::type{
+    static_assert(
+        is_compatible_iterator_category_v<std::forward_iterator_tag,
+                                          common_iterator_category_t<Iterators...>>,
+        "common iterator category is not convertible to requested "
+        "std::forward_iterator_tag");
+    return iterator_type_t<std::forward_iterator_tag, Iterators...>{
         std::forward<Iterators>(args)...};
 }
 
 template <typename... Iterators>
 constexpr auto make_iterator(std::bidirectional_iterator_tag, Iterators&&... args) {
-    return typename iterator_type<std::bidirectional_iterator_tag, Iterators...>::type{
+    static_assert(
+        is_compatible_iterator_category_v<std::bidirectional_iterator_tag,
+                                          common_iterator_category_t<Iterators...>>,
+        "common iterator category is not convertible to requested "
+        "std::bidirectional_iterator_tag");
+    return iterator_type_t<std::bidirectional_iterator_tag, Iterators...>{
         std::forward<Iterators>(args)...};
 }
 
 template <typename... Iterators>
 constexpr auto make_iterator(std::random_access_iterator_tag, Iterators&&... args) {
-    return typename iterator_type<std::random_access_iterator_tag, Iterators...>::type{
+    static_assert(
+        is_compatible_iterator_category_v<std::random_access_iterator_tag,
+                                          common_iterator_category_t<Iterators...>>,
+        "common iterator category is not convertible to requested "
+        "std::random_access_iterator_tag");
+    return iterator_type_t<std::random_access_iterator_tag, Iterators...>{
         std::forward<Iterators>(args)...};
 }
 
 template <typename... Iterators>
 constexpr auto make_iterator(offset_iterator_tag, Iterators&&... args) {
-    return typename iterator_type<offset_iterator_tag, Iterators...>::type{
+    static_assert(
+        is_compatible_iterator_category_v<offset_iterator_tag,
+                                          common_iterator_category_t<Iterators...>>,
+        "common iterator category is not convertible to requested "
+        "zip::offset_iterator_tag");
+    return iterator_type_t<offset_iterator_tag, Iterators...>{
         std::forward<Iterators>(args)...};
 }
 
