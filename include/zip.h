@@ -293,7 +293,6 @@ class backward {
 template <typename IteratorBase, typename IteratorPack>
 struct offset {
     using base_type = IteratorBase;
-    using typename IteratorPack::difference_type;
     ADD_BASE_ACCESSOR(base_type)
 
     typename IteratorPack::difference_type m_offset{};
@@ -389,9 +388,21 @@ struct offset {
         m_offset -= rhs;
         return base();
     }
+
+    // Dereference
+    constexpr typename IteratorPack::value_type operator*() const {
+        return operator[](0);
+    }
+
+    constexpr typename IteratorPack::value_type operator[](
+        typename IteratorPack::difference_type rhs) const {
+        rhs += m_offset;
+        return ttl::transform<typename IteratorPack::value_type>(
+            base().iterators(), [rhs](auto&& it) -> decltype(auto) { return it[rhs]; });
+    }
 };
 
-struct offset_iterator_tag {};
+struct offset_iterator_tag : public std::random_access_iterator_tag {};
 
 template <typename... Iterators>
 using forward_iterator = iterator<pack<Iterators...>, dereference, comparison, forward>;
@@ -438,6 +449,26 @@ using iterator_type_t =
 template <typename... Iterators>
 constexpr auto make_iterator(Iterators&&... args) {
     return iterator_type_t<Iterators...>{std::forward<Iterators>(args)...};
+}
+
+template <typename... Iterators>
+constexpr auto make_iterator(std::forward_iterator_tag, Iterators&&... args) {
+    return typename iterator_type<std::forward_iterator_tag, Iterators...>::type{std::forward<Iterators>(args)...};
+}
+
+template <typename... Iterators>
+constexpr auto make_iterator(std::bidirectional_iterator_tag, Iterators&&... args) {
+    return typename iterator_type<std::bidirectional_iterator_tag, Iterators...>::type{std::forward<Iterators>(args)...};
+}
+
+template <typename... Iterators>
+constexpr auto make_iterator(std::random_access_iterator_tag, Iterators&&... args) {
+    return typename iterator_type<std::random_access_iterator_tag, Iterators...>::type{std::forward<Iterators>(args)...};
+}
+
+template <typename... Iterators>
+constexpr auto make_iterator(offset_iterator_tag, Iterators&&... args) {
+    return typename iterator_type<offset_iterator_tag, Iterators...>::type{std::forward<Iterators>(args)...};
 }
 
 // template <typename... Sequences>
