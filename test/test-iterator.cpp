@@ -423,8 +423,8 @@ REGISTER_TYPED_TEST_SUITE_P(ForwardInterface,
 // BidirectionalIterator Concept
 // https://en.cppreference.com/w/cpp/named_req/BidirectionalIterator
 template <typename IteratorCategory>
-struct RandomAccessInterface : public ::testing::Test {};
-TYPED_TEST_SUITE_P(RandomAccessInterface);
+struct BidirectionalInterface : public ::testing::Test {};
+TYPED_TEST_SUITE_P(BidirectionalInterface);
 ///////////////////////////////////////////////////////////
 
 TYPED_TEST_P(BidirectionalInterface, OperatorDecrementPrefix) {
@@ -464,8 +464,8 @@ REGISTER_TYPED_TEST_SUITE_P(BidirectionalInterface,
 // RandomAccessIterator Concept
 // https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator
 template <typename IteratorCategory>
-struct BidirectionalInterface : public ::testing::Test {};
-TYPED_TEST_SUITE_P(BidirectionalInterface);
+struct RandomAccessInterface : public ::testing::Test {};
+TYPED_TEST_SUITE_P(RandomAccessInterface);
 ///////////////////////////////////////////////////////////
 
 TYPED_TEST_P(RandomAccessInterface, OperatorSubscript) {
