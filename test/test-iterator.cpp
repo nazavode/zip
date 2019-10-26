@@ -70,13 +70,14 @@
 using ::testing::Each;
 
 template <typename IteratorCategory>
-struct ZipIteratorTest : public ::testing::Test {
+struct ForwardInterface : public ::testing::Test {
     // using x_type = std::array<int, 10>;
     // using y_type = std::array<long long, 10>;
     // using z_type = std::array<signed char, 10>;
     // using iterator_category = IteratorCategory;
     // using iterator =
-    //     typename zip::iterator_type<iterator_category, x_type::iterator, y_type::iterator,
+    //     typename zip::iterator_type<iterator_category, x_type::iterator,
+    //     y_type::iterator,
     //                                 z_type::iterator>::type;
 
     // static iterator begin() { return {std::begin(x), std::begin(y), std::begin(z)}; }
@@ -100,7 +101,15 @@ struct ZipIteratorTest : public ::testing::Test {
     // static z_type z{0, -1, -2, -3, -4, -5, -6, -7, -8, -9};
 };
 
-TYPED_TEST_SUITE_P(ZipIteratorTest);
+TYPED_TEST_SUITE_P(ForwardInterface);
+
+template <typename IteratorCategory>
+struct RandomAccessInterface : public ::testing::Test {};
+TYPED_TEST_SUITE_P(RandomAccessInterface);
+
+template <typename IteratorCategory>
+struct BidirectionalInterfaceTest : public ::testing::Test {};
+TYPED_TEST_SUITE_P(BidirectionalInterfaceTest);
 
 //
 // Helper: containers()
@@ -111,31 +120,25 @@ auto containers();
 auto containers(std::forward_iterator_tag) {
     using ret = std::tuple<std::vector<std::int32_t>, std::forward_list<std::uint64_t>,
                            std::vector<std::int8_t>>;
-    return ret{
-        {0,  1,  2,  3,  4,  5,  6,  7,  8,  9},
-        {9,  8,  7,  6,  5,  4,  3,  2,  1,  0},
-        {0, -1, -2, -3, -4, -5, -6, -7, -8, -9}
-    };
+    return ret{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+               {9, 8, 7, 6, 5, 4, 3, 2, 1, 0},
+               {0, -1, -2, -3, -4, -5, -6, -7, -8, -9}};
 }
 
 auto containers(std::bidirectional_iterator_tag) {
     using ret = std::tuple<std::vector<std::int32_t>, std::list<std::uint64_t>,
                            std::vector<std::int8_t>>;
-    return ret{
-        {0,  1,  2,  3,  4,  5,  6,  7,  8,  9},
-        {9,  8,  7,  6,  5,  4,  3,  2,  1,  0},
-        {0, -1, -2, -3, -4, -5, -6, -7, -8, -9}
-    };
+    return ret{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+               {9, 8, 7, 6, 5, 4, 3, 2, 1, 0},
+               {0, -1, -2, -3, -4, -5, -6, -7, -8, -9}};
 }
 
 auto containers(std::random_access_iterator_tag) {
     using ret = std::tuple<std::vector<std::int32_t>, std::vector<std::uint64_t>,
                            std::vector<std::int8_t>>;
-    return ret{
-        {0,  1,  2,  3,  4,  5,  6,  7,  8,  9},
-        {9,  8,  7,  6,  5,  4,  3,  2,  1,  0},
-        {0, -1, -2, -3, -4, -5, -6, -7, -8, -9}
-    };
+    return ret{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+               {9, 8, 7, 6, 5, 4, 3, 2, 1, 0},
+               {0, -1, -2, -3, -4, -5, -6, -7, -8, -9}};
 }
 
 auto containers(zip::offset_iterator_tag) {
@@ -147,14 +150,44 @@ auto containers(zip::offset_iterator_tag) {
 //
 
 template <typename IteratorCategory, typename ContainerTuple, std::size_t... Indexes>
-auto begin_impl(IteratorCategory tag, ContainerTuple&& data, std::index_sequence<Indexes...>) {
-    return zip::make_iterator(tag, std::begin(std::get<Indexes>(std::forward<ContainerTuple>(data)))...);
+auto begin_impl(IteratorCategory tag, ContainerTuple&& data,
+                std::index_sequence<Indexes...>) {
+    return zip::make_iterator(
+        tag, std::begin(std::get<Indexes>(std::forward<ContainerTuple>(data)))...);
 }
 
 template <typename IteratorCategory, typename ContainerTuple>
 auto begin(IteratorCategory tag, ContainerTuple&& data) {
-    using indexes = std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<ContainerTuple>>>;
+    using indexes = std::make_index_sequence<
+        std::tuple_size_v<std::remove_reference_t<ContainerTuple>>>;
     return begin_impl(tag, std::forward<ContainerTuple>(data), indexes{});
+}
+
+//
+// Helper: end(ContainerTuple&&)
+//
+
+template <typename IteratorCategory, typename ContainerTuple, std::size_t... Indexes>
+auto end_impl(IteratorCategory tag, ContainerTuple&& data,
+              std::index_sequence<Indexes...>) {
+    return zip::make_iterator(
+        tag, std::end(std::get<Indexes>(std::forward<ContainerTuple>(data)))...);
+}
+
+template <typename IteratorCategory, typename ContainerTuple>
+auto end(IteratorCategory tag, ContainerTuple&& data) {
+    using indexes = std::make_index_sequence<
+        std::tuple_size_v<std::remove_reference_t<ContainerTuple>>>;
+    return end_impl(tag, std::forward<ContainerTuple>(data), indexes{});
+}
+
+//
+// Helper: size(ContainerTuple&&)
+//
+
+template <typename ContainerTuple>
+auto size(ContainerTuple&& data) {
+    return std::size(std::get<0>(std::forward<ContainerTuple>(data)));
 }
 
 // TEST_F(ZipIteratorTest, IteratorCategoryRandomAccess) {
@@ -192,7 +225,8 @@ auto begin(IteratorCategory tag, ContainerTuple&& data) {
 
 // TYPED_TEST_P(ZipIteratorTest, IsNotDefaultConstructible) {
 //     EXPECT_FALSE(
-//         std::is_default_constructible_v<typename ZipIteratorTest<TypeParam>::iterator>);
+//         std::is_default_constructible_v<typename
+//         ZipIteratorTest<TypeParam>::iterator>);
 // }
 
 // TYPED_TEST_P(ZipIteratorTest, IsCopyConstructible) {
@@ -201,7 +235,8 @@ auto begin(IteratorCategory tag, ContainerTuple&& data) {
 // }
 
 // TYPED_TEST_P(ZipIteratorTest, IsCopyAssignable) {
-//     EXPECT_TRUE(std::is_copy_assignable_v<typename ZipIteratorTest<TypeParam>::iterator>);
+//     EXPECT_TRUE(std::is_copy_assignable_v<typename
+//     ZipIteratorTest<TypeParam>::iterator>);
 // }
 
 // TYPED_TEST_P(ZipIteratorTest, IsMoveConstructible) {
@@ -210,7 +245,8 @@ auto begin(IteratorCategory tag, ContainerTuple&& data) {
 // }
 
 // TYPED_TEST_P(ZipIteratorTest, IsMoveAssignable) {
-//     EXPECT_TRUE(std::is_move_assignable_v<typename ZipIteratorTest<TypeParam>::iterator>);
+//     EXPECT_TRUE(std::is_move_assignable_v<typename
+//     ZipIteratorTest<TypeParam>::iterator>);
 // }
 
 // TYPED_TEST_P(ZipIteratorTest, IsDestructible) {
@@ -245,7 +281,7 @@ auto begin(IteratorCategory tag, ContainerTuple&& data) {
 //     EXPECT_FALSE(std::is_const_v<std::remove_reference_t<decltype(z_item)>>);
 // }
 
-TYPED_TEST_P(ZipIteratorTest, OperatorDereferenceBegin) {
+TYPED_TEST_P(ForwardInterface, OperatorDereference) {
     // operator*()
     auto tag = TypeParam{};
     auto data = containers(tag);
@@ -256,49 +292,59 @@ TYPED_TEST_P(ZipIteratorTest, OperatorDereferenceBegin) {
     EXPECT_EQ(z_item, *(std::begin(std::get<2>(data))));
 }
 
-// TEST_F(ZipIteratorTest, OperatorSubscript) {
-//     // operator[](difference_type)
-//     auto value = begin()[0];
-//     auto [x_item, y_item, z_item] = value;
-//     EXPECT_EQ(x_item, *(std::begin(x)));
-//     EXPECT_EQ(y_item, *(std::begin(y)));
-//     EXPECT_EQ(z_item, *(std::begin(z)));
-// }
+TYPED_TEST_P(RandomAccessInterface, OperatorSubscript) {
+    // operator[](difference_type)
+    auto tag = TypeParam{};
+    auto data = containers(tag);
+    auto value = begin(tag, data)[0];
+    auto [x_item, y_item, z_item] = value;
+    EXPECT_EQ(x_item, *(std::begin(std::get<0>(data))));
+    EXPECT_EQ(y_item, *(std::begin(std::get<1>(data))));
+    EXPECT_EQ(z_item, *(std::begin(std::get<2>(data))));
+}
 
-// TEST_F(ZipIteratorTest, OperatorMinusIterator) {
-//     // operator-(const zip_iterator&)
-//     EXPECT_EQ(end() - begin(), size());
-// }
+TYPED_TEST_P(RandomAccessInterface, OperatorMinusIterator) {
+    // operator-(const zip_iterator&)
+    auto tag = TypeParam{};
+    auto data = containers(tag);
+    EXPECT_EQ(end(tag, data) - begin(tag, data), size(data));
+}
 
-// TEST_F(ZipIteratorTest, OperatorPlusIntegral) {
-//     // operator+(difference_type)
-//     auto it = begin() + 1;
-//     auto [x_item, y_item, z_item] = *it;
-//     EXPECT_EQ(x_item, *(std::begin(x) + 1));
-//     EXPECT_EQ(y_item, *(std::begin(y) + 1));
-//     EXPECT_EQ(z_item, *(std::begin(z) + 1));
-// }
+TYPED_TEST_P(RandomAccessInterface, OperatorPlusIntegral) {
+    // operator+(difference_type)
+    auto tag = TypeParam{};
+    auto data = containers(tag);
+    auto it = begin(tag, data) + 1;
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_EQ(x_item, *(std::begin(std::get<0>(data)) + 1));
+    EXPECT_EQ(y_item, *(std::begin(std::get<1>(data)) + 1));
+    EXPECT_EQ(z_item, *(std::begin(std::get<2>(data)) + 1));
+}
 
-// TEST_F(ZipIteratorTest, OperatorPlusEqualIntegral) {
-//     // operator+=(difference_type)
-//     auto it = begin();
-//     it += 1;
-//     auto [x_item, y_item, z_item] = *it;
-//     EXPECT_EQ(x_item, *(std::begin(x) + 1));
-//     EXPECT_EQ(y_item, *(std::begin(y) + 1));
-//     EXPECT_EQ(z_item, *(std::begin(z) + 1));
-// }
+TYPED_TEST_P(RandomAccessInterface, OperatorPlusEqualIntegral) {
+    // operator+=(difference_type)
+    auto tag = TypeParam{};
+    auto data = containers(tag);
+    auto it = begin(tag, data);
+    it += 1;
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_EQ(x_item, *(std::begin(std::get<0>(data)) + 1));
+    EXPECT_EQ(y_item, *(std::begin(std::get<1>(data)) + 1));
+    EXPECT_EQ(z_item, *(std::begin(std::get<2>(data)) + 1));
+}
 
-// TEST_F(ZipIteratorTest, OperatorIncrementPrefix) {
-//     // operator++()
-//     auto it = begin();
-//     auto inc = ++it;
-//     auto [x_item, y_item, z_item] = *it;
-//     EXPECT_EQ(it, inc);
-//     EXPECT_EQ(x_item, *(std::begin(x) + 1));
-//     EXPECT_EQ(y_item, *(std::begin(y) + 1));
-//     EXPECT_EQ(z_item, *(std::begin(z) + 1));
-// }
+TYPED_TEST_P(ForwardInterface, OperatorIncrementPrefix) {
+    // operator++()
+    auto tag = TypeParam{};
+    auto data = containers(tag);
+    auto it = begin(tag, data);
+    auto inc = ++it;
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_EQ(it, inc);
+    EXPECT_EQ(x_item, *(++std::begin(std::get<0>(data))));
+    EXPECT_EQ(y_item, *(++std::begin(std::get<1>(data))));
+    EXPECT_EQ(z_item, *(++std::begin(std::get<2>(data))));
+}
 
 // TEST_F(ZipIteratorTest, OperatorIncrementPostfix) {
 //     // operator++(int)
@@ -493,8 +539,16 @@ TYPED_TEST_P(ZipIteratorTest, OperatorDereferenceBegin) {
 //                             IsCopyConstructible, IsCopyAssignable, IsMoveConstructible,
 //                             IsMoveAssignable, IsDestructible, IsSwappable);
 
-REGISTER_TYPED_TEST_SUITE_P(ZipIteratorTest, OperatorDereferenceBegin);
+REGISTER_TYPED_TEST_SUITE_P(ForwardInterface, OperatorDereference,
+                            OperatorIncrementPrefix);
 
+// REGISTER_TYPED_TEST_SUITE_P(BidirectionalInterfaceTest,
+//     );
+
+REGISTER_TYPED_TEST_SUITE_P(RandomAccessInterface, OperatorMinusIterator,
+                            OperatorPlusIntegral, OperatorSubscript,
+                            // OperatorIncrementPrefix,
+                            OperatorPlusEqualIntegral);
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
@@ -508,6 +562,10 @@ using BidirectionalCategoryTypes =
 using RandomAccessCategoryTypes =
     ::testing::Types<std::random_access_iterator_tag, zip::offset_iterator_tag>;
 
-INSTANTIATE_TYPED_TEST_SUITE_P(Forward, ZipIteratorTest, ForwardCategoryTypes);
+INSTANTIATE_TYPED_TEST_SUITE_P(ZipIterator, ForwardInterface, ForwardCategoryTypes);
+// INSTANTIATE_TYPED_TEST_SUITE_P(ZipBidirectional, BidirectionalInterfaceTest,
+// BidirectionalCategoryTypes);
+INSTANTIATE_TYPED_TEST_SUITE_P(ZipIterator, RandomAccessInterface,
+                               RandomAccessCategoryTypes);
 
 #pragma GCC diagnostic pop

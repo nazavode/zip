@@ -178,20 +178,26 @@ class dereference {
 };
 
 template <typename IteratorBase, typename IteratorPack>
-class subscript {
+class equality_comparable {
     using base_type = IteratorBase;
     ADD_BASE_ACCESSOR(base_type)
 
    public:
-    constexpr typename IteratorPack::value_type operator[](
-        typename IteratorPack::difference_type rhs) const {
-        return ttl::transform<typename IteratorPack::value_type>(
-            base().iterators(), [rhs](auto&& it) -> decltype(auto) { return it[rhs]; });
+    constexpr bool operator==(const base_type& rhs) const {
+        // Equivalent to:
+        // !(a != a' && b != b' && ...)
+        return ttl::any(base().iterators(), rhs.iterators(), std::equal_to{});
+    }
+
+    constexpr bool operator!=(const base_type& rhs) const {
+        // a != a' && b != b' && ...
+        // This is needed to stop on the first sequence that hits its own std::end()
+        return ttl::all(base().iterators(), rhs.iterators(), std::not_equal_to{});
     }
 };
 
 template <typename IteratorBase, typename IteratorPack>
-class comparison {
+class totally_ordered {
     using base_type = IteratorBase;
     ADD_BASE_ACCESSOR(base_type)
 
@@ -211,32 +217,14 @@ class comparison {
     constexpr bool operator>=(const base_type& rhs) const {
         return ttl::any(base().iterators(), rhs.iterators(), std::greater_equal{});
     }
-
-    constexpr bool operator==(const base_type& rhs) const {
-        // Equivalent to:
-        // !(a != a' && b != b' && ...)
-        return ttl::any(base().iterators(), rhs.iterators(), std::equal_to{});
-    }
-
-    constexpr bool operator!=(const base_type& rhs) const {
-        // a != a' && b != b' && ...
-        // This is needed to stop on the first sequence that hits its own std::end()
-        return ttl::all(base().iterators(), rhs.iterators(), std::not_equal_to{});
-    }
 };
 
 template <typename IteratorBase, typename IteratorPack>
-class forward {
+class incrementable {
     using base_type = IteratorBase;
     ADD_BASE_ACCESSOR(base_type)
 
    public:
-    constexpr base_type operator+(typename IteratorPack::difference_type rhs) const {
-        return std::make_from_tuple<base_type>(
-            ttl::transform<typename IteratorPack::pack_type>(
-                base().iterators(), [rhs](auto&& it) { return it + rhs; }));
-    }
-
     constexpr base_type& operator++() {
         ttl::for_each(base().iterators(), [](auto&& it) { ++it; });
         return base();
@@ -247,32 +235,14 @@ class forward {
         ttl::for_each(base().iterators(), [](auto&& it) { ++it; });
         return prev;
     }
-
-    constexpr base_type& operator+=(typename IteratorPack::difference_type rhs) {
-        ttl::for_each(base().iterators(), [rhs](auto&& it) { it += rhs; });
-        return base();
-    }
 };
 
 template <typename IteratorBase, typename IteratorPack>
-class backward {
+class decrementable {
     using base_type = IteratorBase;
     ADD_BASE_ACCESSOR(base_type)
 
    public:
-    constexpr base_type operator-(typename IteratorPack::difference_type rhs) const {
-        return std::make_from_tuple<base_type>(
-            ttl::transform<typename IteratorPack::pack_type>(
-                base().iterators(), [rhs](auto&& it) { return it - rhs; }));
-    }
-
-    constexpr typename IteratorPack::difference_type operator-(
-        const base_type& other) const {
-        return ttl::inner_product(base().iterators(), other.iterators(),
-                                  [](auto&&... prods) { return std::min({prods...}); },
-                                  std::minus{});
-    }
-
     constexpr base_type& operator--() {
         ttl::for_each(base().iterators(), [](auto&& it) { --it; });
         return base();
@@ -283,10 +253,47 @@ class backward {
         ttl::for_each(base().iterators(), [](auto&& it) { --it; });
         return prev;
     }
+};
+
+template <typename IteratorBase, typename IteratorPack>
+class random_access {
+    using base_type = IteratorBase;
+    ADD_BASE_ACCESSOR(base_type)
+
+   public:
+    constexpr base_type operator+(typename IteratorPack::difference_type rhs) const {
+        return std::make_from_tuple<base_type>(
+            ttl::transform<typename IteratorPack::pack_type>(
+                base().iterators(), [rhs](auto&& it) { return it + rhs; }));
+    }
+
+    constexpr base_type& operator+=(typename IteratorPack::difference_type rhs) {
+        ttl::for_each(base().iterators(), [rhs](auto&& it) { it += rhs; });
+        return base();
+    }
+
+    constexpr base_type operator-(typename IteratorPack::difference_type rhs) const {
+        return std::make_from_tuple<base_type>(
+            ttl::transform<typename IteratorPack::pack_type>(
+                base().iterators(), [rhs](auto&& it) { return it - rhs; }));
+    }
+
+    constexpr typename IteratorPack::difference_type operator-(
+        const base_type& other) const {
+        return ttl::inner_product(
+            base().iterators(), other.iterators(),
+            [](auto&&... prods) { return std::min({prods...}); }, std::minus{});
+    }
 
     constexpr base_type& operator-=(typename IteratorPack::difference_type rhs) {
         ttl::for_each(base().iterators(), [rhs](auto&& it) { it -= rhs; });
         return base();
+    }
+
+    constexpr typename IteratorPack::value_type operator[](
+        typename IteratorPack::difference_type rhs) const {
+        return ttl::transform<typename IteratorPack::value_type>(
+            base().iterators(), [rhs](auto&& it) -> decltype(auto) { return it[rhs]; });
     }
 };
 
@@ -405,15 +412,18 @@ struct offset {
 struct offset_iterator_tag : public std::random_access_iterator_tag {};
 
 template <typename... Iterators>
-using forward_iterator = iterator<pack<Iterators...>, dereference, comparison, forward>;
+using forward_iterator =
+    iterator<pack<Iterators...>, dereference, equality_comparable, incrementable>;
 
 template <typename... Iterators>
 using bidirectional_iterator =
-    iterator<pack<Iterators...>, dereference, comparison, forward, backward>;
+    iterator<pack<Iterators...>, dereference, equality_comparable, incrementable,
+             decrementable>;
 
 template <typename... Iterators>
 using random_access_iterator =
-    iterator<pack<Iterators...>, dereference, comparison, forward, backward, subscript>;
+    iterator<pack<Iterators...>, dereference, equality_comparable, incrementable,
+             decrementable, totally_ordered, random_access>;
 
 template <typename... Iterators>
 using offset_iterator = iterator<pack<Iterators...>, offset>;
@@ -453,22 +463,26 @@ constexpr auto make_iterator(Iterators&&... args) {
 
 template <typename... Iterators>
 constexpr auto make_iterator(std::forward_iterator_tag, Iterators&&... args) {
-    return typename iterator_type<std::forward_iterator_tag, Iterators...>::type{std::forward<Iterators>(args)...};
+    return typename iterator_type<std::forward_iterator_tag, Iterators...>::type{
+        std::forward<Iterators>(args)...};
 }
 
 template <typename... Iterators>
 constexpr auto make_iterator(std::bidirectional_iterator_tag, Iterators&&... args) {
-    return typename iterator_type<std::bidirectional_iterator_tag, Iterators...>::type{std::forward<Iterators>(args)...};
+    return typename iterator_type<std::bidirectional_iterator_tag, Iterators...>::type{
+        std::forward<Iterators>(args)...};
 }
 
 template <typename... Iterators>
 constexpr auto make_iterator(std::random_access_iterator_tag, Iterators&&... args) {
-    return typename iterator_type<std::random_access_iterator_tag, Iterators...>::type{std::forward<Iterators>(args)...};
+    return typename iterator_type<std::random_access_iterator_tag, Iterators...>::type{
+        std::forward<Iterators>(args)...};
 }
 
 template <typename... Iterators>
 constexpr auto make_iterator(offset_iterator_tag, Iterators&&... args) {
-    return typename iterator_type<offset_iterator_tag, Iterators...>::type{std::forward<Iterators>(args)...};
+    return typename iterator_type<offset_iterator_tag, Iterators...>::type{
+        std::forward<Iterators>(args)...};
 }
 
 // template <typename... Sequences>
