@@ -108,8 +108,8 @@ struct RandomAccessInterface : public ::testing::Test {};
 TYPED_TEST_SUITE_P(RandomAccessInterface);
 
 template <typename IteratorCategory>
-struct BidirectionalInterfaceTest : public ::testing::Test {};
-TYPED_TEST_SUITE_P(BidirectionalInterfaceTest);
+struct BidirectionalInterface : public ::testing::Test {};
+TYPED_TEST_SUITE_P(BidirectionalInterface);
 
 //
 // Helper: containers()
@@ -190,7 +190,7 @@ auto size(ContainerTuple&& data) {
     return std::size(std::get<0>(std::forward<ContainerTuple>(data)));
 }
 
-// TEST_F(ZipIteratorTest, IteratorCategoryRandomAccess) {
+// TYPED_TEST_P(ZipIteratorTest, IteratorCategoryRandomAccess) {
 //     EXPECT_TRUE((std::is_same_v<typename zip_iterator_type::iterator_category,
 //                                 std::random_access_iterator_tag>));
 //     std::array<int, 10> a;
@@ -203,7 +203,7 @@ auto size(ContainerTuple&& data) {
 //                                 std::random_access_iterator_tag>));
 // }
 
-// TEST_F(ZipIteratorTest, IteratorCategoryBidirectional) {
+// TYPED_TEST_P(ZipIteratorTest, IteratorCategoryBidirectional) {
 //     std::array<int, 10> a;
 //     std::list<int> b;
 //     std::vector<long long> c;
@@ -212,7 +212,7 @@ auto size(ContainerTuple&& data) {
 //                                 std::bidirectional_iterator_tag>));
 // }
 
-// TEST_F(ZipIteratorTest, IteratorCategoryForward) {
+// TYPED_TEST_P(ZipIteratorTest, IteratorCategoryForward) {
 //     std::array<int, 10> a;
 //     std::forward_list<int> b;
 //     std::vector<long long> c;
@@ -257,7 +257,7 @@ auto size(ContainerTuple&& data) {
 //     EXPECT_TRUE(std::is_swappable_v<typename ZipIteratorTest<TypeParam>::iterator>);
 // }
 
-// TEST_F(ZipIteratorTest, ConstnessPreservedConst) {
+// TYPED_TEST_P(ZipIteratorTest, ConstnessPreservedConst) {
 //     auto it = zip::make_iterator(std::cbegin(x), std::cbegin(y), std::cbegin(z));
 //     auto [x_item, y_item, z_item] = *it;
 //     EXPECT_TRUE(std::is_const_v<std::remove_reference_t<decltype(x_item)>>);
@@ -265,7 +265,7 @@ auto size(ContainerTuple&& data) {
 //     EXPECT_TRUE(std::is_const_v<std::remove_reference_t<decltype(z_item)>>);
 // }
 
-// TEST_F(ZipIteratorTest, ConstnessPreservedMut) {
+// TYPED_TEST_P(ZipIteratorTest, ConstnessPreservedMut) {
 //     auto it = zip::make_iterator(std::begin(x), std::begin(y), std::begin(z));
 //     auto [x_item, y_item, z_item] = *it;
 //     EXPECT_FALSE(std::is_const_v<std::remove_reference_t<decltype(x_item)>>);
@@ -273,7 +273,7 @@ auto size(ContainerTuple&& data) {
 //     EXPECT_FALSE(std::is_const_v<std::remove_reference_t<decltype(z_item)>>);
 // }
 
-// TEST_F(ZipIteratorTest, ConstnessPreservedMixed) {
+// TYPED_TEST_P(ZipIteratorTest, ConstnessPreservedMixed) {
 //     auto it = zip::make_iterator(std::begin(x), std::cbegin(y), std::begin(z));
 //     auto [x_item, y_item, z_item] = *it;
 //     EXPECT_FALSE(std::is_const_v<std::remove_reference_t<decltype(x_item)>>);
@@ -346,85 +346,124 @@ TYPED_TEST_P(ForwardInterface, OperatorIncrementPrefix) {
     EXPECT_EQ(z_item, *(++std::begin(std::get<2>(data))));
 }
 
-// TEST_F(ZipIteratorTest, OperatorIncrementPostfix) {
-//     // operator++(int)
-//     auto it = begin();
-//     auto inc = it++;
-//     EXPECT_NE(it, inc);
-//     EXPECT_EQ(inc, begin());
-//     auto [x_item, y_item, z_item] = *it;
-//     EXPECT_EQ(x_item, *(std::begin(x) + 1));
-//     EXPECT_EQ(y_item, *(std::begin(y) + 1));
-//     EXPECT_EQ(z_item, *(std::begin(z) + 1));
-// }
+TYPED_TEST_P(ForwardInterface, OperatorIncrementPostfix) {
+    // operator++(int)
+    auto tag = TypeParam{};
+    auto data = containers(tag);
+    auto it = begin(tag, data);
+    auto inc = it++;
+    EXPECT_NE(it, inc);
+    EXPECT_EQ(inc, begin(tag, data));
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_EQ(x_item, *(++std::begin(std::get<0>(data))));
+    EXPECT_EQ(y_item, *(++std::begin(std::get<1>(data))));
+    EXPECT_EQ(z_item, *(++std::begin(std::get<2>(data))));
+}
 
-// TEST_F(ZipIteratorTest, OperatorMinusIntegral) {
-//     // operator-(difference_type)
-//     auto it = end() - 3;
-//     auto [x_item, y_item, z_item] = *it;
-//     EXPECT_EQ(x_item, *(std::end(x) - 3));
-//     EXPECT_EQ(y_item, *(std::end(y) - 3));
-//     EXPECT_EQ(z_item, *(std::end(z) - 3));
-// }
+TYPED_TEST_P(RandomAccessInterface, OperatorMinusIntegral) {
+    // operator-(difference_type)
+    auto tag = TypeParam{};
+    auto data = containers(tag);
+    auto it = end(tag, data) - 3;
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_EQ(x_item, *(std::end(std::get<0>(data)) - 3));
+    EXPECT_EQ(y_item, *(std::end(std::get<1>(data)) - 3));
+    EXPECT_EQ(z_item, *(std::end(std::get<2>(data)) - 3));
+}
 
-// TEST_F(ZipIteratorTest, OperatorMinusEqualIntegral) {
-//     // operator-=(difference_type)
-//     auto it = end();
-//     it -= 3;
-//     EXPECT_NE(it, end());
-//     auto [x_item, y_item, z_item] = *it;
-//     EXPECT_EQ(x_item, *(std::end(x) - 3));
-//     EXPECT_EQ(y_item, *(std::end(y) - 3));
-//     EXPECT_EQ(z_item, *(std::end(z) - 3));
-// }
+TYPED_TEST_P(RandomAccessInterface, OperatorMinusEqualIntegral) {
+    // operator-=(difference_type)
+    auto tag = TypeParam{};
+    auto data = containers(tag);
+    auto it = end(tag, data);
+    it -= 3;
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_EQ(x_item, *(std::end(std::get<0>(data)) - 3));
+    EXPECT_EQ(y_item, *(std::end(std::get<1>(data)) - 3));
+    EXPECT_EQ(z_item, *(std::end(std::get<2>(data)) - 3));
+}
 
-// TEST_F(ZipIteratorTest, OperatorDecrementPrefix) {
-//     // operator--()
-//     auto it = end();
-//     auto dec = --it;
-//     EXPECT_EQ(it, dec);
-//     auto [x_item, y_item, z_item] = *it;
-//     EXPECT_EQ(x_item, *(std::end(x) - 1));
-//     EXPECT_EQ(y_item, *(std::end(y) - 1));
-//     EXPECT_EQ(z_item, *(std::end(z) - 1));
-// }
+TYPED_TEST_P(BidirectionalInterface, OperatorDecrementPrefix) {
+    // operator--()
+    auto tag = TypeParam{};
+    auto data = containers(tag);
+    auto it = end(tag, data);
+    auto dec = --it;
+    EXPECT_EQ(it, dec);
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_EQ(x_item, *(--std::end(std::get<0>(data))));
+    EXPECT_EQ(y_item, *(--std::end(std::get<1>(data))));
+    EXPECT_EQ(z_item, *(--std::end(std::get<2>(data))));
+}
 
-// TEST_F(ZipIteratorTest, OperatorDecrementPostfix) {
-//     // operator--(int)
-//     auto it = end();
-//     auto dec = it--;
-//     EXPECT_NE(it, dec);
-//     EXPECT_EQ(end(), dec);
-//     auto [x_item, y_item, z_item] = *it;
-//     EXPECT_EQ(x_item, *(std::end(x) - 1));
-//     EXPECT_EQ(y_item, *(std::end(y) - 1));
-//     EXPECT_EQ(z_item, *(std::end(z) - 1));
-// }
+TYPED_TEST_P(BidirectionalInterface, OperatorDecrementPostfix) {
+    // operator--(int)
+    auto tag = TypeParam{};
+    auto data = containers(tag);
+    auto it = end(tag, data);
+    auto dec = it--;
+    EXPECT_NE(it, dec);
+    EXPECT_EQ(end(tag, data), dec);
+    auto [x_item, y_item, z_item] = *it;
+    EXPECT_EQ(x_item, *(--std::end(std::get<0>(data))));
+    EXPECT_EQ(y_item, *(--std::end(std::get<1>(data))));
+    EXPECT_EQ(z_item, *(--std::end(std::get<2>(data))));
+}
 
-// TEST_F(ZipIteratorTest, OperatorLT) { EXPECT_LT(begin(), end()); }
+TYPED_TEST_P(RandomAccessInterface, OperatorLT) {
+    auto tag = TypeParam{};
+    auto data = containers(tag);
+    auto it_begin = begin(tag, data);
+    auto it_end = end(tag, data);
+    EXPECT_LT(it_begin, it_end);
+}
 
-// TEST_F(ZipIteratorTest, OperatorLE) {
-//     EXPECT_LE(begin(), end());
-//     EXPECT_LE(begin(), begin());
-//     EXPECT_LE(end(), end());
-// }
+TYPED_TEST_P(RandomAccessInterface, OperatorLE) {
+    auto tag = TypeParam{};
+    auto data = containers(tag);
+    auto it_begin = begin(tag, data);
+    auto it_end = end(tag, data);
+    EXPECT_LE(it_begin, it_end);
+    EXPECT_LE(it_begin, it_begin);
+    EXPECT_LE(it_end, it_end);
+}
 
-// TEST_F(ZipIteratorTest, OperatorGT) { EXPECT_GT(end(), begin()); }
+TYPED_TEST_P(RandomAccessInterface, OperatorGT) {
+    auto tag = TypeParam{};
+    auto data = containers(tag);
+    auto it_begin = begin(tag, data);
+    auto it_end = end(tag, data);
+    EXPECT_GT(it_end, it_begin);
+}
 
-// TEST_F(ZipIteratorTest, OperatorGE) {
-//     EXPECT_GE(end(), begin());
-//     EXPECT_GE(begin(), begin());
-//     EXPECT_GE(end(), end());
-// }
+TYPED_TEST_P(RandomAccessInterface, OperatorGE) {
+    auto tag = TypeParam{};
+    auto data = containers(tag);
+    auto it_begin = begin(tag, data);
+    auto it_end = end(tag, data);
+    EXPECT_GE(it_end, it_begin);
+    EXPECT_GE(it_begin, it_begin);
+    EXPECT_GE(it_end, it_end);
+}
 
-// TEST_F(ZipIteratorTest, OperatorNE) { EXPECT_NE(begin(), end()); }
+TYPED_TEST_P(ForwardInterface, OperatorNE) {
+    auto tag = TypeParam{};
+    auto data = containers(tag);
+    auto it_begin = begin(tag, data);
+    auto it_end = end(tag, data);
+    EXPECT_NE(it_begin, it_end);
+}
 
-// TEST_F(ZipIteratorTest, OperatorEQ) {
-//     EXPECT_EQ(begin(), begin());
-//     EXPECT_EQ(end(), end());
-// }
+TYPED_TEST_P(ForwardInterface, OperatorEQ) {
+    auto tag = TypeParam{};
+    auto data = containers(tag);
+    auto it_begin = begin(tag, data);
+    auto it_end = end(tag, data);
+    EXPECT_EQ(it_begin, it_begin);
+    EXPECT_EQ(it_end, it_end);
+}
 
-// TEST_F(ZipIteratorTest, ModifyStdGet) {
+// TYPED_TEST_P(ZipIteratorTest, ModifyStdGet) {
 //     auto value = *begin();
 //     ASSERT_TRUE(std::is_reference_v<decltype(std::get<0>(value))>);
 //     ASSERT_TRUE(std::is_reference_v<decltype(std::get<1>(value))>);
@@ -437,7 +476,7 @@ TYPED_TEST_P(ForwardInterface, OperatorIncrementPrefix) {
 //     EXPECT_EQ(*std::begin(z), sentinel<2>());
 // }
 
-// TEST_F(ZipIteratorTest, ModifyUnqualifiedGet) {
+// TYPED_TEST_P(ZipIteratorTest, ModifyUnqualifiedGet) {
 //     using std::get;
 //     auto value = *begin();
 //     ASSERT_TRUE(std::is_reference_v<decltype(get<0>(value))>);
@@ -451,7 +490,7 @@ TYPED_TEST_P(ForwardInterface, OperatorIncrementPrefix) {
 //     EXPECT_EQ(*std::begin(z), sentinel<2>());
 // }
 
-// TEST_F(ZipIteratorTest, ModifyStructuredBinding) {
+// TYPED_TEST_P(ZipIteratorTest, ModifyStructuredBinding) {
 //     auto [x_bind, y_bind, z_bind] = *begin();
 //     ASSERT_TRUE(std::is_reference_v<decltype(x_bind)>);
 //     ASSERT_TRUE(std::is_reference_v<decltype(y_bind)>);
@@ -464,7 +503,7 @@ TYPED_TEST_P(ForwardInterface, OperatorIncrementPrefix) {
 //     EXPECT_EQ(*std::begin(z), sentinel<2>());
 // }
 
-// TEST_F(ZipIteratorTest, ModifyRefStructuredBinding) {
+// TYPED_TEST_P(ZipIteratorTest, ModifyRefStructuredBinding) {
 //     auto&& [x_bind, y_bind, z_bind] = *begin();
 //     ASSERT_TRUE(std::is_reference_v<decltype(x_bind)>);
 //     ASSERT_TRUE(std::is_reference_v<decltype(y_bind)>);
@@ -477,10 +516,10 @@ TYPED_TEST_P(ForwardInterface, OperatorIncrementPrefix) {
 //     EXPECT_EQ(*std::begin(z), sentinel<2>());
 // }
 
-// TEST_F(ZipIteratorTest, StdDistance) { EXPECT_EQ(std::distance(begin(), end()),
+// TYPED_TEST_P(ZipIteratorTest, StdDistance) { EXPECT_EQ(std::distance(begin(), end()),
 // size()); }
 
-// TEST_F(ZipIteratorTest, StdForEach) {
+// TYPED_TEST_P(ZipIteratorTest, StdForEach) {
 //     const auto v_0 = sentinel<0>();
 //     const auto v_1 = sentinel<1>();
 //     const auto v_2 = sentinel<2>();
@@ -494,7 +533,7 @@ TYPED_TEST_P(ForwardInterface, OperatorIncrementPrefix) {
 //     ASSERT_THAT(z, Each(v_2));
 // }
 
-// TEST_F(ZipIteratorTest, StdForEachStructuredBinding) {
+// TYPED_TEST_P(ZipIteratorTest, StdForEachStructuredBinding) {
 //     const auto v_0 = sentinel<0>();
 //     const auto v_1 = sentinel<1>();
 //     const auto v_2 = sentinel<2>();
@@ -511,11 +550,11 @@ TYPED_TEST_P(ForwardInterface, OperatorIncrementPrefix) {
 
 // // TODO
 
-// // TEST_F(ZipIteratorTest, StdTransform) {}
-// // TEST_F(ZipIteratorTest, StdFind) {}
-// // TEST_F(ZipIteratorTest, StdIsSorted) {}
-// // TEST_F(ZipIteratorTest, StdSort) {}
-// // TEST_F(ZipIteratorTest, StdNthElement) {}
+// // TYPED_TEST_P(ZipIteratorTest, StdTransform) {}
+// // TYPED_TEST_P(ZipIteratorTest, StdFind) {}
+// // TYPED_TEST_P(ZipIteratorTest, StdIsSorted) {}
+// // TYPED_TEST_P(ZipIteratorTest, StdSort) {}
+// // TYPED_TEST_P(ZipIteratorTest, StdNthElement) {}
 
 // // TEST_CASE("zip_iterator works with std algorithms", "[zip_iterator]") {
 // //     std::array<int, 10>         a{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -540,16 +579,20 @@ TYPED_TEST_P(ForwardInterface, OperatorIncrementPrefix) {
 //                             IsMoveAssignable, IsDestructible, IsSwappable);
 
 REGISTER_TYPED_TEST_SUITE_P(ForwardInterface, OperatorDereference,
-                            OperatorIncrementPrefix);
+                            OperatorIncrementPrefix, OperatorIncrementPostfix, OperatorNE, OperatorEQ);
 
-// REGISTER_TYPED_TEST_SUITE_P(BidirectionalInterfaceTest,
-//     );
+REGISTER_TYPED_TEST_SUITE_P(BidirectionalInterface, OperatorDecrementPrefix, OperatorDecrementPostfix
+     );
 
 REGISTER_TYPED_TEST_SUITE_P(RandomAccessInterface, OperatorMinusIterator,
                             OperatorPlusIntegral, OperatorSubscript,
-                            // OperatorIncrementPrefix,
-                            OperatorPlusEqualIntegral);
+                            OperatorPlusEqualIntegral, OperatorMinusIntegral,
+                            OperatorMinusEqualIntegral, OperatorLT, OperatorLE,
+                            OperatorGT, OperatorGE);
 
+// Googletest macros doesn't support -Wall -Werror (wtf?),
+// so users should expect breaks:
+// https://github.com/google/googletest/pull/2316#issuecomment-518269259
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
 
@@ -563,8 +606,8 @@ using RandomAccessCategoryTypes =
     ::testing::Types<std::random_access_iterator_tag, zip::offset_iterator_tag>;
 
 INSTANTIATE_TYPED_TEST_SUITE_P(ZipIterator, ForwardInterface, ForwardCategoryTypes);
-// INSTANTIATE_TYPED_TEST_SUITE_P(ZipBidirectional, BidirectionalInterfaceTest,
-// BidirectionalCategoryTypes);
+INSTANTIATE_TYPED_TEST_SUITE_P(ZipBidirectional, BidirectionalInterface,
+BidirectionalCategoryTypes);
 INSTANTIATE_TYPED_TEST_SUITE_P(ZipIterator, RandomAccessInterface,
                                RandomAccessCategoryTypes);
 
