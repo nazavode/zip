@@ -29,7 +29,7 @@ namespace ttl {
 namespace detail {
 
 template<typename T>
-using indexes_t = std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<T>>>;
+using indexes = std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<T>>>;
 
 template <typename Return, typename Tuple, typename UnaryOp, std::size_t... Indexes>
 constexpr Return transform_impl(Tuple&& t, UnaryOp&& f, std::index_sequence<Indexes...>) {
@@ -81,13 +81,13 @@ constexpr auto inner_product_impl(TupleLHS&& lhs, TupleRHS&& rhs,
 template <typename Tuple, typename UnaryOp>
 constexpr void for_each(Tuple&& t, UnaryOp&& f) {
     detail::for_each_impl(std::forward<Tuple>(t), std::forward<UnaryOp>(f),
-                          detail::indexes_t<Tuple>{});
+                          detail::indexes<Tuple>{});
 }
 
 template <typename Return, typename Tuple, typename UnaryOp>
 constexpr auto transform(Tuple&& t, UnaryOp&& f) {
     return detail::transform_impl<Return>(std::forward<Tuple>(t), std::forward<UnaryOp>(f),
-                                          detail::indexes_t<Tuple>{});
+                                          detail::indexes<Tuple>{});
 }
 
 template <typename TupleLHS, typename TupleRHS, typename BinaryPredicate>
@@ -95,7 +95,7 @@ constexpr bool all(TupleLHS&& lhs, TupleRHS&& rhs, BinaryPredicate&& op) {
     static_assert(std::tuple_size_v<std::remove_reference_t<TupleLHS>> ==
                   std::tuple_size_v<std::remove_reference_t<TupleRHS>>);
     return detail::all_impl(std::forward<TupleLHS>(lhs), std::forward<TupleRHS>(rhs),
-                            std::forward<BinaryPredicate>(op), detail::indexes_t<TupleLHS>{});
+                            std::forward<BinaryPredicate>(op), detail::indexes<TupleLHS>{});
 }
 
 template <typename TupleLHS, typename TupleRHS, typename BinaryPredicate>
@@ -103,13 +103,13 @@ constexpr bool any(TupleLHS&& lhs, TupleRHS&& rhs, BinaryPredicate&& op) {
     static_assert(std::tuple_size_v<std::remove_reference_t<TupleLHS>> ==
                   std::tuple_size_v<std::remove_reference_t<TupleRHS>>);
     return detail::any_impl(std::forward<TupleLHS>(lhs), std::forward<TupleRHS>(rhs),
-                            std::forward<BinaryPredicate>(op), detail::indexes_t<TupleLHS>{});
+                            std::forward<BinaryPredicate>(op), detail::indexes<TupleLHS>{});
 }
 
 template <typename Tuple, typename UnaryPredicate>
 constexpr bool any(Tuple&& t, UnaryPredicate&& op) {
     return detail::any_impl(std::forward<Tuple>(t), std::forward<UnaryPredicate>(op),
-                            detail::indexes_t<Tuple>{});
+                            detail::indexes<Tuple>{});
 }
 
 template<typename TupleLHS, typename TupleRHS,
@@ -119,24 +119,19 @@ constexpr auto inner_product(TupleLHS&& lhs, TupleRHS&& rhs, SumNaryOp&& sum, Pr
                   std::tuple_size_v<std::remove_reference_t<TupleRHS>>);
     return detail::inner_product_impl(std::forward<TupleLHS>(lhs), std::forward<TupleRHS>(rhs),
                                       std::forward<SumNaryOp>(sum), std::forward<ProdBinaryOp>(prod),
-                                      detail::indexes_t<TupleLHS>{});
+                                      detail::indexes<TupleLHS>{});
 }
 
 // clang-format on
 }  // namespace ttl
 
-namespace detail {
-
-template <typename IteratorPack, template <typename, typename> typename... Policies>
+template <typename IteratorPack,
+          template <typename Pack, typename Self> typename... Policies>
 class iterator : public IteratorPack,
                  public Policies<iterator<IteratorPack, Policies...>, IteratorPack>... {
    public:
     using IteratorPack::IteratorPack;
 };
-
-/////////////////////////////////////////////////////////////////////////////////////
-// Pack
-/////////////////////////////////////////////////////////////////////////////////////
 
 template <typename... Iterators>
 class pack {
@@ -166,9 +161,9 @@ class pack {
     pack_type m_iterators;
 };
 
-/////////////////////////////////////////////////////////////////////////////////////
-// Policies
-/////////////////////////////////////////////////////////////////////////////////////
+///
+/// Policies
+///
 
 template <typename IteratorBase, typename IteratorPack>
 class dereference {
@@ -273,10 +268,9 @@ class backward {
 
     constexpr typename IteratorPack::difference_type operator-(
         const base_type& other) const {
-        return ttl::inner_product(
-            base().iterators(), other.iterators(),
-            [](auto&&... prods) { return std::min({prods...}); },
-            std::minus{});
+        return ttl::inner_product(base().iterators(), other.iterators(),
+                                  [](auto&&... prods) { return std::min({prods...}); },
+                                  std::minus{});
     }
 
     constexpr base_type& operator--() {
@@ -397,26 +391,21 @@ struct offset {
     }
 };
 
-}  // namespace detail
-
 struct offset_iterator_tag {};
 
 template <typename... Iterators>
-using forward_iterator = detail::iterator<detail::pack<Iterators...>, detail::dereference,
-                                          detail::comparison, detail::forward>;
+using forward_iterator = iterator<pack<Iterators...>, dereference, comparison, forward>;
 
 template <typename... Iterators>
 using bidirectional_iterator =
-    detail::iterator<detail::pack<Iterators...>, detail::dereference, detail::comparison,
-                     detail::forward, detail::backward>;
+    iterator<pack<Iterators...>, dereference, comparison, forward, backward>;
 
 template <typename... Iterators>
 using random_access_iterator =
-    detail::iterator<detail::pack<Iterators...>, detail::dereference, detail::comparison,
-                     detail::forward, detail::backward, detail::subscript>;
+    iterator<pack<Iterators...>, dereference, comparison, forward, backward, subscript>;
 
 template <typename... Iterators>
-using offset_iterator = detail::iterator<detail::pack<Iterators...>, detail::offset>;
+using offset_iterator = iterator<pack<Iterators...>, offset>;
 
 template <typename IteratorCategory, typename FirstIterator, typename... Iterators>
 struct iterator_type;
@@ -443,7 +432,7 @@ struct iterator_type<offset_iterator_tag, FirstIterator, Iterators...> {
 
 template <typename... Iterators>
 using iterator_type_t =
-    typename iterator_type<typename detail::pack<Iterators...>::iterator_category,
+    typename iterator_type<typename pack<Iterators...>::iterator_category,
                            Iterators...>::type;
 
 template <typename... Iterators>
