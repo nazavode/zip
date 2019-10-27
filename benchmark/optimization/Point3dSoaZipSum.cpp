@@ -13,8 +13,8 @@ Result Point3dSoaZipSum(const std::vector<int>& x, const std::vector<int>& y, co
     int sum_y = 0;
     int sum_z = 0;
 
-    const auto begin = zip::make_iterator(std::begin(x), std::begin(y), std::begin(z));
-    const auto end = zip::make_iterator(std::end(x), std::end(y), std::end(z));
+    const auto begin = zip::make_iterator(zip::offset_iterator_tag{}, std::begin(x), std::begin(y), std::begin(z));
+    const auto end = zip::make_iterator(zip::offset_iterator_tag{}, std::end(x), std::end(y), std::end(z));
 
     for(auto it = begin; it != end; ++it) {
         const auto [value_x, value_y, value_z] = *it;

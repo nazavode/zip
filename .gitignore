@@ -8,6 +8,7 @@ spack.lock
 
 # Build stuff
 build/
+build-vscode/
 cmake-build-*/
 
 # Prerequisites
