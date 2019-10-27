@@ -564,7 +564,7 @@ constexpr auto make_iterator(offset_iterator_tag, Iterators&&... args) {
 }
 
 template <typename IteratorCategory, typename... Sequences>
-struct zip {
+struct zip_view {
     // Why the & is needed while declval-ing Sequences:
     // https://stackoverflow.com/questions/42580761/why-does-stdbegin-always-return-const-iterator-in-such-a-case
     // clang-format off
@@ -576,11 +576,7 @@ struct zip {
 
     using sequences = std::tuple<Sequences&...>;
 
-    constexpr zip(Sequences&... sqs) noexcept : m_sequences{sqs...} {}
-    constexpr zip(std::forward_iterator_tag, Sequences&... sqs) noexcept : zip(sqs...) {}
-    constexpr zip(std::bidirectional_iterator_tag, Sequences&... sqs) noexcept : zip(sqs...) {}
-    constexpr zip(std::random_access_iterator_tag, Sequences&... sqs) noexcept : zip(sqs...) {}
-    constexpr zip(offset_iterator_tag, Sequences&... sqs) noexcept : zip(sqs...) {}
+    constexpr zip_view(Sequences&... sqs) noexcept : m_sequences{sqs...} {}
 
     constexpr iterator begin()
         noexcept((noexcept(std::begin(std::declval<Sequences&>())) && ...)) {
@@ -621,24 +617,24 @@ struct zip {
 };
 
 template <typename... Sequences>
-zip(Sequences&...)
-    ->zip<common_iterator_category_t<decltype(std::begin(std::declval<Sequences&>()))...>,
-          Sequences...>;
+constexpr auto zip(Sequences&&... args) -> zip_view<
+    common_iterator_category_t<decltype(std::begin(std::declval<Sequences&>()))...>,
+    Sequences...> {
+    return {std::forward<Sequences>(args)...};
+}
 
-template <typename... Sequences>
-zip(std::forward_iterator_tag, Sequences&... sqs)
-    ->zip<std::forward_iterator_tag, Sequences...>;
-
-template <typename... Sequences>
-zip(std::bidirectional_iterator_tag, Sequences&... sqs)
-    ->zip<std::bidirectional_iterator_tag, Sequences...>;
-
-template <typename... Sequences>
-zip(std::random_access_iterator_tag, Sequences&... sqs)
-    ->zip<std::random_access_iterator_tag, Sequences...>;
-
-template <typename... Sequences>
-zip(offset_iterator_tag, Sequences&... sqs)->zip<offset_iterator_tag, Sequences...>;
+template <typename IteratorCategory, typename... Sequences>
+constexpr auto zip(IteratorCategory, Sequences&&... args)
+    -> std::enable_if_t<is_iterator_category_v<IteratorCategory>,
+                        zip_view<IteratorCategory, Sequences...>> {
+    static_assert(
+        is_compatible_iterator_category_v<offset_iterator_tag,
+                                          common_iterator_category_t<decltype(std::begin(
+                                              std::declval<Sequences&>()))...>>,
+        "deduced common iterator category is not compatible with requested iterator "
+        "category");
+    return {std::forward<Sequences>(args)...};
+}
 
 }  // namespace zip
 

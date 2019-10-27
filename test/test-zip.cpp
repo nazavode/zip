@@ -27,10 +27,10 @@ TEST(Zip, IteratorCategoryRandomAccess) {
     std::vector<long long> b;
     std::array<signed char, 10> c;
     int d[20];
-    auto deduced = zip::zip{a, b, c, d};
+    auto deduced = zip::zip(a, b, c, d);
     EXPECT_TRUE((std::is_same_v<decltype(deduced)::iterator_category,
                                 std::random_access_iterator_tag>));
-    auto requested = zip::zip{std::random_access_iterator_tag{}, a, b, c, d};
+    auto requested = zip::zip(std::random_access_iterator_tag{}, a, b, c, d);
     EXPECT_TRUE((std::is_same_v<decltype(requested)::iterator_category,
                                 std::random_access_iterator_tag>));
 }
@@ -39,7 +39,7 @@ TEST(Zip, IteratorCategoryBidirectional) {
     std::array<int, 10> a;
     std::list<int> b;
     std::vector<long long> c;
-    auto it = zip::zip{a, b, c};
+    auto it = zip::zip(a, b, c);
     EXPECT_TRUE((std::is_same_v<decltype(it)::iterator_category,
                                 std::bidirectional_iterator_tag>));
 }
@@ -49,7 +49,7 @@ TEST(Zip, IteratorCategoryForward) {
     std::forward_list<int> b;
     std::vector<long long> c;
     std::list<int> d;
-    auto it = zip::zip{a, b, c, d};
+    auto it = zip::zip(a, b, c, d);
     EXPECT_TRUE(
         (std::is_same_v<decltype(it)::iterator_category, std::forward_iterator_tag>));
 }
@@ -57,7 +57,7 @@ TEST(Zip, IteratorCategoryForward) {
 TEST(Zip, EmptyIterationSpace) {
     std::array<int, 0> a;
     std::array<float, 0> b;
-    auto z = zip::zip{a, b};
+    auto z = zip::zip(a, b);
     EXPECT_EQ(std::begin(z), std::end(z));
 }
 
@@ -65,7 +65,7 @@ TEST(Zip, RangeBasedForLoop) {
     std::vector<int> a{9, 8, 7, 6, 5, 4, 3};
     std::vector<long long> b{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-    for (auto&& [aa, bb] : zip::zip{a, b}) {
+    for (auto&& [aa, bb] : zip::zip(a, b)) {
         aa = -1;
         bb = -1;
     }
