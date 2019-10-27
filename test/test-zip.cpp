@@ -1,26 +1,81 @@
-// #include <zip.h>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+#include <zip.h>
 
-// #include <array>
-// #include <iterator>
-// #include <type_traits>
-// #include <vector>
+#include <algorithm>
+#include <array>
+#include <forward_list>
+#include <iterator>
+#include <limits>
+#include <list>
+#include <type_traits>
+#include <vector>
 
-// #include "catch.hpp"
+#include "test-helpers.h"
 
-// using Catch::Matchers::Approx;
-// using Catch::Matchers::Equals;
+// Matchers
+using ::testing::Each;
 
-// TEST_CASE("empty zip", "[zip]") {
-//     auto z = zip::zip{};
-//     STATIC_REQUIRE(decltype(z)::arity == 0);
-// }
+// Helpers
+using zip::test::begin;
+using zip::test::containers;
+using zip::test::end;
+using zip::test::size;
 
-// TEST_CASE("zip supports empty iteration space", "[zip]") {
-//     std::array<int, 0> a;
-//     std::array<float, 0> b;
-//     auto z = zip::zip{a, b};
-//     REQUIRE(std::begin(z) == std::end(z));
-// }
+TEST(Zip, IteratorCategoryRandomAccess) {
+    std::array<int, 10> a;
+    std::vector<long long> b;
+    std::array<signed char, 10> c;
+    int d[20];
+    auto deduced = zip::zip{a, b, c, d};
+    EXPECT_TRUE((std::is_same_v<decltype(deduced)::iterator_category,
+                                std::random_access_iterator_tag>));
+    auto requested = zip::zip{std::random_access_iterator_tag{}, a, b, c, d};
+    EXPECT_TRUE((std::is_same_v<decltype(requested)::iterator_category,
+                                std::random_access_iterator_tag>));
+}
+
+TEST(Zip, IteratorCategoryBidirectional) {
+    std::array<int, 10> a;
+    std::list<int> b;
+    std::vector<long long> c;
+    auto it = zip::zip{a, b, c};
+    EXPECT_TRUE((std::is_same_v<decltype(it)::iterator_category,
+                                std::bidirectional_iterator_tag>));
+}
+
+TEST(Zip, IteratorCategoryForward) {
+    std::array<int, 10> a;
+    std::forward_list<int> b;
+    std::vector<long long> c;
+    std::list<int> d;
+    auto it = zip::zip{a, b, c, d};
+    EXPECT_TRUE(
+        (std::is_same_v<decltype(it)::iterator_category, std::forward_iterator_tag>));
+}
+
+TEST(Zip, EmptyIterationSpace) {
+    std::array<int, 0> a;
+    std::array<float, 0> b;
+    auto z = zip::zip{a, b};
+    EXPECT_EQ(std::begin(z), std::end(z));
+}
+
+TEST(Zip, RangeBasedForLoop) {
+    std::vector<int> a{9, 8, 7, 6, 5, 4, 3};
+    std::vector<long long> b{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+    for (auto&& [aa, bb] : zip::zip{a, b}) {
+        aa = -1;
+        bb = -1;
+    }
+
+    ASSERT_THAT(a, Each(-1));
+
+    // REQUIRE_THAT(a, Equals(std::vector<int>{-1, -1, -1, -1, -1, -1, -1}));
+    // REQUIRE_THAT(b, Equals(std::vector<long long>{-1, -1, -1, -1, -1, -1, -1, 7, 8,
+    // 9}));
+}
 
 // TODO
 // Add tests for iterator concept constraints, e.g.:
@@ -76,20 +131,6 @@
 //         REQUIRE_THAT(a, Equals(std::vector<int>{1, 2, 3, 4, 5, 6, 7, 7, 8, 9}));
 //         REQUIRE_THAT(b, Approx(std::vector<float>{11, 10, 9, 8, 7, 6, 5}));
 //     }
-// }
-
-// TEST_CASE("zip supports range-based for loops") {
-//     std::vector<int> a{9, 8, 7, 6, 5, 4, 3};
-//     std::vector<long long> b{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-
-//     for (auto [_a, _b] : zip::zip{a, b}) {
-//         _a = -1;
-//         _b = -1;
-//     }
-
-//     REQUIRE_THAT(a, Equals(std::vector<int>{-1, -1, -1, -1, -1, -1, -1}));
-//     REQUIRE_THAT(b, Equals(std::vector<long long>{-1, -1, -1, -1, -1, -1, -1, 7, 8,
-//     9}));
 // }
 
 // TEST_CASE("zip is random access") {

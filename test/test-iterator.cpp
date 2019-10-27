@@ -1,5 +1,3 @@
-#include "test-helpers.h"
-
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <zip.h>
@@ -13,12 +11,14 @@
 #include <type_traits>
 #include <vector>
 
+#include "test-helpers.h"
+
 // Matchers
 using ::testing::Each;
 
 // Helpers
-using zip::test::containers;
 using zip::test::begin;
+using zip::test::containers;
 using zip::test::end;
 using zip::test::size;
 
