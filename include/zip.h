@@ -563,19 +563,24 @@ constexpr auto make_iterator(offset_iterator_tag, Iterators&&... args) {
         std::forward<Iterators>(args)...};
 }
 
-template <typename... Sequences>
+template <typename IteratorCategory, typename... Sequences>
 struct zip {
     // Why the & is needed while declval-ing Sequences:
     // https://stackoverflow.com/questions/42580761/why-does-stdbegin-always-return-const-iterator-in-such-a-case
     // clang-format off
+    using iterator_category = IteratorCategory;
     using iterator = 
-        decltype(make_iterator(std::begin(std::declval<Sequences&>())...));
+        decltype(make_iterator(std::declval<iterator_category>(), std::begin(std::declval<Sequences&>())...));
     using const_iterator =
-        decltype(make_iterator(std::cbegin(std::declval<Sequences&>())...));
+        decltype(make_iterator(std::declval<iterator_category>(), std::cbegin(std::declval<Sequences&>())...));
 
     using sequences = std::tuple<Sequences&...>;
 
     constexpr zip(Sequences&... sqs) noexcept : m_sequences{sqs...} {}
+    constexpr zip(std::forward_iterator_tag, Sequences&... sqs) noexcept : zip(sqs...) {}
+    constexpr zip(std::bidirectional_iterator_tag, Sequences&... sqs) noexcept : zip(sqs...) {}
+    constexpr zip(std::random_access_iterator_tag, Sequences&... sqs) noexcept : zip(sqs...) {}
+    constexpr zip(offset_iterator_tag, Sequences&... sqs) noexcept : zip(sqs...) {}
 
     constexpr iterator begin()
         noexcept((noexcept(std::begin(std::declval<Sequences&>())) && ...)) {
@@ -614,6 +619,26 @@ struct zip {
    private:
     sequences m_sequences;
 };
+
+template <typename... Sequences>
+zip(Sequences&...)
+    ->zip<common_iterator_category_t<decltype(std::begin(std::declval<Sequences&>()))...>,
+          Sequences...>;
+
+template <typename... Sequences>
+zip(std::forward_iterator_tag, Sequences&... sqs)
+    ->zip<std::forward_iterator_tag, Sequences...>;
+
+template <typename... Sequences>
+zip(std::bidirectional_iterator_tag, Sequences&... sqs)
+    ->zip<std::bidirectional_iterator_tag, Sequences...>;
+
+template <typename... Sequences>
+zip(std::random_access_iterator_tag, Sequences&... sqs)
+    ->zip<std::random_access_iterator_tag, Sequences...>;
+
+template <typename... Sequences>
+zip(offset_iterator_tag, Sequences&... sqs)->zip<offset_iterator_tag, Sequences...>;
 
 }  // namespace zip
 
