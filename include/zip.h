@@ -148,7 +148,7 @@ class pack {
     using difference_type =
         std::common_type_t<typename std::iterator_traits<Iterators>::difference_type...>;
 
-    explicit constexpr pack(Iterators... iterators) noexcept
+    constexpr pack(Iterators... iterators) noexcept
         : m_iterators{std::move(iterators)...} {}
 
     constexpr auto& iterators() & noexcept { return m_iterators; }
@@ -606,13 +606,13 @@ struct zip {
             m_sequences, [](auto&& seq) { return std::cend(seq); });
     }
 
-    constexpr auto operator[] (
-        std::enable_if_t<
-            is_compatible_iterator_category_v<typename iterator::iterator_category,
-                                              std::random_access_iterator_tag>,
-            typename iterator::difference_type> idx) {
-        return begin()[idx];
-    }
+    // constexpr auto operator[] (
+    //     std::enable_if_t<
+    //         is_compatible_iterator_category_v<typename iterator::iterator_category,
+    //                                           std::random_access_iterator_tag>,
+    //         typename iterator::difference_type> idx) {
+    //     return begin()[idx];
+    // }
 
     // clang-format on
 
