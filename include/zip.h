@@ -33,28 +33,27 @@ namespace zip {
 
 namespace ttl {
 
+namespace impl {
 // clang-format off
-
-namespace detail {
 
 template<typename T>
 using indexes = std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<T>>>;
 
 template <typename Return, typename Tuple, typename UnaryOp, std::size_t... Indexes>
-constexpr Return transform_impl(Tuple&& t, UnaryOp&& f, std::index_sequence<Indexes...>) {
+constexpr Return transform(Tuple&& t, UnaryOp&& f, std::index_sequence<Indexes...>) {
     return {
         std::forward<UnaryOp>(f)(std::get<Indexes>(std::forward<Tuple>(t)))...};
 }
 
 template <typename Tuple, typename UnaryOp, std::size_t... Indexes>
-constexpr void for_each_impl(Tuple&& t, UnaryOp&& f, std::index_sequence<Indexes...>) {
+constexpr void for_each(Tuple&& t, UnaryOp&& f, std::index_sequence<Indexes...>) {
     (std::forward<UnaryOp>(f)(std::get<Indexes>(std::forward<Tuple>(t))), ...);
 }
 
 template <typename TupleLHS, typename TupleRHS, typename BinaryPredicate,
           std::size_t... Indexes>
-constexpr bool all_impl(TupleLHS&& lhs, TupleRHS&& rhs, BinaryPredicate&& op,
-                        std::index_sequence<Indexes...>) {
+constexpr bool all(TupleLHS&& lhs, TupleRHS&& rhs, BinaryPredicate&& op,
+                   std::index_sequence<Indexes...>) {
     return (std::forward<BinaryPredicate>(op)(
                 std::get<Indexes>(std::forward<TupleLHS>(lhs)),
                 std::get<Indexes>(std::forward<TupleRHS>(rhs))) && ...);
@@ -62,63 +61,63 @@ constexpr bool all_impl(TupleLHS&& lhs, TupleRHS&& rhs, BinaryPredicate&& op,
 
 template <typename TupleLHS, typename TupleRHS, typename BinaryPredicate,
           std::size_t... Indexes>
-constexpr bool any_impl(TupleLHS&& lhs, TupleRHS&& rhs, BinaryPredicate&& op,
-                        std::index_sequence<Indexes...>) {
+constexpr bool any(TupleLHS&& lhs, TupleRHS&& rhs, BinaryPredicate&& op,
+                   std::index_sequence<Indexes...>) {
     return (std::forward<BinaryPredicate>(op)(
                 std::get<Indexes>(std::forward<TupleLHS>(lhs)),
                 std::get<Indexes>(std::forward<TupleRHS>(rhs))) || ...);
 }
 
 template <typename Tuple, typename UnaryPredicate, std::size_t... Indexes>
-constexpr bool any_impl(Tuple&& t, UnaryPredicate&& op, std::index_sequence<Indexes...>) {
+constexpr bool any(Tuple&& t, UnaryPredicate&& op, std::index_sequence<Indexes...>) {
     return (std::forward<UnaryPredicate>(op)(
                 std::get<Indexes>(std::forward<Tuple>(t))) || ...);
 }
 
 template<typename TupleLHS, typename TupleRHS,
          typename SumNaryOp, typename ProdBinaryOp, std::size_t... Indexes>
-constexpr auto inner_product_impl(TupleLHS&& lhs, TupleRHS&& rhs,
-                                  SumNaryOp&& sum, ProdBinaryOp&& prod, std::index_sequence<Indexes...>) {
+constexpr auto inner_product(TupleLHS&& lhs, TupleRHS&& rhs,
+                             SumNaryOp&& sum, ProdBinaryOp&& prod, std::index_sequence<Indexes...>) {
     return std::forward<SumNaryOp>(sum)(
                std::forward<ProdBinaryOp>(prod)(
                    std::get<Indexes>(std::forward<TupleLHS>(lhs)),
                    std::get<Indexes>(std::forward<TupleRHS>(rhs)))...);
 }
 
-}  // namespace detail
+}  // namespace impl
 
 template <typename Tuple, typename UnaryOp>
 constexpr void for_each(Tuple&& t, UnaryOp&& f) {
-    detail::for_each_impl(std::forward<Tuple>(t), std::forward<UnaryOp>(f),
-                          detail::indexes<Tuple>{});
+    impl::for_each(std::forward<Tuple>(t), std::forward<UnaryOp>(f),
+                   impl::indexes<Tuple>{});
 }
 
 template <typename Return, typename Tuple, typename UnaryOp>
 constexpr auto transform(Tuple&& t, UnaryOp&& f) {
-    return detail::transform_impl<Return>(std::forward<Tuple>(t), std::forward<UnaryOp>(f),
-                                          detail::indexes<Tuple>{});
+    return impl::transform<Return>(std::forward<Tuple>(t), std::forward<UnaryOp>(f),
+                                   impl::indexes<Tuple>{});
 }
 
 template <typename TupleLHS, typename TupleRHS, typename BinaryPredicate>
 constexpr bool all(TupleLHS&& lhs, TupleRHS&& rhs, BinaryPredicate&& op) {
     static_assert(std::tuple_size_v<std::remove_reference_t<TupleLHS>> ==
                   std::tuple_size_v<std::remove_reference_t<TupleRHS>>);
-    return detail::all_impl(std::forward<TupleLHS>(lhs), std::forward<TupleRHS>(rhs),
-                            std::forward<BinaryPredicate>(op), detail::indexes<TupleLHS>{});
+    return impl::all(std::forward<TupleLHS>(lhs), std::forward<TupleRHS>(rhs),
+                     std::forward<BinaryPredicate>(op), impl::indexes<TupleLHS>{});
 }
 
 template <typename TupleLHS, typename TupleRHS, typename BinaryPredicate>
 constexpr bool any(TupleLHS&& lhs, TupleRHS&& rhs, BinaryPredicate&& op) {
     static_assert(std::tuple_size_v<std::remove_reference_t<TupleLHS>> ==
                   std::tuple_size_v<std::remove_reference_t<TupleRHS>>);
-    return detail::any_impl(std::forward<TupleLHS>(lhs), std::forward<TupleRHS>(rhs),
-                            std::forward<BinaryPredicate>(op), detail::indexes<TupleLHS>{});
+    return impl::any(std::forward<TupleLHS>(lhs), std::forward<TupleRHS>(rhs),
+                     std::forward<BinaryPredicate>(op), impl::indexes<TupleLHS>{});
 }
 
 template <typename Tuple, typename UnaryPredicate>
 constexpr bool any(Tuple&& t, UnaryPredicate&& op) {
-    return detail::any_impl(std::forward<Tuple>(t), std::forward<UnaryPredicate>(op),
-                            detail::indexes<Tuple>{});
+    return impl::any(std::forward<Tuple>(t), std::forward<UnaryPredicate>(op),
+                     impl::indexes<Tuple>{});
 }
 
 template<typename TupleLHS, typename TupleRHS,
@@ -126,9 +125,9 @@ template<typename TupleLHS, typename TupleRHS,
 constexpr auto inner_product(TupleLHS&& lhs, TupleRHS&& rhs, SumNaryOp&& sum, ProdBinaryOp&& prod) {
     static_assert(std::tuple_size_v<std::remove_reference_t<TupleLHS>> ==
                   std::tuple_size_v<std::remove_reference_t<TupleRHS>>);
-    return detail::inner_product_impl(std::forward<TupleLHS>(lhs), std::forward<TupleRHS>(rhs),
-                                      std::forward<SumNaryOp>(sum), std::forward<ProdBinaryOp>(prod),
-                                      detail::indexes<TupleLHS>{});
+    return impl::inner_product(std::forward<TupleLHS>(lhs), std::forward<TupleRHS>(rhs),
+                               std::forward<SumNaryOp>(sum), std::forward<ProdBinaryOp>(prod),
+                               impl::indexes<TupleLHS>{});
 }
 
 // clang-format on
