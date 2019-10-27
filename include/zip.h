@@ -563,51 +563,57 @@ constexpr auto make_iterator(offset_iterator_tag, Iterators&&... args) {
         std::forward<Iterators>(args)...};
 }
 
-// template <typename... Sequences>
-// struct zip_view {
-//     static constexpr auto arity = sizeof...(Sequences);
-//     using iterator =
-//         // Why the & is needed here:
-//         //
-//         https://stackoverflow.com/questions/42580761/why-does-stdbegin-always-return-const-iterator-in-such-a-case
-//         zip_iterator<decltype(std::begin(std::declval<Sequences&>()))...>;
-//     // This type wraps a reference to each sequence on which has been
-//     // instantiated:
-//     using sequences = std::tuple<Sequences&...>;
-//
-//     // using size_type =
-//     std::common_type_t<decltype(std::size(std::declval<Sequences&>()))...>; using
-//     size_type = std::size_t;
-//
-//     constexpr zip_view(Sequences&... sqs) noexcept : m_seq{sqs...} {}
-//
-//     constexpr iterator begin() { return begin_impl(std::make_index_sequence<arity>{});
-//     }
-//
-//     constexpr iterator end() { return end_impl(std::make_index_sequence<arity>{}); }
-//
-//     constexpr size_type size() const noexcept {
-//         return size_impl(std::make_index_sequence<arity>{});
-//     }
-//
-//    private:
-//     template <std::size_t... Indexes>
-//     constexpr iterator begin_impl(std::index_sequence<Indexes...>) {
-//         return {std::begin(std::get<Indexes>(m_seq))...};
-//     }
-//
-//     template <std::size_t... Indexes>
-//     constexpr iterator end_impl(std::index_sequence<Indexes...>) {
-//         return {std::end(std::get<Indexes>(m_seq))...};
-//     }
-//
-//     template <std::size_t... Indexes>
-//     constexpr size_type size_impl(std::index_sequence<Indexes...>) const noexcept {
-//         return std::min(std::size(std::get<Indexes>(m_seq))...);
-//     }
-//
-//     sequences m_seq;
-// };
+template <typename... Sequences>
+struct zip {
+    // Why the & is needed while declval-ing Sequences:
+    // https://stackoverflow.com/questions/42580761/why-does-stdbegin-always-return-const-iterator-in-such-a-case
+    // clang-format off
+    using iterator = 
+        decltype(make_iterator(std::begin(std::declval<Sequences&>())...));
+    using const_iterator =
+        decltype(make_iterator(std::cbegin(std::declval<Sequences&>())...));
+
+    using sequences = std::tuple<Sequences&...>;
+
+    constexpr zip(Sequences&... sqs) noexcept : m_sequences{sqs...} {}
+
+    constexpr iterator begin()
+        noexcept((noexcept(std::begin(std::declval<Sequences&>())) && ...)) {
+        return ttl::transform<iterator>(
+            m_sequences, [](auto&& seq) { return std::begin(seq); });
+    }
+
+    constexpr iterator end() 
+        noexcept((noexcept(std::end(std::declval<Sequences&>())) && ...)) {
+        return ttl::transform<iterator>(
+            m_sequences, [](auto&& seq) { return std::end(seq); });
+    }
+
+    constexpr const_iterator cbegin() const
+        noexcept((noexcept(std::cbegin(std::declval<Sequences&>())) && ...)) {
+        return ttl::transform<const_iterator>(
+            m_sequences, [](auto&& seq) { return std::cbegin(seq); });
+    }
+
+    constexpr const_iterator cend() const
+        noexcept((noexcept(std::cend(std::declval<Sequences&>())) && ...)) {
+        return ttl::transform<const_iterator>(
+            m_sequences, [](auto&& seq) { return std::cend(seq); });
+    }
+
+    constexpr auto operator[] (
+        std::enable_if_t<
+            is_compatible_iterator_category_v<typename iterator::iterator_category,
+                                              std::random_access_iterator_tag>,
+            typename iterator::difference_type> idx) {
+        return begin()[idx];
+    }
+
+    // clang-format on
+
+   private:
+    sequences m_sequences;
+};
 
 }  // namespace zip
 
