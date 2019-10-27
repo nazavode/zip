@@ -17,17 +17,17 @@
 // class template crtp helper providing this stuff
 // to all policy classes is unsustainable compared
 // to a neat old school macro.
-// clang-format: off
-#define ZIP_ADD_CRTP_SELF_ACCESSOR(SELF_TYPE)                                       \
-    constexpr auto& self() & noexcept { return static_cast<SELF_TYPE&>(*this); }    \
-    constexpr auto const& self() const& noexcept {                                  \
-        return static_cast<SELF_TYPE const&>(*this);                                \
-    }                                                                               \
-    constexpr auto&& self() && noexcept { return static_cast<SELF_TYPE&&>(*this); } \
-    constexpr auto const&& self() const&& noexcept {                                \
-        return static_cast<SELF_TYPE const&&>(*this);                               \
-    }
-// clang-format: on
+// clang-format off
+#define ZIP_ADD_CRTP_SELF_ACCESSOR(SELF_TYPE)           \
+    constexpr auto& self() & noexcept {                 \
+        return static_cast<SELF_TYPE&>(*this); }        \
+    constexpr auto const& self() const& noexcept {      \
+        return static_cast<SELF_TYPE const&>(*this); }  \
+    constexpr auto&& self() && noexcept {               \
+        return static_cast<SELF_TYPE&&>(*this); }       \
+    constexpr auto const&& self() const&& noexcept {    \
+        return static_cast<SELF_TYPE const&&>(*this); }
+// clang-format on
 
 namespace zip {
 
@@ -415,6 +415,10 @@ struct offset {
 
 }  // namespace policy
 
+//
+// Concrete iterators
+//
+
 template <typename IteratorPack,
           template <typename Pack, typename Self> typename... Policies>
 class iterator : public IteratorPack,
@@ -422,10 +426,6 @@ class iterator : public IteratorPack,
    public:
     using IteratorPack::IteratorPack;
 };
-
-//
-// Concrete iterators
-//
 
 struct offset_iterator_tag : public std::random_access_iterator_tag {};
 
