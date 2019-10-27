@@ -473,11 +473,11 @@ using offset_iterator =
 
 template <typename T>
 inline constexpr bool is_iterator_category_v =
-    std::is_convertible_v<T, std::forward_iterator_tag>;
+    std::is_convertible_v<std::add_lvalue_reference_t<T>, std::add_lvalue_reference_t<std::forward_iterator_tag>>;
 
 template <typename A, typename B>
 inline constexpr bool is_compatible_iterator_category_v =
-    is_iterator_category_v<A>&& is_iterator_category_v<B>&& std::is_convertible_v<A, B>;
+    is_iterator_category_v<A>&& is_iterator_category_v<B>&& std::is_convertible_v<std::add_lvalue_reference_t<A>, std::add_lvalue_reference_t<B>>;
 
 template <typename IteratorCategory, typename... Iterators>
 struct iterator_type;
@@ -512,55 +512,23 @@ using common_iterator_category_t = typename policy::pack<Iterators...>::iterator
 // Factory
 //
 
+template<std::size_t I, typename... Ts>
+using nth_type_t = std::tuple_element_t<I, std::tuple<Ts...>>;
+
+
 template <typename... Iterators>
-constexpr auto make_iterator(Iterators&&... args) {
-    using iterator_category = common_iterator_category_t<Iterators...>;
-    return iterator_type_t<iterator_category, Iterators...>{
+constexpr auto make_iterator(Iterators&&... args) /* -> std::enable_if_t<!is_iterator_category_v<nth_type_t<0, Iterators...>>, iterator_type_t<common_iterator_category_t<Iterators...>, Iterators...>> */ {
+    return iterator_type_t<common_iterator_category_t<Iterators...>, Iterators...>{
         std::forward<Iterators>(args)...};
 }
 
-template <typename... Iterators>
-constexpr auto make_iterator(std::forward_iterator_tag, Iterators&&... args) {
-    static_assert(
-        is_compatible_iterator_category_v<std::forward_iterator_tag,
-                                          common_iterator_category_t<Iterators...>>,
-        "deduced common iterator category is not compatible with requested "
-        "std::forward_iterator_tag");
-    return iterator_type_t<std::forward_iterator_tag, Iterators...>{
-        std::forward<Iterators>(args)...};
-}
-
-template <typename... Iterators>
-constexpr auto make_iterator(std::bidirectional_iterator_tag, Iterators&&... args) {
-    static_assert(
-        is_compatible_iterator_category_v<std::bidirectional_iterator_tag,
-                                          common_iterator_category_t<Iterators...>>,
-        "deduced common iterator category is not compatible with requested "
-        "std::bidirectional_iterator_tag");
-    return iterator_type_t<std::bidirectional_iterator_tag, Iterators...>{
-        std::forward<Iterators>(args)...};
-}
-
-template <typename... Iterators>
-constexpr auto make_iterator(std::random_access_iterator_tag, Iterators&&... args) {
-    static_assert(
-        is_compatible_iterator_category_v<std::random_access_iterator_tag,
-                                          common_iterator_category_t<Iterators...>>,
-        "deduced common iterator category is not compatible with requested "
-        "std::random_access_iterator_tag");
-    return iterator_type_t<std::random_access_iterator_tag, Iterators...>{
-        std::forward<Iterators>(args)...};
-}
-
-template <typename... Iterators>
-constexpr auto make_iterator(offset_iterator_tag, Iterators&&... args) {
+template <typename IteratorCategory, typename... Iterators>
+constexpr auto make_iterator(IteratorCategory, Iterators&&... args) -> std::enable_if_t<is_iterator_category_v<IteratorCategory>, iterator_type_t<IteratorCategory, Iterators...>> {
     static_assert(
         is_compatible_iterator_category_v<offset_iterator_tag,
                                           common_iterator_category_t<Iterators...>>,
-        "deduced common iterator category is not compatible with requested "
-        "zip::offset_iterator_tag");
-    return iterator_type_t<offset_iterator_tag, Iterators...>{
-        std::forward<Iterators>(args)...};
+        "common iterator category is not compatible with requested iterator category");
+    return {std::forward<Iterators>(args)...};
 }
 
 template <typename IteratorCategory, typename... Sequences>
