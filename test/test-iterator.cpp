@@ -1,3 +1,5 @@
+#include "test-helpers.h"
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <zip.h>
@@ -14,84 +16,11 @@
 // Matchers
 using ::testing::Each;
 
-//
-// Helper: containers()
-//
-
-auto containers();
-
-auto containers(std::forward_iterator_tag) {
-    using ret = std::tuple<std::vector<std::int32_t>, std::forward_list<std::uint64_t>,
-                           std::vector<std::int8_t>>;
-    return ret{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
-               {9, 8, 7, 6, 5, 4, 3, 2, 1, 0},
-               {0, -1, -2, -3, -4, -5, -6, -7, -8, -9}};
-}
-
-auto containers(std::bidirectional_iterator_tag) {
-    using ret = std::tuple<std::vector<std::int32_t>, std::list<std::uint64_t>,
-                           std::vector<std::int8_t>>;
-    return ret{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
-               {9, 8, 7, 6, 5, 4, 3, 2, 1, 0},
-               {0, -1, -2, -3, -4, -5, -6, -7, -8, -9}};
-}
-
-auto containers(std::random_access_iterator_tag) {
-    using ret = std::tuple<std::vector<std::int32_t>, std::vector<std::uint64_t>,
-                           std::vector<std::int8_t>>;
-    return ret{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
-               {9, 8, 7, 6, 5, 4, 3, 2, 1, 0},
-               {0, -1, -2, -3, -4, -5, -6, -7, -8, -9}};
-}
-
-auto containers(zip::offset_iterator_tag) {
-    return containers(std::random_access_iterator_tag{});
-}
-
-//
-// Helper: begin(ContainerTuple&&)
-//
-
-template <typename IteratorCategory, typename ContainerTuple, std::size_t... Indexes>
-auto begin_impl(IteratorCategory tag, ContainerTuple&& data,
-                std::index_sequence<Indexes...>) {
-    return zip::make_iterator(
-        tag, std::begin(std::get<Indexes>(std::forward<ContainerTuple>(data)))...);
-}
-
-template <typename IteratorCategory, typename ContainerTuple>
-auto begin(IteratorCategory tag, ContainerTuple&& data) {
-    using indexes = std::make_index_sequence<
-        std::tuple_size_v<std::remove_reference_t<ContainerTuple>>>;
-    return begin_impl(tag, std::forward<ContainerTuple>(data), indexes{});
-}
-
-//
-// Helper: end(ContainerTuple&&)
-//
-
-template <typename IteratorCategory, typename ContainerTuple, std::size_t... Indexes>
-auto end_impl(IteratorCategory tag, ContainerTuple&& data,
-              std::index_sequence<Indexes...>) {
-    return zip::make_iterator(
-        tag, std::end(std::get<Indexes>(std::forward<ContainerTuple>(data)))...);
-}
-
-template <typename IteratorCategory, typename ContainerTuple>
-auto end(IteratorCategory tag, ContainerTuple&& data) {
-    using indexes = std::make_index_sequence<
-        std::tuple_size_v<std::remove_reference_t<ContainerTuple>>>;
-    return end_impl(tag, std::forward<ContainerTuple>(data), indexes{});
-}
-
-//
-// Helper: size(ContainerTuple&&)
-//
-
-template <typename ContainerTuple>
-auto size(ContainerTuple&& data) {
-    return std::size(std::get<0>(std::forward<ContainerTuple>(data)));
-}
+// Helpers
+using zip::test::containers;
+using zip::test::begin;
+using zip::test::end;
+using zip::test::size;
 
 TEST(MakeIterator, IteratorCategoryRandomAccess) {
     std::array<int, 10> a;
@@ -157,9 +86,6 @@ TEST(MakeIterator, ConstnessPreservedMut) {
 ///////////////////////////////////////////////////////////
 // ForwardIterator Concept
 // https://en.cppreference.com/w/cpp/named_req/ForwardIterator
-template <typename IteratorCategory>
-struct ForwardInterface : public ::testing::Test {};
-TYPED_TEST_SUITE_P(ForwardInterface);
 ///////////////////////////////////////////////////////////
 
 TYPED_TEST_P(ForwardInterface, IsNotDefaultConstructible) {
@@ -422,9 +348,6 @@ REGISTER_TYPED_TEST_SUITE_P(ForwardInterface,
 ///////////////////////////////////////////////////////////
 // BidirectionalIterator Concept
 // https://en.cppreference.com/w/cpp/named_req/BidirectionalIterator
-template <typename IteratorCategory>
-struct BidirectionalInterface : public ::testing::Test {};
-TYPED_TEST_SUITE_P(BidirectionalInterface);
 ///////////////////////////////////////////////////////////
 
 TYPED_TEST_P(BidirectionalInterface, OperatorDecrementPrefix) {
@@ -463,9 +386,6 @@ REGISTER_TYPED_TEST_SUITE_P(BidirectionalInterface,
 ///////////////////////////////////////////////////////////
 // RandomAccessIterator Concept
 // https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator
-template <typename IteratorCategory>
-struct RandomAccessInterface : public ::testing::Test {};
-TYPED_TEST_SUITE_P(RandomAccessInterface);
 ///////////////////////////////////////////////////////////
 
 TYPED_TEST_P(RandomAccessInterface, OperatorSubscript) {
