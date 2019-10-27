@@ -17,10 +17,10 @@ Result Point4dSoaZipSum(const std::vector<int>& x, const std::vector<int>& y,
     int sum_w = 0;
 
     const auto begin =
-        zip::make_iterator(zip::offset_iterator_tag{}, std::begin(x), std::begin(y), std::begin(z), std::begin(w));
+        zip::make_iterator(zip::offset, std::begin(x), std::begin(y), std::begin(z), std::begin(w));
     
     const auto end =
-        zip::make_iterator(zip::offset_iterator_tag{}, std::end(x), std::end(y), std::end(z), std::end(w));
+        zip::make_iterator(zip::offset, std::end(x), std::end(y), std::end(z), std::end(w));
 
     for(auto it = begin; it != end; ++it) {
         const auto [value_x, value_y, value_z, value_w] = *it;
