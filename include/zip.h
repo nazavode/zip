@@ -484,6 +484,9 @@ inline constexpr bool is_compatible_iterator_category_v =
     is_iterator_category_v<A>&& is_iterator_category_v<B>&& std::is_convertible_v<
         std::add_lvalue_reference_t<A>, std::add_lvalue_reference_t<B>>;
 
+// Metafunction that returns the iterator type built using
+// IteratorCategory and a list of iterator types.
+// The actual iterator type is selected according to IteratorCategory.
 template <typename IteratorCategory, typename... Iterators>
 struct iterator_type;
 
@@ -510,6 +513,9 @@ struct iterator_type<offset_iterator_tag, Iterators...> {
 template <typename IteratorCategory, typename... Iterators>
 using iterator_type_t = typename iterator_type<IteratorCategory, Iterators...>::type;
 
+// Metafunction that returns the most specialized (given
+// std::forward_iterator_tag as inheritance root) common iterator
+// category tag among the iterator type list provided. 
 template <typename... Iterators>
 using common_iterator_category_t = typename policy::pack<Iterators...>::iterator_category;
 
