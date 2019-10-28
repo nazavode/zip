@@ -9,14 +9,13 @@
 #include <type_traits>
 #include <utility>
 
-//
 // CRTP helpers
 // self(): casts this to a perfectly forwarded
 // reference to the CRTP complete type.
-// The cost (in terms of mess) of having an actual
-// class template crtp helper providing this stuff
-// to all policy classes is unsustainable compared
-// to a neat old school macro.
+// Note to self: the cost (in terms of type mess) of
+// having *all* the policy classes derive from an actual
+// class template providing this stuff is unsustainable
+// compared to a neat old school macro.
 // clang-format off
 #define ZIP_ADD_CRTP_SELF_ACCESSOR(SELF_TYPE)           \
     constexpr auto& self() & noexcept {                 \
@@ -419,6 +418,8 @@ struct offset {
 // Concrete iterators
 //
 
+struct offset_iterator_tag : public std::random_access_iterator_tag {};
+
 template <typename IteratorPack,
           template <typename Pack, typename Self> typename... Policies>
 class iterator : public IteratorPack,
@@ -426,10 +427,6 @@ class iterator : public IteratorPack,
    public:
     using IteratorPack::IteratorPack;
 };
-
-struct offset_iterator_tag : public std::random_access_iterator_tag {};
-
-inline constexpr auto offset = offset_iterator_tag{};
 
 // clang-format off
 template <typename... Iterators>
@@ -471,13 +468,21 @@ using offset_iterator =
 // Traits
 //
 
+template <std::size_t I, typename... Ts>
+using nth_type_t = std::tuple_element_t<I, std::tuple<Ts...>>;
+
+template <typename T>
+using sequence_iterator_t = decltype(std::begin(std::declval<T&>()));
+
 template <typename T>
 inline constexpr bool is_iterator_category_v =
-    std::is_convertible_v<std::add_lvalue_reference_t<T>, std::add_lvalue_reference_t<std::forward_iterator_tag>>;
+    std::is_convertible_v<std::add_lvalue_reference_t<T>,
+                          std::add_lvalue_reference_t<std::forward_iterator_tag>>;
 
 template <typename A, typename B>
 inline constexpr bool is_compatible_iterator_category_v =
-    is_iterator_category_v<A>&& is_iterator_category_v<B>&& std::is_convertible_v<std::add_lvalue_reference_t<A>, std::add_lvalue_reference_t<B>>;
+    is_iterator_category_v<A>&& is_iterator_category_v<B>&& std::is_convertible_v<
+        std::add_lvalue_reference_t<A>, std::add_lvalue_reference_t<B>>;
 
 template <typename IteratorCategory, typename... Iterators>
 struct iterator_type;
@@ -512,23 +517,23 @@ using common_iterator_category_t = typename policy::pack<Iterators...>::iterator
 // Factory
 //
 
-template<std::size_t I, typename... Ts>
-using nth_type_t = std::tuple_element_t<I, std::tuple<Ts...>>;
-
-
-template <typename... Iterators>
-constexpr auto make_iterator(Iterators&&... args) /* -> std::enable_if_t<!is_iterator_category_v<nth_type_t<0, Iterators...>>, iterator_type_t<common_iterator_category_t<Iterators...>, Iterators...>> */ {
-    return iterator_type_t<common_iterator_category_t<Iterators...>, Iterators...>{
-        std::forward<Iterators>(args)...};
-}
-
-template <typename IteratorCategory, typename... Iterators>
-constexpr auto make_iterator(IteratorCategory, Iterators&&... args) -> std::enable_if_t<is_iterator_category_v<IteratorCategory>, iterator_type_t<IteratorCategory, Iterators...>> {
+template <typename IteratorCategory, typename... Iterators,
+          typename = std::enable_if_t<is_iterator_category_v<IteratorCategory>>>
+constexpr auto make_iterator(IteratorCategory, Iterators&&... args) {
     static_assert(
         is_compatible_iterator_category_v<offset_iterator_tag,
                                           common_iterator_category_t<Iterators...>>,
         "common iterator category is not compatible with requested iterator category");
-    return {std::forward<Iterators>(args)...};
+    using return_type = iterator_type_t<IteratorCategory, Iterators...>;
+    return return_type{std::forward<Iterators>(args)...};
+}
+
+template <
+    typename... Iterators,
+    typename = std::enable_if_t<!is_iterator_category_v<nth_type_t<0, Iterators...>>>>
+constexpr auto make_iterator(Iterators&&... args) {
+    using iterator_category = common_iterator_category_t<Iterators...>;
+    return make_iterator(iterator_category{}, std::forward<Iterators>(args)...);
 }
 
 template <typename IteratorCategory, typename... Sequences>
@@ -584,24 +589,25 @@ struct zip_view {
     sequences m_sequences;
 };
 
-template <typename... Sequences>
-constexpr auto zip(Sequences&&... args) -> zip_view<
-    common_iterator_category_t<decltype(std::begin(std::declval<Sequences&>()))...>,
-    Sequences...> {
-    return {std::forward<Sequences>(args)...};
-}
-
-template <typename IteratorCategory, typename... Sequences>
-constexpr auto zip(IteratorCategory, Sequences&&... args)
-    -> std::enable_if_t<is_iterator_category_v<IteratorCategory>,
-                        zip_view<IteratorCategory, Sequences...>> {
+template <typename IteratorCategory, typename... Sequences,
+          typename = std::enable_if_t<is_iterator_category_v<IteratorCategory>>>
+constexpr auto zip(IteratorCategory, Sequences&&... args) {
     static_assert(
-        is_compatible_iterator_category_v<offset_iterator_tag,
-                                          common_iterator_category_t<decltype(std::begin(
-                                              std::declval<Sequences&>()))...>>,
+        is_compatible_iterator_category_v<
+            offset_iterator_tag,
+            common_iterator_category_t<sequence_iterator_t<Sequences>...>>,
         "deduced common iterator category is not compatible with requested iterator "
         "category");
-    return {std::forward<Sequences>(args)...};
+    using return_type = zip_view<IteratorCategory, Sequences...>;
+    return return_type{std::forward<Sequences>(args)...};
+}
+
+template <
+    typename... Sequences,
+    typename = std::enable_if_t<!is_iterator_category_v<nth_type_t<0, Sequences...>>>>
+constexpr auto zip(Sequences&&... args) {
+    using iterator_category = common_iterator_category_t<sequence_iterator_t<Sequences>...>;
+    return zip(iterator_category{}, std::forward<Sequences>(args)...);
 }
 
 }  // namespace zip

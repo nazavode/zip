@@ -35,7 +35,7 @@ class SoA : public ::benchmark::Fixture {
 
     template <std::size_t... Indexes>
     constexpr auto cbegin_impl(std::index_sequence<Indexes...>) const noexcept {
-        return zip::make_iterator(zip::offset, std::cbegin(data[Indexes])...);
+        return zip::make_iterator(zip::offset_iterator_tag{}, std::cbegin(data[Indexes])...);
     }
 
     constexpr auto cend() const noexcept {
@@ -44,7 +44,7 @@ class SoA : public ::benchmark::Fixture {
 
     template <std::size_t... Indexes>
     constexpr auto cend_impl(std::index_sequence<Indexes...>) const noexcept {
-        return zip::make_iterator(zip::offset, std::cend(data[Indexes])...);
+        return zip::make_iterator(zip::offset_iterator_tag{}, std::cend(data[Indexes])...);
     }
 
     std::array<container_type, N> data;
