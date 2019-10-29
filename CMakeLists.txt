@@ -3,7 +3,7 @@ project(zip VERSION 0.1 LANGUAGES CXX)
 
 option(ZIP_ENABLE_TEST      "Enable building unit tests" ON)
 option(ZIP_ENABLE_BENCHMARK "Enable building micro-benchmarks" OFF)
-option(ZIP_ENABLE_OPTRECORD "Enable generation of LLVM optimization records" OFF)
+option(ZIP_ENABLE_OPTREPORT "Enable generation of optimization reports" OFF)
 
 # Add extra finders
 set(CMAKE_MODULE_PATH
@@ -206,26 +206,22 @@ if(CLANG_TIDY_FOUND)
 endif(CLANG_TIDY_FOUND)
 
 ###########################################################
-# Optimization records
+# Optimization reports
 ###########################################################
 
-if(ZIP_ENABLE_OPTRECORD)
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        include(FnAddOptimizationRecord)
-        add_optimization_record(
-            OptimizationRecords
-            SOURCES
-                ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point1dIteratorSum.cpp
-                ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point1dZipSum.cpp
-                ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point2dSoaZipSum.cpp
-                ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point3dSoaZipSum.cpp
-                ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point4dSoaZipSum.cpp
-            DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/opt
-            COMPILER_FLAGS -O3 -DNDEBUG -std=c++17 -stdlib=libc++
-            INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/include
-            ARCH skylake-avx512
-            COMPILER_PASSES loop-vectorize)
-    else()
-        message(WARNING "Optimization record generation is only supported on Clang")
-    endif()
-endif(ZIP_ENABLE_OPTRECORD)
+if(ZIP_ENABLE_OPTREPORT)
+    include(FnAddOptReport)
+    add_optreport(
+        OptimizationRecords
+        SOURCES
+            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point1dIteratorSum.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point1dZipSum.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point2dSoaZipSum.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point3dSoaZipSum.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point4dSoaZipSum.cpp
+        DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/benchmark/optimization
+        COMPILER_FLAGS -O3 -DNDEBUG -std=c++17 -stdlib=libc++
+        INCLUDES zip::zip
+        ARCH skylake-avx512
+        COMPILER_PASSES loop-vectorize)
+endif(ZIP_ENABLE_OPTREPORT)
