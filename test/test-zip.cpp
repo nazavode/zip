@@ -40,11 +40,11 @@ TEST(Zip, IteratorCategoryForward) {
     std::vector<long long> c;
     std::list<int> d;
     auto deduced = zip::zip(a, b, c, d);
-    EXPECT_TRUE(
-        (std::is_same_v<decltype(deduced)::iterator_category, std::forward_iterator_tag>));
+    EXPECT_TRUE((
+        std::is_same_v<decltype(deduced)::iterator_category, std::forward_iterator_tag>));
     auto requested = zip::zip(std::forward_iterator_tag{}, a, b, c, d);
-    EXPECT_TRUE(
-        (std::is_same_v<decltype(requested)::iterator_category, std::forward_iterator_tag>));
+    EXPECT_TRUE((std::is_same_v<decltype(requested)::iterator_category,
+                                std::forward_iterator_tag>));
 }
 
 TEST(Zip, IteratorCategoryRandomAccess) {

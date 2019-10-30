@@ -162,10 +162,6 @@ class pack {
     pack_type m_iterators;
 };
 
-///
-/// Policies
-///
-
 template <typename IteratorBase, typename IteratorPack>
 class dereference {
     using self_type = IteratorBase;
@@ -515,7 +511,7 @@ using iterator_type_t = typename iterator_type<IteratorCategory, Iterators...>::
 
 // Metafunction that returns the most specialized (given
 // std::forward_iterator_tag as inheritance root) common iterator
-// category tag among the iterator type list provided. 
+// category tag among the iterator type list provided.
 template <typename... Iterators>
 using common_iterator_category_t = typename policy::pack<Iterators...>::iterator_category;
 
@@ -580,16 +576,23 @@ struct zip_view {
         return ttl::transform<const_iterator>(
             m_sequences, [](auto&& seq) { return std::cend(seq); });
     }
-
-    // constexpr auto operator[] (
-    //     std::enable_if_t<
-    //         is_compatible_iterator_category_v<typename iterator::iterator_category,
-    //                                           std::random_access_iterator_tag>,
-    //         typename iterator::difference_type> idx) {
-    //     return begin()[idx];
-    // }
-
     // clang-format on
+
+    // TODO how to reasonably SFINAE on this?
+    // Cannot enable_if on:
+    // * return type: without auto, it must be calculated anyway
+    //   (would fail on decltype(std::declval<iterator>()[0]) when
+    //   no iterator::operator[])
+    // * extra function argument, operator[] *must* have exactly one
+    // Just turn it into a function template for now. Ugly but works fine.
+    template <typename T = typename iterator::difference_type,
+              typename = std::enable_if_t<
+                  (sizeof(T),
+                   is_compatible_iterator_category_v<typename iterator::iterator_category,
+                                                     std::random_access_iterator_tag>)>>
+    constexpr auto operator[](T idx) {
+        return begin()[idx];
+    }
 
    private:
     sequences m_sequences;
@@ -612,7 +615,8 @@ template <
     typename... Sequences,
     typename = std::enable_if_t<!is_iterator_category_v<nth_type_t<0, Sequences...>>>>
 constexpr auto zip(Sequences&&... args) {
-    using iterator_category = common_iterator_category_t<sequence_iterator_t<Sequences>...>;
+    using iterator_category =
+        common_iterator_category_t<sequence_iterator_t<Sequences>...>;
     return zip(iterator_category{}, std::forward<Sequences>(args)...);
 }
 
