@@ -193,7 +193,7 @@ class equality_comparable {
     constexpr bool operator!=(const self_type& rhs) const {
         // a != a' && b != b' && ...
         // This is needed to stop on the first sequence that hits its own std::end()
-        return ttl::all(self().iterators(), rhs.iterators(), std::not_equal_to{});
+        return !(self() == rhs);
     }
 };
 
