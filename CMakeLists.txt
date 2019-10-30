@@ -212,7 +212,7 @@ endif(CLANG_TIDY_FOUND)
 if(ZIP_ENABLE_OPTREPORT)
     include(FnAddOptReport)
     add_optreport(
-        OptimizationRecords
+        ZipOptreport
         SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point1dIteratorSum.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point1dZipSum.cpp
