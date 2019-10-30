@@ -333,9 +333,7 @@ struct offset {
     }
 
     constexpr bool operator!=(const self_type& rhs) const noexcept {
-        using std::get;
-        return (get<0>(self().iterators()) + m_offset) !=
-               (get<0>(rhs.iterators()) + rhs.m_offset);
+        return !(self() == rhs);
     }
 
     // Forward interface
