@@ -9,28 +9,21 @@
 #include <type_traits>
 #include <utility>
 
-// CRTP helpers
-// self(): casts this to a perfectly forwarded
-// reference to the CRTP complete type.
-// Note to self: the cost (in terms of type mess) of
-// having *all* the policy classes derive from an actual
-// class template providing this stuff is unsustainable
-// compared to a neat old school macro.
-// clang-format off
-#define ZIP_ADD_CRTP_SELF_ACCESSOR(SELF_TYPE)           \
-    constexpr auto& self() & noexcept {                 \
-        return static_cast<SELF_TYPE&>(*this); }        \
-    constexpr auto const& self() const& noexcept {      \
-        return static_cast<SELF_TYPE const&>(*this); }  \
-    constexpr auto&& self() && noexcept {               \
-        return static_cast<SELF_TYPE&&>(*this); }       \
-    constexpr auto const&& self() const&& noexcept {    \
-        return static_cast<SELF_TYPE const&&>(*this); }
-// clang-format on
-
 namespace zip {
 
 namespace ttl {
+// ttl contains a bunch of std algorithms that operate
+// on tuple-like types instead of iterators. Even
+// if not strictly needed for the sake of correctness,
+// currently all of the binary functions statically check
+// that both the lhs and rhs are of tuple-like types of
+// the same static size. This constraint could be relaxed
+// if the need arises. Provided algorithms are:
+// - transform
+// - for_each
+// - inner_product
+// - all
+// - any
 
 namespace impl {
 // clang-format off
@@ -133,6 +126,24 @@ constexpr auto inner_product(TupleLHS&& lhs, TupleRHS&& rhs, SumNaryOp&& sum, Pr
 }  // namespace ttl
 
 namespace policy {
+
+// self(): this CRTP helper casts 'this' to a perfectly
+// forwarded reference to the CRTP complete type.
+// Note to self: the cost (in terms of type mess) of
+// having *all* the policy classes derive from an actual
+// class template providing this stuff is unsustainable
+// compared to a neat old school macro.
+// clang-format off
+#define ZIP_ADD_CRTP_SELF_ACCESSOR(SELF_TYPE)           \
+    constexpr auto& self() & noexcept {                 \
+        return static_cast<SELF_TYPE&>(*this); }        \
+    constexpr auto const& self() const& noexcept {      \
+        return static_cast<SELF_TYPE const&>(*this); }  \
+    constexpr auto&& self() && noexcept {               \
+        return static_cast<SELF_TYPE&&>(*this); }       \
+    constexpr auto const&& self() const&& noexcept {    \
+        return static_cast<SELF_TYPE const&&>(*this); }
+// clang-format on
 
 template <typename... Iterators>
 class pack {
@@ -294,6 +305,12 @@ class random_access {
     }
 };
 
+// offset policy class provides all the functionalities of a
+// regular random access iterator on an iterator pack in the
+// fastest way. It prioritizes performances over correctness:
+// it is built under the assumption that all the wrapped
+// iterators target sequences of the same length, otherwise
+// almost all operations result in undefined behaviour.
 template <typename IteratorBase, typename IteratorPack>
 struct offset {
     using self_type = IteratorBase;
@@ -406,6 +423,10 @@ struct offset {
     }
 };
 
+#ifdef ZIP_ADD_CRTP_SELF_ACCESSOR
+#undef ZIP_ADD_CRTP_SELF_ACCESSOR
+#endif
+
 }  // namespace policy
 
 //
@@ -451,6 +472,11 @@ using random_access_iterator =
         policy::totally_ordered,
         policy::random_access>;
 
+// offset_iterator focuses on performance (e.g.: iteration loops vectorisability)
+// over correctness: it works only on random access iterators and behaves
+// correctly only when all the zipped sequences are of the same length,
+// otherwise it bails out and produces undefined behaviour just like
+// boost::iterator.
 template <typename... Iterators>
 using offset_iterator =
     iterator<
@@ -459,7 +485,7 @@ using offset_iterator =
 // clang-format on
 
 //
-// Traits
+// Helper traits
 //
 
 template <std::size_t I, typename... Ts>
@@ -507,14 +533,15 @@ struct iterator_type<offset_iterator_tag, Iterators...> {
 template <typename IteratorCategory, typename... Iterators>
 using iterator_type_t = typename iterator_type<IteratorCategory, Iterators...>::type;
 
-// Metafunction that returns the most specialized (given
-// std::forward_iterator_tag as inheritance root) common iterator
-// category tag among the iterator type list provided.
+// common_iterator_category_t is a metafunction that returns the
+// least-upper-bound (e.g.: most specialized common ancestor type
+// given std::forward_iterator_tag as the inheritance root) common
+// iterator category tag among the iterator type list provided.
 template <typename... Iterators>
 using common_iterator_category_t = typename policy::pack<Iterators...>::iterator_category;
 
 //
-// Factory
+// Factories
 //
 
 template <typename IteratorCategory, typename... Iterators,
@@ -538,10 +565,10 @@ constexpr auto make_iterator(Iterators&&... args) {
 
 template <typename IteratorCategory, typename... Sequences>
 struct zip_view {
+    using iterator_category = IteratorCategory;
     // Why the & is needed while declval-ing Sequences:
     // https://stackoverflow.com/questions/42580761/why-does-stdbegin-always-return-const-iterator-in-such-a-case
     // clang-format off
-    using iterator_category = IteratorCategory;
     using iterator = 
         decltype(make_iterator(std::declval<iterator_category>(), std::begin(std::declval<Sequences&>())...));
     using const_iterator =
@@ -596,6 +623,16 @@ struct zip_view {
     sequences m_sequences;
 };
 
+// zip wraps a sequence of iterators into one single type
+// that is iterable in a python-like zip fashion.
+// The iterator category is deduced as the least-upper-bound
+// of all the arguments' iterator categories.
+// It's possible to ask for a specific iterator category by
+// passing it as the first argument; if it turns out to be
+// not convertible to the actual least-upper-bound of the
+// argument iterator categories, a static error will be
+// reported.
+
 template <typename IteratorCategory, typename... Sequences,
           typename = std::enable_if_t<is_iterator_category_v<IteratorCategory>>>
 constexpr auto zip(IteratorCategory, Sequences&&... args) {
@@ -619,9 +656,5 @@ constexpr auto zip(Sequences&&... args) {
 }
 
 }  // namespace zip
-
-#ifdef ZIP_ADD_CRTP_SELF_ACCESSOR
-#undef ZIP_ADD_CRTP_SELF_ACCESSOR
-#endif
 
 #endif
