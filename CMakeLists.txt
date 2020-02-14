@@ -78,13 +78,15 @@ target_link_libraries(ZipTest
         zip::cxxstd
         zip::warnings
         zip::zip)
+# Check for -Wgnu-zero-variadic-macro-arguments
+
     
 if(ZIP_ENABLE_TEST)
     find_package(GTest QUIET)
     if(NOT GTEST_FOUND)
         message(STATUS "Installing googletest via submodule")
-        execute_process(COMMAND git submodule update --init -- vendor/googletest
-                        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+        include(FnGitSubmoduleUpdate)
+        git_submodule_update(vendor/googletest)
         set(vendor_source_dir ${CMAKE_SOURCE_DIR}/vendor/googletest)
         set(vendor_binary_dir ${CMAKE_BINARY_DIR}/vendor/googletest)
         # Prevent overriding the parent project's compiler/linker
@@ -143,8 +145,8 @@ if(ZIP_ENABLE_BENCHMARK)
     find_package(benchmark QUIET)
     if(NOT benchmark_FOUND)
         message(STATUS "Installing google benchmark via submodule")
-        execute_process(COMMAND git submodule update --init -- vendor/benchmark
-                        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+        include(FnGitSubmoduleUpdate)
+        git_submodule_update(vendor/benchmark)
         set(vendor_source_dir ${CMAKE_SOURCE_DIR}/vendor/benchmark)
         set(vendor_binary_dir ${CMAKE_BINARY_DIR}/vendor/benchmark)
         set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
