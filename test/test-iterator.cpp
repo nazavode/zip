@@ -541,8 +541,10 @@ using RandomAccessCategoryTypes =
 // Googletest macros doesn't support -Wall -Werror (wtf?),
 // so users should expect breaks:
 // https://github.com/google/googletest/pull/2316#issuecomment-518269259
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+#endif
 
 INSTANTIATE_TYPED_TEST_SUITE_P(ZipIterator,
     ForwardInterface, ForwardCategoryTypes);
@@ -553,5 +555,7 @@ INSTANTIATE_TYPED_TEST_SUITE_P(ZipIterator,
 INSTANTIATE_TYPED_TEST_SUITE_P(ZipIterator,
     RandomAccessInterface, RandomAccessCategoryTypes);
 
-#pragma GCC diagnostic pop
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 // clang-format on
