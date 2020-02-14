@@ -216,12 +216,12 @@ if(ZIP_ENABLE_OPTREPORT)
     add_optreport(
         ZipOptreport
         SOURCES
-            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point1dIteratorSum.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point1dZipSum.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point2dSoaZipSum.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point3dSoaZipSum.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/optimization/Point4dSoaZipSum.cpp
-        DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/benchmark/optimization
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/opt/Point1dIteratorSum.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/opt/Point1dZipSum.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/opt/Point2dSoaZipSum.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/opt/Point3dSoaZipSum.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/opt/Point4dSoaZipSum.cpp
+        DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/test/opt
         COMPILER_FLAGS -O3 -DNDEBUG -std=c++17 -stdlib=libc++
         INCLUDES zip::zip
         ARCH skylake-avx512
