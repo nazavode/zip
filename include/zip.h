@@ -12,18 +12,17 @@
 namespace zip {
 
 namespace ttl {
-// ttl contains a bunch of std algorithms that operate
-// on tuple-like types instead of iterators. Even
-// if not strictly needed for the sake of correctness,
-// currently all of the binary functions statically check
-// that both the lhs and rhs are of tuple-like types of
-// the same static size. This constraint could be relaxed
-// if the need arises. Provided algorithms are:
-// - transform
-// - for_each
-// - inner_product
-// - all
-// - any
+/// Namespace ttl contains a bunch of std algorithms that operate
+/// on tuple-like types instead of iterators. Even if not strictly
+/// needed for the sake of correctness, currently all of the binary
+/// functions statically check that both the lhs and rhs are of
+/// tuple-like types of the same static size. This constraint could
+/// be relaxed if the need arises. Provided algorithms are:
+/// - transform
+/// - for_each
+/// - inner_product
+/// - all
+/// - any
 
 namespace impl {
 // clang-format off
@@ -504,9 +503,9 @@ inline constexpr bool is_compatible_iterator_category_v =
     is_iterator_category_v<A>&& is_iterator_category_v<B>&& std::is_convertible_v<
         std::add_lvalue_reference_t<A>, std::add_lvalue_reference_t<B>>;
 
-// Metafunction that returns the iterator type built using
-// IteratorCategory and a list of iterator types.
-// The actual iterator type is selected according to IteratorCategory.
+/// iterator_type is a metafunction that returns a zipped iterator type
+/// according the specified IteratorCategory and packs in it the list
+/// of specified iterator types.
 template <typename IteratorCategory, typename... Iterators>
 struct iterator_type;
 
@@ -530,13 +529,16 @@ struct iterator_type<offset_iterator_tag, Iterators...> {
     using type = offset_iterator<Iterators...>;
 };
 
+/// iterator_type_t is a metafunction that returns a zipped iterator type
+/// according the specified IteratorCategory and packs in it the list
+/// of specified iterator types.
 template <typename IteratorCategory, typename... Iterators>
 using iterator_type_t = typename iterator_type<IteratorCategory, Iterators...>::type;
 
-// common_iterator_category_t is a metafunction that returns the
-// least-upper-bound (e.g.: most specialized common ancestor type
-// given std::forward_iterator_tag as the inheritance root) common
-// iterator category tag among the iterator type list provided.
+/// common_iterator_category_t is a metafunction that returns the
+/// least-upper-bound (e.g.: most specialized common ancestor type
+/// given std::forward_iterator_tag as the inheritance root) common
+/// iterator category tag among the iterator type list provided.
 template <typename... Iterators>
 using common_iterator_category_t = typename policy::pack<Iterators...>::iterator_category;
 
@@ -623,16 +625,15 @@ struct zip_view {
     sequences m_sequences;
 };
 
-// zip wraps a sequence of iterators into one single type
-// that is iterable in a python-like zip fashion.
-// The iterator category is deduced as the least-upper-bound
-// of all the arguments' iterator categories.
-// It's possible to ask for a specific iterator category by
-// passing it as the first argument; if it turns out to be
-// not convertible to the actual least-upper-bound of the
-// argument iterator categories, a static error will be
-// reported.
-
+/// zip wraps a sequence of iterators into one single type
+/// that is iterable in a python-like zip fashion.
+/// The iterator category is deduced as the least-upper-bound
+/// of all the arguments' iterator categories.
+/// It's possible to ask for a specific iterator category by
+/// passing it as the first argument; if it turns out to be
+/// not convertible to the actual least-upper-bound of the
+/// argument iterator categories, a static error will be
+/// reported.
 template <typename IteratorCategory, typename... Sequences,
           typename = std::enable_if_t<is_iterator_category_v<IteratorCategory>>>
 constexpr auto zip(IteratorCategory, Sequences&&... args) {
