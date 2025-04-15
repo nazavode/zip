@@ -58,9 +58,9 @@ target_link_libraries(ZipLib
 # Defines target 'zip::test'
 ###########################################################
 add_executable(ZipTest
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/test-zip.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/test-iterator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/sanitize-options.cpp)
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/unit/test-zip.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/unit/test-iterator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/unit/sanitize-options.cpp)
 add_executable(zip::test ALIAS ZipTest)
 set_target_properties(ZipTest
     PROPERTIES
