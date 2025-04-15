@@ -614,9 +614,9 @@ struct zip_view {
     // Just turn it into a function template for now. Ugly but works fine.
     template <typename T = typename iterator::difference_type,
               typename = std::enable_if_t<
-                  (sizeof(T),
-                   is_compatible_iterator_category_v<typename iterator::iterator_category,
-                                                     std::random_access_iterator_tag>)>>
+                  sizeof(T) &&
+                  is_compatible_iterator_category_v<typename iterator::iterator_category,
+                                                    std::random_access_iterator_tag>>>
     constexpr auto operator[](T idx) {
         return begin()[idx];
     }
