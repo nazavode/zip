@@ -1,6 +1,0 @@
-[submodule "external/benchmark"]
-	path = vendor/benchmark
-	url = https://github.com/google/benchmark.git
-[submodule "external/gtest"]
-	path = vendor/googletest
-	url = https://github.com/google/googletest.git
