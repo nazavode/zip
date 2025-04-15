@@ -21,9 +21,8 @@ class SoA : public ::benchmark::Fixture {
     }
 
     void TearDown(::benchmark::State& state) {
-        state.SetBytesProcessed(static_cast<std::int64_t>(
-            state.iterations() * static_cast<std::uint64_t>(state.range(0)) *
-            sizeof(value_type) * N));
+        state.SetBytesProcessed(state.iterations() * state.range(0) *
+                                static_cast<int64_t>(sizeof(value_type) * N));
         std::for_each(std::begin(data), std::end(data), [](auto&& c) { c.clear(); });
     }
 
@@ -324,8 +323,7 @@ BENCHMARK_DEFINE_F(AoS_Int32_3D, SumSubscript)(benchmark::State& state) {
         benchmark::DoNotOptimize(return_sum_z);
     }
 
-    state.SetBytesProcessed(static_cast<std::int64_t>(
-        state.iterations() * static_cast<std::uint64_t>(state.range(0)) * sizeof(int) *
-        3U));
+    state.SetBytesProcessed(state.iterations() * state.range(0) *
+                            static_cast<int64_t>(sizeof(int) * 3));
 }
 BENCHMARK_REGISTER_F(AoS_Int32_3D, SumSubscript)->Range(1 << 0, 1 << 10);
