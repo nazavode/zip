@@ -9,7 +9,7 @@ config.zip_build_dir = path(r"@ZIP_BUILD_ROOT@")
 config.filecheck_path = path(r"@ZIP_FILECHECK_PATH@")
 
 config.substitutions.extend([
-    (r"%cxx", r"@CMAKE_CXX_COMPILER@"),
+    (r"%cxx", r"@CMAKE_CXX_COMPILER@ -I'@ZIP_SRC_ROOT@/include'"),
     (r"%opt-report-summary", path(r"@ZIP_SRC_ROOT@/scripts/opt-report-summary.py"))
 ])
 
