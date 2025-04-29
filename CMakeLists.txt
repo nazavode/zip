@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 project(
   zip
   VERSION 0.1
@@ -10,6 +10,8 @@ option(ZIP_ENABLE_OPT_TEST "Enable optimization tests (needs lit+filecheck)"
 option(ZIP_ENABLE_BENCHMARK "Enable building micro-benchmarks" OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+include(cmake/CPM.cmake)
 
 # ##############################################################################
 # C++ standard level. Defines target 'zip::cxxstd'.
@@ -55,7 +57,7 @@ target_link_libraries(ZipLib INTERFACE zip::cxxstd)
 # ##############################################################################
 
 if(ZIP_ENABLE_TEST)
-  find_package(GTest REQUIRED CONFIG)
+  cpmaddpackage(NAME GTest GITHUB_REPOSITORY google/googletest VERSION 1.16.0)
 
   add_executable(
     ZipUnitTest
@@ -111,7 +113,19 @@ endif(ZIP_ENABLE_OPT_TEST)
 # ##############################################################################
 
 if(ZIP_ENABLE_BENCHMARK)
-  find_package(benchmark REQUIRED CONFIG)
+
+  cpmaddpackage(
+    NAME
+    benchmark
+    GITHUB_REPOSITORY
+    google/benchmark
+    VERSION
+    1.9.2
+    OPTIONS
+    "BENCHMARK_ENABLE_TESTING OFF"
+    "BENCHMARK_ENABLE_WERROR OFF"
+    "BENCHMARK_FORCE_WERROR OFF"
+    "BENCHMARK_USE_LIBCXX ON")
 
   add_executable(ZipBenchmark
                  ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/bench-iterator.cpp)
