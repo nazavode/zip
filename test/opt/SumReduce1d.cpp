@@ -27,34 +27,22 @@ int SumReduce1dFloat(const std::vector<float>& x) {
     return sum;
 }
 
-// Offset iterator
+// Zip
 
-int SumReduce1dIntOffset(const std::vector<int>& x) {
+int SumReduce1dIntZip(const std::vector<int>& x) {
     int sum = 0;
-
-    const auto begin = zip::make_iterator(zip::offset_iterator_tag{}, std::cbegin(x));
-    const auto end = zip::make_iterator(zip::offset_iterator_tag{}, std::cend(x));
-
-    // CHECK: PASSED(loop-vectorize) SumReduce1d.cpp:39
-    for (auto it = begin; it != end; ++it) {
-        const auto [value] = *it;
+    // CHECK: PASSED(loop-vectorize) SumReduce1d.cpp:35
+    for (auto [value] : zip::zip(x)) {
         sum += value;
     }
-
     return sum;
 }
 
-float SumReduce1dFloatOffset(const std::vector<float>& x) {
+float SumReduce1dFloatZip(const std::vector<float>& x) {
     float sum = 0.f;
-
-    const auto begin = zip::make_iterator(zip::offset_iterator_tag{}, std::cbegin(x));
-    const auto end = zip::make_iterator(zip::offset_iterator_tag{}, std::cend(x));
-
-    // CHECK: PASSED(loop-vectorize) SumReduce1d.cpp:54
-    for (auto it = begin; it != end; ++it) {
-        const auto [value] = *it;
+    // CHECK: PASSED(loop-vectorize) SumReduce1d.cpp:44
+    for (auto [value] : zip::zip(x)) {
         sum += value;
     }
-
     return sum;
 }

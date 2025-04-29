@@ -14,20 +14,54 @@ struct Result {
     T z;
 };
 
+Result<int> SumReduce3dInt(const std::vector<int>& x, const std::vector<int>& y,
+                           const std::vector<int>& z) {
+    int sum_x = 0;
+    int sum_y = 0;
+    int sum_z = 0;
+
+    // zip_iterator inferred category is random_access, clang is unable
+    // to vectorize while keeping track of 3 independent iterators:
+    // CHECK: MISSED(loop-vectorize) SumReduce3d.cpp:26
+    for (auto [value_x, value_y, value_z] : zip::zip(x, y, z)) {
+        sum_x += value_x;
+        sum_y += value_y;
+        sum_z += value_z;
+    }
+
+    return {sum_x, sum_y, sum_z};
+}
+
 Result<int> SumReduce3dIntOffset(const std::vector<int>& x, const std::vector<int>& y,
                                  const std::vector<int>& z) {
     int sum_x = 0;
     int sum_y = 0;
     int sum_z = 0;
 
-    const auto begin = zip::make_iterator(zip::offset_iterator_tag{}, std::cbegin(x),
-                                          std::cbegin(y), std::cbegin(z));
-    const auto end = zip::make_iterator(zip::offset_iterator_tag{}, std::cend(x),
-                                        std::cend(y), std::cend(z));
+    // offset_iterator must be requested explicitly, but allows
+    // clang to vectorize since it advances all iterators using
+    // a single induction variable:
+    // CHECK: PASSED(loop-vectorize) SumReduce3d.cpp:45
+    for (auto [value_x, value_y, value_z] :
+         zip::zip(zip::offset_iterator_tag{}, x, y, z)) {
+        sum_x += value_x;
+        sum_y += value_y;
+        sum_z += value_z;
+    }
 
-    // CHECK: PASSED(loop-vectorize) SumReduce3d.cpp:29
-    for (auto it = begin; it != end; ++it) {
-        const auto [value_x, value_y, value_z] = *it;
+    return {sum_x, sum_y, sum_z};
+}
+
+Result<float> SumReduce3dFloat(const std::vector<float>& x, const std::vector<float>& y,
+                               const std::vector<float>& z) {
+    float sum_x = 0.f;
+    float sum_y = 0.f;
+    float sum_z = 0.f;
+
+    // zip_iterator inferred category is random_access, clang is unable
+    // to vectorize while keeping track of 4 independent iterators:
+    // CHECK: MISSED(loop-vectorize) SumReduce3d.cpp:64
+    for (auto [value_x, value_y, value_z] : zip::zip(x, y, z)) {
         sum_x += value_x;
         sum_y += value_y;
         sum_z += value_z;
@@ -43,14 +77,12 @@ Result<float> SumReduce3dFloatOffset(const std::vector<float>& x,
     float sum_y = 0.f;
     float sum_z = 0.f;
 
-    const auto begin = zip::make_iterator(zip::offset_iterator_tag{}, std::cbegin(x),
-                                          std::cbegin(y), std::cbegin(z));
-    const auto end = zip::make_iterator(zip::offset_iterator_tag{}, std::cend(x),
-                                        std::cend(y), std::cend(z));
-
-    // CHECK: PASSED(loop-vectorize) SumReduce3d.cpp:52
-    for (auto it = begin; it != end; ++it) {
-        const auto [value_x, value_y, value_z] = *it;
+    // offset_iterator must be requested explicitly, but allows
+    // clang to vectorize since it advances all iterators using
+    // a single induction variable:
+    // CHECK: PASSED(loop-vectorize) SumReduce3d.cpp:84
+    for (auto [value_x, value_y, value_z] :
+         zip::zip(zip::offset_iterator_tag{}, x, y, z)) {
         sum_x += value_x;
         sum_y += value_y;
         sum_z += value_z;
