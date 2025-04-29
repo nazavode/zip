@@ -8,15 +8,16 @@ option(ZIP_ENABLE_TEST "Enable building unit tests" OFF)
 option(ZIP_ENABLE_OPT_TEST "Enable optimization tests (needs lit+filecheck)"
        OFF)
 option(ZIP_ENABLE_BENCHMARK "Enable building micro-benchmarks" OFF)
-option(ZIP_ENABLE_OPTREPORT "Enable generation of optimization reports" OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # ##############################################################################
 # C++ standard level. Defines target 'zip::cxxstd'.
 # ##############################################################################
-include(FnAddCxxStdLibrary)
-add_cxxstd_library(ZipCxxStd 17)
+
+add_library(ZipCxxStd INTERFACE)
+set_property(TARGET ZipCxxStd PROPERTY INTERFACE_CXX_EXTENSIONS OFF)
+set_property(TARGET ZipCxxStd PROPERTY INTERFACE_COMPILE_FEATURES cxx_std_17)
 add_library(zip::cxxstd ALIAS ZipCxxStd)
 
 # ##############################################################################
@@ -165,32 +166,3 @@ if(CLANG_TIDY_FOUND)
     COMMAND ${tidy_cmd} -fix ${_AllSources}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif(CLANG_TIDY_FOUND)
-
-# ##############################################################################
-# Optimization reports
-# ##############################################################################
-
-if(ZIP_ENABLE_OPTREPORT)
-  include(FnAddOptReport)
-  add_optreport(
-    ZipOptreport
-    SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/opt/Point1dIteratorSum.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/opt/Point1dZipSum.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/opt/Point2dSoaZipSum.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/opt/Point3dSoaZipSum.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/opt/Point4dSoaZipSum.cpp
-    DESTINATION
-    ${CMAKE_CURRENT_BINARY_DIR}/test/opt
-    COMPILER_FLAGS
-    -O3
-    -DNDEBUG
-    -std=c++17
-    -stdlib=libc++
-    INCLUDES
-    zip::zip
-    ARCH
-    skylake-avx512
-    COMPILER_PASSES
-    loop-vectorize)
-endif(ZIP_ENABLE_OPTREPORT)
