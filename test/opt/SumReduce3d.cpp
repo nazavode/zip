@@ -59,7 +59,7 @@ Result<float> SumReduce3dFloat(const std::vector<float>& x, const std::vector<fl
     float sum_z = 0.f;
 
     // zip_iterator inferred category is random_access, clang is unable
-    // to vectorize while keeping track of 4 independent iterators:
+    // to vectorize while keeping track of 3 independent iterators:
     // CHECK: MISSED(loop-vectorize) SumReduce3d.cpp:64
     for (auto [value_x, value_y, value_z] : zip::zip(x, y, z)) {
         sum_x += value_x;
