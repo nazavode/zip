@@ -51,36 +51,35 @@ target_include_directories(
 target_link_libraries(ZipLib INTERFACE zip::cxxstd)
 
 # ##############################################################################
-# Unit tests. Defines target 'zip::unittest'
+# Unit tests.
 # ##############################################################################
-add_executable(
-  ZipUnitTest
-  ${CMAKE_CURRENT_SOURCE_DIR}/test/unit/test-zip.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test/unit/test-iterator.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/test/unit/sanitize-options.cpp)
-add_executable(zip::unittest ALIAS ZipUnitTest)
-set_target_properties(
-  ZipUnitTest
-  PROPERTIES # zip::cxxstd isn't enough since INTERFACE_CXX_EXTENSIONS
-             # is still broken:
-             # https://gitlab.kitware.com/cmake/cmake/issues/17183
-             CXX_EXTENSIONS OFF
-             OUTPUT_NAME "zip-test")
-target_link_libraries(ZipUnitTest PRIVATE zip::cxxstd zip::warnings zip::zip)
-# Check for -Wgnu-zero-variadic-macro-arguments
 
 if(ZIP_ENABLE_TEST)
   find_package(GTest REQUIRED CONFIG)
-  target_link_libraries(ZipUnitTest PRIVATE GTest::gtest GTest::gmock
-                                            GTest::gtest_main)
+
+  add_executable(
+    ZipUnitTest
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/unit/test-zip.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/unit/test-iterator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/unit/sanitize-options.cpp)
+  add_executable(zip::unittest ALIAS ZipUnitTest)
+  set_target_properties(
+    ZipUnitTest
+    PROPERTIES # zip::cxxstd isn't enough since INTERFACE_CXX_EXTENSIONS
+               # is still broken:
+               # https://gitlab.kitware.com/cmake/cmake/issues/17183
+               CXX_EXTENSIONS OFF
+               OUTPUT_NAME "zip-test")
+
+  target_link_libraries(
+    ZipUnitTest PRIVATE zip::cxxstd zip::warnings zip::zip GTest::gtest
+                        GTest::gmock GTest::gtest_main)
   enable_testing()
   add_test(NAME zip-test COMMAND ZipUnitTest)
-else(ZIP_ENABLE_TEST)
-  set_target_properties(ZipUnitTest PROPERTIES EXCLUDE_FROM_ALL ON)
 endif(ZIP_ENABLE_TEST)
 
 # ##############################################################################
-# Optimization tests. Defines target check-zip
+# Optimization tests.
 # ##############################################################################
 
 if(ZIP_ENABLE_OPT_TEST)
@@ -101,35 +100,33 @@ if(ZIP_ENABLE_OPT_TEST)
                  ${CMAKE_CURRENT_BINARY_DIR}/test/opt/lit.site.cfg.py @ONLY)
 
   add_custom_target(
-    check-zip ALL
+    test-opt
     COMMAND ${ZIP_LIT} test/opt/
     DEPENDS zip::zip
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 endif(ZIP_ENABLE_OPT_TEST)
 
 # ##############################################################################
-# Micro-benchmarks. Defines target 'zip::benchmark'
+# Micro-benchmarks
 # ##############################################################################
-add_executable(ZipBenchmark
-               ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/bench-iterator.cpp)
-add_executable(zip::benchmark ALIAS ZipBenchmark)
-set_target_properties(
-  ZipBenchmark
-  PROPERTIES # zip::cxxstd isn't enough since INTERFACE_CXX_EXTENSIONS
-             # is still broken:
-             # https://gitlab.kitware.com/cmake/cmake/issues/17183
-             CXX_EXTENSIONS OFF
-             OUTPUT_NAME "zip-benchmark")
-target_link_libraries(ZipBenchmark PRIVATE zip::cxxstd zip::warnings zip::zip)
 
 if(ZIP_ENABLE_BENCHMARK)
   find_package(benchmark REQUIRED CONFIG)
-  target_link_libraries(ZipBenchmark PRIVATE benchmark::benchmark
-                                             benchmark::benchmark_main)
 
-else(ZIP_ENABLE_BENCHMARK)
-  # Don't download Google Benchmark and skip target
-  set_target_properties(ZipBenchmark PROPERTIES EXCLUDE_FROM_ALL ON)
+  add_executable(ZipBenchmark
+                 ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/bench-iterator.cpp)
+  add_executable(zip::benchmark ALIAS ZipBenchmark)
+  set_target_properties(
+    ZipBenchmark
+    PROPERTIES # zip::cxxstd isn't enough since INTERFACE_CXX_EXTENSIONS
+               # is still broken:
+               # https://gitlab.kitware.com/cmake/cmake/issues/17183
+               CXX_EXTENSIONS OFF
+               OUTPUT_NAME "zip-benchmark")
+
+  target_link_libraries(
+    ZipBenchmark PRIVATE zip::cxxstd zip::warnings zip::zip
+                         benchmark::benchmark benchmark::benchmark_main)
 endif(ZIP_ENABLE_BENCHMARK)
 
 # ##############################################################################
