@@ -44,6 +44,10 @@ jobs:
             -DZIP_ENABLE_BENCHMARK=OFF \
             -DZIP_USE_SANITIZER=Address;Undefined
           cmake --build build
+      
+      - name: Code formatting
+        run: |
+          cmake --build build --target format
 
       - name: Unit tests
         run: |
