@@ -34,51 +34,47 @@
 # https://github.com/nazavode/cmake-depot.git
 # cmake-format: on
 
-find_program(CLANG_FORMAT_EXECUTABLE
-             HINTS "${ClangFormat_ROOT}"
-             NAMES clang-format
-                   clang-format-20
-                   clang-format-19
-                   clang-format-18
-                   clang-format-17
-                   clang-format-16
-                   clang-format-15
-                   clang-format-14
-                   clang-format-13
-                   clang-format-12
-                   clang-format-11
-                   clang-format-10
-                   clang-format-9
-                   clang-format-8
-                   clang-format-7
-                   clang-format-6
-                   clang-format-5
-                   clang-format-4
-                   clang-format-3
-             DOC "clang-format executable")
+find_program(
+  CLANG_FORMAT_EXECUTABLE
+  HINTS "${ClangFormat_ROOT}"
+  NAMES clang-format
+        clang-format-20
+        clang-format-19
+        clang-format-18
+        clang-format-17
+        clang-format-16
+        clang-format-15
+        clang-format-14
+        clang-format-13
+        clang-format-12
+        clang-format-11
+        clang-format-10
+        clang-format-9
+        clang-format-8
+        clang-format-7
+        clang-format-6
+        clang-format-5
+        clang-format-4
+        clang-format-3
+  DOC "clang-format executable")
 mark_as_advanced(CLANG_FORMAT_EXECUTABLE)
 
 # Extract version from command "clang-format -version"
 if(CLANG_FORMAT_EXECUTABLE)
-  execute_process(COMMAND ${CLANG_FORMAT_EXECUTABLE} -version
-                  OUTPUT_VARIABLE clang_format_version
-                  ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(
+    COMMAND ${CLANG_FORMAT_EXECUTABLE} -version
+    OUTPUT_VARIABLE clang_format_version
+    ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   if(clang_format_version MATCHES "^clang-format version .*")
     # clang_format_version sample: "clang-format version 3.9.1-4ubuntu3~16.04.1
     # (tags/RELEASE_391/rc2)"
-    string(REGEX
-           REPLACE "clang-format version ([.0-9]+).*"
-                   "\\1"
-                   CLANG_FORMAT_VERSION
-                   "${clang_format_version}")
+    string(REGEX REPLACE "clang-format version ([.0-9]+).*" "\\1"
+                         CLANG_FORMAT_VERSION "${clang_format_version}")
     # CLANG_FORMAT_VERSION sample: "3.9.1"
 
     # Extract version components
-    string(REPLACE "."
-                   ";"
-                   clang_format_version
-                   "${CLANG_FORMAT_VERSION}")
+    string(REPLACE "." ";" clang_format_version "${CLANG_FORMAT_VERSION}")
     list(LENGTH clang_format_version CLANG_FORMAT_VERSION_COUNT)
     if(CLANG_FORMAT_VERSION_COUNT GREATER 0)
       list(GET clang_format_version 0 CLANG_FORMAT_VERSION_MAJOR)

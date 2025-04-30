@@ -1,3 +1,4 @@
+# cmake-format: off
 # * returns all the source files (including headers) associated to the given targets.
 #
 # get_target_sources(<sourcesvar> <target> [<target>...])
@@ -14,7 +15,6 @@
 # * INTERFACE_HEADER
 # * PRIVATE_HEADER
 #
-# cmake-format: off
 # This file is part of:
 # https://github.com/nazavode/cmake-depot.git
 #
@@ -34,29 +34,24 @@
 # cmake-format: on
 
 function(get_target_sources _outvar _target)
-    # Returns all the source files
-    # (including headers) associated to the given
-    # targets.
-    set(sources "")
-    foreach(tgt ${_target} ${ARGN})
-        get_target_property(tgt_type ${tgt} TYPE)
-        set(properties
-            INTERFACE_SOURCES
-            INTERFACE_HEADER)
-        if(NOT ${tgt_type} STREQUAL "INTERFACE_LIBRARY")
-            set(properties
-                ${properties}
-                SOURCES
-                PUBLIC_HEADER
-                PRIVATE_HEADER)
-        endif()
-        foreach(property ${properties})
-            get_target_property(result ${tgt} ${property})
-            if(NOT ("${result}" STREQUAL "result-NOTFOUND" OR "${result}" STREQUAL ""))
-                list(APPEND sources ${result})
-            endif()
-        endforeach()
+  # Returns all the source files (including headers) associated to the given
+  # targets.
+  set(sources "")
+  foreach(tgt ${_target} ${ARGN})
+    get_target_property(tgt_type ${tgt} TYPE)
+    set(properties INTERFACE_SOURCES INTERFACE_HEADER)
+    if(NOT ${tgt_type} STREQUAL "INTERFACE_LIBRARY")
+      set(properties ${properties} SOURCES PUBLIC_HEADER PRIVATE_HEADER)
+    endif()
+    foreach(property ${properties})
+      get_target_property(result ${tgt} ${property})
+      if(NOT ("${result}" STREQUAL "result-NOTFOUND" OR "${result}" STREQUAL ""
+             ))
+        list(APPEND sources ${result})
+      endif()
     endforeach()
-    set(${_outvar} ${sources} PARENT_SCOPE)
+  endforeach()
+  set(${_outvar}
+      ${sources}
+      PARENT_SCOPE)
 endfunction(get_target_sources)
-
