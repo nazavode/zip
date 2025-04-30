@@ -42,7 +42,7 @@ jobs:
             -DCMAKE_CXX_FLAGS="-stdlib=libc++" \
             -DZIP_ENABLE_TEST=ON \
             -DZIP_ENABLE_OPT_TEST=ON \
-            -DZIP_ENABLE_BENCHMARK=OFF \
+            -DZIP_ENABLE_BENCHMARK=ON \
             -DZIP_USE_SANITIZER="Address;Undefined"
           cmake --build build
       
