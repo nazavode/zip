@@ -56,8 +56,7 @@ jobs:
           source venv/bin/activate
           cmake --build build --target test
       
-      # - name: Optimization tests
-      #   run: |
-      #     source venv/bin/activate
-      #     cd build
-      #     lit -v test/opt
+      - name: Optimization tests
+        run: |
+          source venv/bin/activate
+          cmake --build build --target test-opt

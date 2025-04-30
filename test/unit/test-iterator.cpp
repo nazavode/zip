@@ -544,6 +544,7 @@ using RandomAccessCategoryTypes =
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+#pragma clang diagnostic ignored "-Wc++20-extensions"
 #endif
 
 INSTANTIATE_TYPED_TEST_SUITE_P(ZipIterator,
