@@ -34,6 +34,7 @@ jobs:
 
       - name: Build
         run: |
+          source venv/bin/activate
           cmake -S . -B build -G Ninja \
             -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_C_COMPILER=clang-20 \
@@ -47,10 +48,12 @@ jobs:
       
       - name: Code formatting
         run: |
+          source venv/bin/activate
           cmake --build build --target format
 
       - name: Unit tests
         run: |
+          source venv/bin/activate
           cmake --build build --target test
       
       - name: Optimization tests
