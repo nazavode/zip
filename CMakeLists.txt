@@ -86,12 +86,12 @@ endif(ZIP_ENABLE_TEST)
 # ##############################################################################
 
 if(ZIP_ENABLE_OPT_TEST)
-  find_program(
-    ZIP_FILECHECK
-    NAMES FileCheck filecheck
-    HINTS $ENV{ZIP_FILECHECK} REQUIRED)
-  get_filename_component(ZIP_FILECHECK_PATH "${ZIP_FILECHECK}" DIRECTORY)
-  message(STATUS "Found FileCheck: ${ZIP_FILECHECK}")
+  find_package(FileCheck REQUIRED)
+  if(NOT FILECHECK_FOUND)
+    message(FATAL_ERROR "FileCheck not found.")
+  endif()
+  set(ZIP_FILECHECK ${FILECHECK_EXECUTABLE})
+  message(STATUS "Found FileCheck: ${FILECHECK_EXECUTABLE}")
 
   find_program(ZIP_LIT lit HINTS $ENV{ZIP_LIT} REQUIRED)
   message(STATUS "Found lit: ${ZIP_LIT}")
@@ -149,7 +149,14 @@ endif(ZIP_ENABLE_BENCHMARK)
 # on all sources)
 # ##############################################################################
 include(FnGetTargetSources)
-get_target_sources(_AllSources zip::zip zip::unittest zip::benchmark)
+set(_AllTargets ZipLib)
+if(TARGET ZipUnitTest)
+  list(APPEND _AllTargets ZipUnitTest)
+endif()
+if(TARGET ZipBenchmark)
+  list(APPEND _AllTargets ZipBenchmark)
+endif()
+get_target_sources(_AllSources ${_AllTargets})
 
 find_package(ClangFormat)
 

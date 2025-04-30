@@ -1,7 +1,7 @@
 // RUN: mkdir -p %t
 // RUN: %cxx -O3 -ffast-math -DNDEBUG -std=c++17 -fsave-optimization-record \
 // RUN:      -foptimization-record-file=%t/remarks.yaml -o %t/out.o -c %s
-// RUN: %opt-report-summary < %t/remarks.yaml | FileCheck %s
+// RUN: %opt-report-summary < %t/remarks.yaml | %filecheck %s
 
 #include <zip.h>
 
