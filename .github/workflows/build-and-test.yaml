@@ -50,6 +50,7 @@ jobs:
         run: |
           source venv/bin/activate
           cmake --build build --target format
+          cmake-format --check CMakeLists.txt cmake/modules/*.cmake
 
       - name: Unit tests
         run: |
