@@ -8,34 +8,39 @@ option(ZIP_ENABLE_TEST "Enable building unit tests" OFF)
 option(ZIP_ENABLE_OPT_TEST "Enable optimization tests (needs lit+filecheck)"
        OFF)
 option(ZIP_ENABLE_BENCHMARK "Enable building micro-benchmarks" OFF)
+set(ZIP_USE_SANITIZER "" CACHE STRING
+      "Define the sanitizer used to build binaries and tests. Possible values are: Address, Undefined and Address;Undefined. Defaults to empty string.")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 include(cmake/CPM.cmake)
 
 # ##############################################################################
-# C++ standard level. Defines target 'zip::cxxstd'.
+# Internal build configuration. Defines target ZipConfig. Meant to be privately
+# linked to non-interface internal targets. Not to be exported.
 # ##############################################################################
 
-add_library(ZipCxxStd INTERFACE)
-set_property(TARGET ZipCxxStd PROPERTY INTERFACE_CXX_EXTENSIONS OFF)
-set_property(TARGET ZipCxxStd PROPERTY INTERFACE_COMPILE_FEATURES cxx_std_17)
-add_library(zip::cxxstd ALIAS ZipCxxStd)
+add_library(ZipConfig INTERFACE)
 
-# ##############################################################################
-# Compiler warnings. Defines target 'zip::warnings'.
-# ##############################################################################
-add_library(ZipWarnings INTERFACE)
-add_library(zip::warnings ALIAS ZipWarnings)
-set_property(
-  TARGET ZipWarnings
-  PROPERTY INTERFACE_COMPILE_OPTIONS
-           -pedantic-errors
-           -Wall
-           -Wextra
-           -Werror
-           -Wconversion
-           -Wsign-conversion)
+set(WARNINGS -pedantic-errors
+-Wall
+-Wextra
+-Werror
+-Wconversion
+-Wsign-conversion)
+
+set_target_properties(ZipConfig PROPERTIES
+  INTERFACE_CXX_EXTENSIONS OFF
+  INTERFACE_COMPILE_FEATURES cxx_std_17
+  INTERFACE_COMPILE_OPTIONS "${WARNINGS}")
+
+include(FnGetSanitizerFlags)
+get_sanitizer_flags(SANITIZER_FLAGS)
+if(SANITIZER_FLAGS)
+  message(STATUS "Setting sanitizer flags: ${SANITIZER_FLAGS}")
+  target_compile_options(ZipConfig INTERFACE ${SANITIZER_FLAGS})
+  target_link_options(ZipConfig INTERFACE ${SANITIZER_FLAGS})
+endif()
 
 # ##############################################################################
 # Library. Defines target 'zip::zip'
@@ -50,7 +55,9 @@ target_include_directories(
   ZipLib INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-target_link_libraries(ZipLib INTERFACE zip::cxxstd)
+set_target_properties(ZipLib PROPERTIES
+                   INTERFACE_CXX_EXTENSIONS OFF
+                   INTERFACE_COMPILE_FEATURES cxx_std_17)
 
 # ##############################################################################
 # Unit tests.
@@ -67,14 +74,13 @@ if(ZIP_ENABLE_TEST)
   add_executable(zip::unittest ALIAS ZipUnitTest)
   set_target_properties(
     ZipUnitTest
-    PROPERTIES # zip::cxxstd isn't enough since INTERFACE_CXX_EXTENSIONS
-               # is still broken:
+    PROPERTIES # INTERFACE_CXX_EXTENSIONS is still broken:
                # https://gitlab.kitware.com/cmake/cmake/issues/17183
                CXX_EXTENSIONS OFF
                OUTPUT_NAME "zip-test")
 
   target_link_libraries(
-    ZipUnitTest PRIVATE zip::cxxstd zip::warnings zip::zip GTest::gtest
+    ZipUnitTest PRIVATE ZipConfig zip::zip GTest::gtest
                         GTest::gmock GTest::gtest_main)
   enable_testing()
   add_test(NAME zip-test COMMAND ZipUnitTest)
@@ -139,7 +145,7 @@ if(ZIP_ENABLE_BENCHMARK)
                OUTPUT_NAME "zip-benchmark")
 
   target_link_libraries(
-    ZipBenchmark PRIVATE zip::cxxstd zip::warnings zip::zip
+    ZipBenchmark PRIVATE ZipConfig zip::zip
                          benchmark::benchmark benchmark::benchmark_main)
 endif(ZIP_ENABLE_BENCHMARK)
 
