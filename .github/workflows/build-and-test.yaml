@@ -59,4 +59,5 @@ jobs:
       - name: Optimization tests
         run: |
           source venv/bin/activate
-          cmake --build build --target test-opt
+          cd build
+          lit -v test/opt
