@@ -111,7 +111,7 @@ if(ZIP_ENABLE_OPT_TEST)
 endif(ZIP_ENABLE_OPT_TEST)
 
 # ##############################################################################
-# Micro-benchmarks
+# Micro-benchmarks.
 # ##############################################################################
 
 if(ZIP_ENABLE_BENCHMARK)
@@ -144,20 +144,23 @@ if(ZIP_ENABLE_BENCHMARK)
 endif(ZIP_ENABLE_BENCHMARK)
 
 # ##############################################################################
-# Tooling Defines the following targets (only if the corresponding tool is
-# found): - format-fix (run clang-format fixers in place on all sources) - tidy
-# (run clang-tidy on all sources) - tidy-fix   (run clang-tidy fixers in place
-# on all sources)
+# Tooling. Defines the following targets (only if the corresponding tool is
+# found):
+#
+# * format (run clang-format on all sources)
+# * format-fix (run clang-format fixers in place on all sources)
+# * tidy (run clang-tidy on all sources)
+# * tidy-fix   (run clang-tidy fixers in place on all sources)
+#
 # ##############################################################################
+set(_AllTargets ZipLib ZipUnitTest ZipBenchmark)
+foreach(tgt IN LISTS _AllTargets)
+  if(TARGET ${tgt})
+    list(APPEND _Targets ${tgt})
+  endif()
+endforeach()
 include(FnGetTargetSources)
-set(_AllTargets ZipLib)
-if(TARGET ZipUnitTest)
-  list(APPEND _AllTargets ZipUnitTest)
-endif()
-if(TARGET ZipBenchmark)
-  list(APPEND _AllTargets ZipBenchmark)
-endif()
-get_target_sources(_AllSources ${_AllTargets})
+get_target_sources(_Sources ${_Targets})
 
 find_package(ClangFormat)
 
@@ -168,11 +171,11 @@ if(CLANG_FORMAT_FOUND)
   add_custom_target(
     format
     COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file --dry-run --Werror
-            ${_AllSources}
+            ${_Sources}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   add_custom_target(
     format-fix
-    COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${_AllSources}
+    COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${_Sources}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif(CLANG_FORMAT_FOUND)
 
@@ -186,10 +189,10 @@ if(CLANG_TIDY_FOUND)
                -warnings-as-errors=*)
   add_custom_target(
     tidy
-    COMMAND ${tidy_cmd} ${_AllSources}
+    COMMAND ${tidy_cmd} ${_Sources}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   add_custom_target(
     tidy-fix
-    COMMAND ${tidy_cmd} -fix ${_AllSources}
+    COMMAND ${tidy_cmd} -fix ${_Sources}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif(CLANG_TIDY_FOUND)
