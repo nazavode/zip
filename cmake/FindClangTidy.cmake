@@ -22,29 +22,26 @@
 # cmake-format: on
 
 find_program(CLANG_TIDY_EXECUTABLE
+             HINTS "${ClangTidy_ROOT}"
              NAMES clang-tidy
+                   clang-tidy-20
+                   clang-tidy-19
+                   clang-tidy-18
+                   clang-tidy-17
+                   clang-tidy-16
+                   clang-tidy-15
+                   clang-tidy-14
+                   clang-tidy-13
+                   clang-tidy-12
+                   clang-tidy-11
+                   clang-tidy-10
                    clang-tidy-9
-                   clang-tidy-9.0
                    clang-tidy-8
-                   clang-tidy-8.0
                    clang-tidy-7
-                   clang-tidy-7.0
                    clang-tidy-6
-                   clang-tidy-6.0
                    clang-tidy-5
-                   clang-tidy-5.0
                    clang-tidy-4
-                   clang-tidy-4.0
-                   clang-tidy-3.9
-                   clang-tidy-3.8
-                   clang-tidy-3.7
-                   clang-tidy-3.6
-                   clang-tidy-3.5
-                   clang-tidy-3.4
-                   clang-tidy-3.3
-                   clang-tidy-3.2
-                   clang-tidy-3.1
-                   clang-tidy-3.0
+                   clang-tidy-3
              DOC "clang-tidy executable")
 mark_as_advanced(CLANG_TIDY_EXECUTABLE)
 

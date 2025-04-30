@@ -151,10 +151,17 @@ endif(ZIP_ENABLE_BENCHMARK)
 include(FnGetTargetSources)
 get_target_sources(_AllSources zip::zip zip::unittest zip::benchmark)
 
-find_package(ClangFormat QUIET)
+find_package(ClangFormat)
+
 if(CLANG_FORMAT_FOUND)
   message(STATUS "clang-format: found ${CLANG_FORMAT_EXECUTABLE}")
+  message(STATUS "clang-format: added custom target 'format'")
   message(STATUS "clang-format: added custom target 'format-fix'")
+  add_custom_target(
+    format
+    COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file --dry-run --Werror
+            ${_AllSources}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   add_custom_target(
     format-fix
     COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${_AllSources}
@@ -162,9 +169,11 @@ if(CLANG_FORMAT_FOUND)
 endif(CLANG_FORMAT_FOUND)
 
 find_package(ClangTidy QUIET)
+
 if(CLANG_TIDY_FOUND)
   message(STATUS "clang-tidy: found ${CLANG_TIDY_EXECUTABLE}")
-  message(STATUS "clang-tidy: added custom targets 'tidy' and 'tidy-fix'")
+  message(STATUS "clang-tidy: added custom target 'tidy'")
+  message(STATUS "clang-tidy: added custom target 'tidy-fix'")
   set(tidy_cmd ${CLANG_TIDY_EXECUTABLE} -p ${CMAKE_CURRENT_BINARY_DIR}
                -warnings-as-errors=*)
   add_custom_target(
