@@ -149,7 +149,14 @@ endif(ZIP_ENABLE_BENCHMARK)
 # on all sources)
 # ##############################################################################
 include(FnGetTargetSources)
-get_target_sources(_AllSources zip::zip zip::unittest zip::benchmark)
+set(_AllTargets ZipLib)
+if(TARGET ZipUnitTest)
+  list(APPEND _AllTargets ZipUnitTest)
+endif()
+if(TARGET ZipBenchmark)
+  list(APPEND _AllTargets ZipBenchmark)
+endif()
+get_target_sources(_AllSources ${_AllTargets})
 
 find_package(ClangFormat)
 
