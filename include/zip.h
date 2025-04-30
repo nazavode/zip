@@ -386,8 +386,8 @@ struct offset {
         return ret;
     }
 
-    constexpr typename IteratorPack::difference_type operator-(const self_type& rhs) const
-        noexcept {
+    constexpr typename IteratorPack::difference_type operator-(
+        const self_type& rhs) const noexcept {
         using std::get;
         return (get<0>(self().iterators()) + m_offset) -
                (get<0>(rhs.iterators()) + rhs.m_offset);
@@ -500,8 +500,8 @@ inline constexpr bool is_iterator_category_v =
 
 template <typename A, typename B>
 inline constexpr bool is_compatible_iterator_category_v =
-    is_iterator_category_v<A>&& is_iterator_category_v<B>&& std::is_convertible_v<
-        std::add_lvalue_reference_t<A>, std::add_lvalue_reference_t<B>>;
+    is_iterator_category_v<A> && is_iterator_category_v<B> &&
+    std::is_convertible_v<std::add_lvalue_reference_t<A>, std::add_lvalue_reference_t<B>>;
 
 /// iterator_type is a metafunction that returns a zipped iterator type
 /// according the specified IteratorCategory and packs in it the list
