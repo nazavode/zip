@@ -12,7 +12,8 @@ set(ZIP_USE_SANITIZER "" CACHE STRING
       "Define the sanitizer used to build tests. Possible values are: Address, Undefined and Address;Undefined. Defaults to empty string.")
 # cmake-format: on
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+                      ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 include(cmake/CPM.cmake)
 
