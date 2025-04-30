@@ -43,7 +43,7 @@ jobs:
             -DZIP_ENABLE_TEST=ON \
             -DZIP_ENABLE_OPT_TEST=ON \
             -DZIP_ENABLE_BENCHMARK=OFF \
-            -DZIP_USE_SANITIZER=Address;Undefined
+            -DZIP_USE_SANITIZER="Address;Undefined"
           cmake --build build
       
       - name: Code formatting
