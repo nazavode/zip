@@ -21,9 +21,10 @@
 # cmake-format: on
 
 find_program(
-  FILECHECK_EXECUTABLE
-  HINTS "${FileCheck_ROOT}"
-  NAMES filecheck
+    FILECHECK_EXECUTABLE
+    HINTS "${FileCheck_ROOT}"
+    NAMES
+        filecheck
         FileCheck
         FileCheck-20
         FileCheck-19
@@ -43,11 +44,12 @@ find_program(
         FileCheck-5
         FileCheck-4
         FileCheck-3
-  DOC "FileCheck executable")
+    DOC "FileCheck executable"
+)
 mark_as_advanced(FILECHECK_EXECUTABLE)
 
 if(FILECHECK_EXECUTABLE)
-  set(FILECHECK_FOUND TRUE)
+    set(FILECHECK_FOUND TRUE)
 else()
-  set(FILECHECK_FOUND FALSE)
+    set(FILECHECK_FOUND FALSE)
 endif()
